@@ -1,0 +1,16 @@
+{% autoescape off %}
+Hi {{ user.username }},
+
+An account was successfully created for you at:
+
+URL: http://{{ domain }}{% url 'vacancies:internal'%}
+
+Here are your account details:
+Username: {{ user.username }}
+Password: {{ password }}
+
+Please visit the URL to log in and change your password for you to apply new roles on the portal, All the best.
+
+Login URL: http://{{ domain }}{% url 'users:login' %}
+
+{% endautoescape %}

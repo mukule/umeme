@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+{% include '../main/includes/hero.html' %}
+<div class="page-content">
+    <div class="container-fluid">
+        <h2>Terms and Conditions</h2>
+        {% if terms %}
+            {{ terms.text|safe }}
+        {% else %}
+            <p>Terms and Conditions are currently not available. Please check back later for updates.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

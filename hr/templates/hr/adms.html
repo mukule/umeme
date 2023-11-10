@@ -1,0 +1,75 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Kengen</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Users</a></li>
+                        <li class="breadcrumb-item active">Admin Staffs</li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Search and select the staff you wish to give roles</h4>
+                 
+
+                    <form method="get" action="{% url 'hr:adms' %}" class="mb-4 text-center">
+                        <div class="input-group" style="width: 60%; margin: 0 auto;">
+                            <input type="text" class="form-control" name="q" placeholder="Search by Staff No.,Email or name" value="">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    
+
+                    <!-- Result Table -->
+                    <div class="table-responsive mt-4">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>Management role</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users_with_access_5 %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.resume.full_name }}</td>
+                                        <td>{{ user.get_function_display }}</td>
+                                        <td><a href="{% url 'hr:admin_role' user.id %}">Update function</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <!-- end card-body-->
+            </div>
+            <!-- end card -->
+
+        </div>
+        <!-- end col -->
+    </div>
+</div>
+{% endblock content %}

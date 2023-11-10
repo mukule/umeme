@@ -1,0 +1,94 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-8">
+                <div class="d-flex align-items-center min-vh-100 justify-content-center">
+                    <div class="w-100 w-md-75 d-block bg-white shadow-lg rounded my-5">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="p-5">
+                                    <div class="text-center mb-3">
+                                        <a href="#" style="width: 50; height: 50;" class="text-dark font-size-22 font-family-secondary">
+                                            <i class="fas fa-user-alt"></i>
+                                        </a>
+                                    </div>
+                                    <h1 class="h5 mb-4 text-center">Create an Admin</h1>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        {{ form.access_level|as_crispy_field }}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {{ form.username|as_crispy_field }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                {{ form.email|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    {{ form.password1|as_crispy_field }}
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn" id="toggle-password">
+                                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    {{ form.password2|as_crispy_field }}
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn" id="toggle-confirm-password">
+                                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group text-center">
+                                            <button class="btn btn-success btn-lg" type="submit">Save & Copy Admin Details</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // JavaScript to toggle password visibility for password1
+    const togglePassword = document.getElementById('toggle-password');
+    const passwordField = document.querySelector('#id_password1');
+
+    togglePassword.addEventListener('click', function () {
+        const fieldType = passwordField.getAttribute('type');
+        if (fieldType === 'password') {
+            passwordField.setAttribute('type', 'text');
+        } else {
+            passwordField.setAttribute('type', 'password');
+        }
+    });
+
+    // JavaScript to toggle password visibility for password2 (confirm password)
+    const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+    const confirmPasswordField = document.querySelector('#id_password2');
+
+    toggleConfirmPassword.addEventListener('click', function () {
+        const fieldType = confirmPasswordField.getAttribute('type');
+        if (fieldType === 'password') {
+            confirmPasswordField.setAttribute('type', 'text');
+        } else {
+            confirmPasswordField.setAttribute('type', 'password');
+        }
+    });
+</script>
+{% endblock content %}

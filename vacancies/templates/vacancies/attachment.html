@@ -1,0 +1,93 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0 font-size-18"></h4>
+
+                        <!-- <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"></li>
+                                <li class="breadcrumb-item active"></li>
+                            </ol>
+                        </div> -->
+                        
+                    </div>
+                </div>
+            </div> 
+            <!---->
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ vacancy.title }}</h4>
+                        <p class="card-subtitle mb-4">{{ vacancy.ref }}</p>
+                        
+                        <div class="d-flex justify-content-center">
+                            <section class="text-white bg-primary text-center col-12 col-md-8">
+                                <div class="row">
+                                    <div class="col-4 text-white">
+                                        <h6 class="text-white mt-4 mb-4"><b>Posting Date:</b> {{ vacancy.date_open }}</h6>
+                                    </div>
+                                    <div class="col-4 text-white">
+                                        <h6 class="text-white mt-4 mb-4"><b>Discipline: </b> {{ vacancy.job_discipline }}</h6>
+                                    </div>
+                                    <div class="col-4 text-white">
+                                        <h6 class="text-white mt-4 mb-4"><b>Apply Before: {{ vacancy.date_close }}</b> </h6>
+                                    </div>
+                                </div>
+                            </section>
+                            
+                        </div>
+                        <h4 class="card-title mt-4">Attachment Description</h4>
+                        <p>{{ vacancy.description }}</p>
+                        <hr>
+                        <h4 class="card-title mt-4">Job Responsibilities</h4>
+                        <p>{{ vacancy.position_responsibilities }}</p>
+                        <hr>
+                        <h4 class="card-title mt-4">Vacant Positions</h4>
+                        <p>{{ vacancy.posts_needed }}</p>
+                        <h4 class="card-title mt-4">Educational Level</h4>
+                        <p>{{ vacancy.min_educational_level }}</p>
+                        <h4 class="card-title mt-4">Minimum Work experience</h4>
+                        <p>{{ vacancy.min_work_experience }} years</p>
+                        <h4 class="card-title mt-4">Nature of Job</h4>
+                        <p>{{ vacancy.vacancy_type }}</p>
+
+                        <div class="text-center">
+                            <form method="post">
+                                {% csrf_token %}
+                                <button type="submit" name="toggle_read" class="btn btn-lg btn-primary-outline">
+                                    {% if terms.read %}
+                                        <i class="fas fa-times"></i> Terms and Conditions
+                                    {% else %}
+                                        <i class="fas fa-check"></i> Terms and Conditions
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                        
+                        
+                        <div class="text-center mt-4">
+                            {% if terms.read %}
+                                <a href="{% url 'vacancies:apply' vacancy_id=vacancy.id %}" class="btn btn-lg btn-primary active">Apply this Attachment</a>
+                            {% else %}
+                                <button class="btn btn-lg btn-primary" disabled>Apply this Attachment</button>
+                                <!-- Optionally, you can provide a message explaining why the button is disabled -->
+                                <div class="text-center mt-4 alert-danger">
+                                    <a href="{% url 'main:terms' %}">Read Terms and Conditions</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+{% endblock content %}

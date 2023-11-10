@@ -1,0 +1,9 @@
+{% autoescape off %}
+Hi {{ user.username }},
+
+Please click on the link below to confirm your Password Change Request:
+
+http://{{ domain }}{% url 'users:secure' uidb64=uid token=token %}
+{% endautoescape %}
+
+Please ignore the email if you did not request for password change

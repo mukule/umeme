@@ -1,0 +1,152 @@
+{% load static %}
+<header id="page-topbar">
+    <div class="navbar-header">
+        <!-- LOGO -->
+        <div class="navbar-brand-box d-flex align-items-left">
+            <a href="/" class="logo">
+               <img src="{% static 'dashboard/images/logo.png' %}" width="50" height="50" alt="">
+                <span>
+                    KENGEN CAREERS PORTAL
+                </span>
+            </a>
+
+            <button type="button" class="btn btn-sm mr-2 font-size-16 d-lg-none header-item waves-effect waves-light" data-toggle="collapse" data-target="#topnav-menu-content">
+                <i class="fa fa-fw fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="d-flex align-items-center">
+        
+                           
+        
+            <div class="dropdown d-inline-block ml-2">
+                <button type="button" class="btn header-item waves-effect waves-light" id="page-header-user-dropdown"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {% if user.is_authenticated %}
+                    <img class="rounded-circle header-profile-user" src="{{ user.profile.url }}"
+                                        alt="Profile Pic">
+                    <span class="d-none d-sm-inline-block ml-1">  {{ user.username }}</span>
+                    <i class="mdi mdi-chevron-down d-none d-sm-inline-block"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item d-flex align-items-center justify-content-between" href="javascript:void(0)">
+                        <span><a href="{% url 'users:logout' %}">Logout</a></span>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center justify-content-between" href="javascript:void(0)">
+                        <span><a href="{% url 'users:profile' user.username %}">My Profile</a></span>
+                    </a>
+                </div>
+                {% else %}
+            </div>
+           
+                <a href="{% url 'users:login' %}" class="logo">
+                    <i class="fas fa-unlock-alt"></i>
+                     <span>
+                      Login
+                     </span>
+                 </a>
+     
+                {% endif %}
+           
+            
+        </div>
+    </div>
+</header>
+<div class="topnav">
+    <div class="container-fluid" style="display: flex; justify-content: center;">
+        <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
+            
+            <div class="collapse navbar-collapse" id="topnav-menu-content">
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated and user.access_level == 5 %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'vacancies:internal' %}">
+                            Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main:staff_profile' %}">
+                            Resume
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        {% if not user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                Home
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
+                        {% if user.access_level != 5 %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/">
+                                    Home
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                    
+                    </li>
+                    {% if user.is_authenticated %}
+                    {% if user.access_level != 5 %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'main:user_profile' %}">
+                                Resume
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+                {% if user.is_authenticated %}
+                {% if user.access_level != 5 %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="">
+                            Why Kengen
+                        </a>
+                    </li>
+                {% endif %}
+            {% endif %}
+
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'main:terms' %}">
+                      T&Cs
+                  </a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="">
+                How to apply
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                FAQS
+                </a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'vacancies:applications' %}">
+                My Applications
+                </a>
+            </li>
+            {% endif %}
+          
+            {% if user.is_authenticated and user.is_superuser or user.function == 1 or user.function == 2 or user.function == 3 or user.function == 4 or user.function == 5 %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'hr:dashboard' %}">
+                    Dashboard
+                </a>
+            </li>
+            {% endif %}
+
+        
+        
+        
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>

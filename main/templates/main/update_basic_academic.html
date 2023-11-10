@@ -1,0 +1,57 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+{% include '../main/includes/hero.html' %}
+<div class="page-content">
+    <div class="container-fluid">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Oops! There are errors in the form:</strong>
+                <ul>
+                    {% for field_errors in form.errors.values %}
+                        {% for error in field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.name_of_the_school|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.index_number|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.date_started|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.date_ended|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.certification|as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.grade_attained|as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.certificate|as_crispy_field }}
+                </div>
+                
+            </div>
+           <div class="text-center">
+            <button type="submit" class="btn btn-primary active">Save</button>
+           </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

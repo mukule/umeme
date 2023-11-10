@@ -1,0 +1,166 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+    {% include 'main/includes/hero.html' %}
+    <div class="page-content">
+        <div class="container-fluid">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        {{ form.full_name.label_tag }}
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}
+                            <div class="text-danger">
+                                {{ form.full_name.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.id_number.label_tag }}
+                        {{ form.id_number }}
+                        {% if form.id_number.errors %}
+                            <div class="text-danger">
+                                {{ form.id_number.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.gender.label_tag }}
+                        {{ form.gender }}
+                        {% if form.gender.errors %}
+                            <div class="text-danger">
+                                {{ form.gender.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        {{ form.email_address.label_tag }}
+                        {{ form.email_address }}
+                        {% if form.email_address.errors %}
+                            <div class="text-danger">
+                                {{ form.email_address.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.phone.label_tag }}
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <div class="text-danger">
+                                {{ form.phone.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        {{ form.dob.label_tag }}
+                        {{ form.dob }}
+                        {% if form.dob.errors %}
+                            <div class="text-danger">
+                                {{ form.dob.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.country_of_birth.label_tag }}
+                        {{ form.country_of_birth }}
+                        {% if form.country_of_birth.errors %}
+                            <div class="text-danger">
+                                {{ form.country_of_birth.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.country_of_residence.label_tag }}
+                        {{ form.country_of_residence }}
+                        {% if form.country_of_residence.errors %}
+                            <div class="text-danger">
+                                {{ form.country_of_residence.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3" id="county-field">
+                        {{ form.county.label_tag }}
+                        {{ form.county }}
+                        {% if form.county.errors %}
+                            <div class="text-danger">
+                                {{ form.county.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        {{ form.educational_level.label_tag }}
+                        {{ form.educational_level }}
+                        {% if form.educational_level.errors %}
+                            <div class="text-danger">
+                                {{ form.educational_level.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.marital_status.label_tag }}
+                        {{ form.marital_status }}
+                        {% if form.marital_status.errors %}
+                            <div class="text-danger">
+                                {{ form.marital_status.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.ethnicity.label_tag }}
+                        {{ form.ethnicity }}
+                        {% if form.ethnicity.errors %}
+                            <div class="text-danger">
+                                {{ form.ethnicity.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-1">
+                        {{ form.disability.label_tag }}
+                        {{ form.disability }}
+                        {% if form.disability.errors %}
+                            <div class="text-danger">
+                                {{ form.disability.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2" id="disability-number-field">
+                        {{ form.disability_number.label_tag }}
+                        {{ form.disability_number }}
+                        {% if form.disability_number.errors %}
+                            <div class="text-danger">
+                                {{ form.disability_number.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        {{ form.field_of_study.label_tag }}
+                        {{ form.field_of_study }}
+                        {% if form.field_of_study.errors %}
+                            <div class="text-danger">
+                                {{ form.field_of_study.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.religion.label_tag }}
+                        {{ form.religion }}
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary active">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

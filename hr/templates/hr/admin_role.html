@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Kengen</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Users</a></li>
+                        <li class="breadcrumb-item active">Admin Staffs</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Update staff function</h4>
+                    
+                    <!-- Form for updating the staff function -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                       <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary">Update Function</button>
+                       </div>
+                    </form>
+                </div>
+                <!-- end card-body-->
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+</div>
+{% endblock content %}

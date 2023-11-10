@@ -1,0 +1,67 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0 font-size-18">Kengen</h4>
+
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Users</a></li>
+                            <li class="breadcrumb-item active">All users</li>
+                        </ol>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>     
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">System Users</h4>
+                        <p class="card-subtitle mb-4">All system users</p>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Email</th>
+                                        <th>Gender</th>
+                                        <th>Age (years)</th>
+                                        <th>Ethnicity</th>
+                                        <th>Active</th>
+                                        <th>Registered</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                        <tr>
+                                            <td>{{ user.username }} {{ user.first_name }} {{ user.last_name }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.resume.get_gender_display }}</td>
+                                            <td>{{ user.resume.age }}</td>
+                                            <td>{{ user.resume.ethnicity }}</td>
+                                            <td>{% if user.is_active %}Yes{% else %}No{% endif %}</td>
+                                            <td>{{ user.date_joined }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <!-- end card-body-->
+                </div>
+                <!-- end card -->
+
+            </div>
+            <!-- end col -->
+       </div>
+    </div>
+</div>
+{% endblock content %}

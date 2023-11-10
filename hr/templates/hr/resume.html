@@ -1,0 +1,240 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0 font-size-18">Kengen</h4>
+
+                    
+                </div>
+            </div>
+        </div>     
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4 text-center">CV / Resume For - {{ user.first_name }} {{ user.last_name }}</h4>
+                      
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                   
+                                    <img src="{{ user.profile.url }}" alt="Profile Photo" class="img-fluid" width="150" height="150">
+                                </div>
+                                <div class="col-md-6">
+                                   
+                                    <h5>Name: {{ user.first_name }} {{ user.last_name }}</h5>
+                                    <p>Email: {{ user.email }}</p>
+                                    <p>Phone: {{ resume.phone }}</p>
+                                    <p>ID NO.: {{ resume.id_number }}</p>
+                                    
+                                </div>
+                            </div>
+                            <hr class="mb-1"><hr class="mt-0">
+                            <!--end user section -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4 class="card-title">Career Objective</h4>
+                                    {% if objective %}
+                                    <p class="card-subtitle">{{ objective.career_objective }}</p>
+                                    {% else %}
+                                    <div class="alert alert-primary text-center active" role="alert">
+                                        This applicant has no Career Objective set
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <hr>
+                            <!--end career objective section -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 class="card-title">Education</h4>
+
+                                    {% if further_studies %}
+                                    <p class="card-subtitle">
+                                       <b> {{ further_studies.date_started }} -  {{ further_studies.date_ended }} <br></b>
+                                       {{ further_studies.certifications }} -
+                                       {{ further_studies.institution_name }} <br>
+                                       Class Attained : {{ further_studies.grade }}
+                                    </p>
+                                    {% else %}
+                                    <div class="alert alert-primary text-center active" role="alert">
+                                        There are currently no further studies added
+                                    </div>
+                                    {% endif %}
+
+                                    <br/>
+
+                                    {% if basic_education %}
+                                    <p class="card-subtitle mb-4">
+                                       <b> {{ basic_education.date_started }} -  {{ basic_education.date_ended }} <br></b>
+                                       {{ basic_education.certification }} -
+                                       {{ basic_education.name_of_the_school }} <br>
+                                       Grade attained : {{ basic_education.grade_attained }}
+                                    </p>
+                                    {% else %}
+                                    <div class="alert alert-primary text-center active" role="alert">
+                                        No basic education for this applicant
+                                    </div>
+                                    {% endif %}
+                                   
+                                </div>
+                                <div class="col-md-6">
+                                   
+                                    <h4 class="card-title">Employment History</h4>
+                                    {% if work_experience %}
+                                    {% for experience in work_experience %}
+                                    <p class="card-subtitle mb-2">
+                                        <b>{{ experience.company_name }} - {{ experience.position }}<br></b>
+                                        {{ experience.date_started }} -
+                                        {% if experience.currently_working %}
+                                        Currently working here
+                                        {% else %}
+                                        {{ experience.date_ended }} <br>
+                                        {% endif %}
+                                        Period worked here : {{ experience.years }}
+                                     </p>
+                                    {% endfor %}
+                                    {% else %}
+                                    <div class="alert alert-primary text-center active" role="alert">
+                                        No Work Experience for this applicant
+                                    </div>
+                                    {% endif %}
+                                    
+                                </div>
+                            </div>
+                             <!--end education and employment history -->
+                             <hr>
+                                <!--docs and memberships -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h4 class="card-title">Professional Membership</h4>
+                                        {% if memberships %}
+                                        {% for membership in memberships %}
+                                        <p class="card-subtitle mb-2">
+                                            <b>{{ membership.membership_title }} - {{ membership.membership_number }}<br></b>
+                                            {{ membership.date_joined }}
+                                         </p>
+                                        {% endfor %}
+                                        {% else %}
+                                        <div class="alert alert-primary text-center active" role="alert">
+                                            No professional membership for this applicant
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <h4 class="card-title">Documents</h4>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                {% if basic_education.certificate %}
+                                                <div class="alert alert-warning shadow-sm" role="alert">
+                                                    <a href="{{ basic_education.certificate.url }}" target="_blank">
+                                                        <i class="fas fa-file-pdf"></i> KCSE Certificate
+                                                    </a>
+                                                </div>
+                                                {% else %}
+                                                <div class="alert alert-primary text-center active" role="alert">
+                                                    This applicant has no KCSE certificate
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-4">
+                                                {% if further_studies.certificate %}
+                                                <div class="alert alert-warning shadow-sm" role="alert">
+                                                    <a href="{{ further_studies.certificate.url }}" target="_blank">
+                                                        <i class="fas fa-file-pdf"></i> College/University Certificate
+                                                    </a>
+                                                </div>
+                                                {% else %}
+                                                <div class="alert alert-primary text-center active" role="alert">
+                                                    This applicant has no college certificate
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-4">
+                                                {% if memberships %}
+                                                {% for membership in memberships %}
+                                                {% if membership.certificate %}
+                                                <div class="alert alert-warning shadow-sm" role="alert">
+                                                    <a href="{{ membership.certificate.url }}" target="_blank">
+                                                        <i class="fas fa-file-pdf"></i> Membership Certificate
+                                                    </a>
+                                                </div>
+                                                {% else %}
+                                                <div class="alert alert-primary text-center active" role="alert">
+                                                    No membership certificate attached
+                                                </div>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% else %}
+                                                <div class="alert alert-primary text-center active" role="alert">
+                                                    This applicant has no Professional membership
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-xl-12">
+                                        <h4 class="card-title text-center">Referees</h4>
+                                            {% if referees %}
+                                            <div class="table-responsive">
+                                                <table class="table table-borderless mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Organization</th>
+                                                            <th>Designation</th>
+                                                            <th>Phone</th>
+                                                            <th>Email</th>
+                                                        </tr>
+                                                    </thead>
+                                                  {% for ref in referees %}
+                                                  <tbody>
+                                                    <tr>
+                                                        <td>{{ ref.full_name }}</td>
+                                                        <td>{{ ref.organization }}</td>
+                                                        <td>{{ ref.designation }}</td>
+                                                        <td>{{ ref.phone }}</td>
+                                                        <td>{{ ref.email }}</td>
+                                                       
+                                                    </tr>
+                                                </tbody>
+                                                {% endfor %}
+                                                </table>
+                                            </div>
+                                            {% else %}
+                                            <div class="alert alert-primary text-center active" role="alert">
+                                                This applicant has no Referees
+                                            </div>
+                                            {% endif %}
+                                    </div>
+                                </div>
+
+                        </div>
+                        
+                        </div>
+                        <div class="d-print-none my-4">
+                            <div class="text-center">
+                                <a href="javascript:window.print()" class="btn btn-primary waves-effect waves-light"><i class="fa fa-print m-r-5"></i> Download/Print</a>
+                               
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <!-- end col -->
+        </div>
+       <!--end row-->
+    </div>
+</div>
+{% endblock content %}

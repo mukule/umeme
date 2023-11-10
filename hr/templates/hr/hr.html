@@ -1,0 +1,67 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Kengen</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Users</a></li>
+                        <li class="breadcrumb-item active">Admin Staffs</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Admin Staffs</h4>
+                    <p class="card-subtitle mb-4">These are staffs with admin rights and their functions</p>
+                    <!-- Result Table -->
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>Management role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if users_with_access_and_function %}
+                                    {% for user in users_with_access_and_function %}
+                                        <tr>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.resume.full_name }}</td>
+                                            <td>{{ user.get_function_display }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4">No staff admin found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-4">
+                       <a class="btn btn-primary btn-lg active" href="{% url 'hr:adms' %}">Add new staff role</a>
+                       </div>
+                </div>
+                <!-- end card-body-->
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+</div>
+{% endblock content %}

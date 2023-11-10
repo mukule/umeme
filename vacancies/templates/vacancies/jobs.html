@@ -1,0 +1,64 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+    {% include '../main/includes/hero.html' %}
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="card p-3">
+                <h4 class="card-title">Open Vacancies - Careers</h4>
+                <section class="col-md-10 mx-auto shadow-sm " style="background-color: #fd7e14; text-align: center; border-radius: 10px; padding: 20px;">
+                    <form method="get">
+                        <div class="form-row align-items-center">
+                            <div class="col-md-4 input-group mb-2 text-center">
+                                <input type="text" name="search" class="form-control" placeholder="Search By Keyword or Job Title">
+                            </div>
+                            <div class="col-md-4 input-group mb-2">
+                                <select name="vacancy_type" class="form-control">
+                                    <option value="" class="text-center">Select Job Function</option>
+                                    {% for discipline in job_disciplines %}
+                                        <option value="{{ discipline.name }}" {% if selected_vacancy_type == discipline.name %}selected{% endif %}>
+                                            {{ discipline.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+                    
+                
+                <div class="row mt-3">
+                    {% for job in jobs %}
+                        <div class="col-md-4">
+                            <a href="{% url 'vacancies:job' job.id %}" style="text-decoration: none; color: inherit;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        {{ job.title }}
+                                    </div>
+                                    <div class="card-body">
+                                        <blockquote class="card-bodyquote">
+                                            <p><b>Job Description:</b> {{ job.description }}</p>
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% if forloop.counter|divisibleby:3 %}
+                            </div><div class="row">
+                        {% endif %}
+                    {% empty %}
+                    <section class="col-md-6 mx-auto my-2 shadow-sm text-center bg-primary rounded p-2">
+                        <p class="text-white">There are no Open Job Vacancies Now</p>
+                    </section>
+                    
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h1 class="mb-0 font-size-18">Terms and Conditions</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="{{ form.text.id_for_label }}" class="col-form-label">Terms and Conditions</label>
+                                    {{ form.text|as_crispy_field }}
+                                </div>
+                              
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary active">Update Terms and Conditions</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock content %}

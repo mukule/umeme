@@ -1,0 +1,83 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mt-4 justify-content-center">
+        <div class="col-xl-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Staffs</h4>
+                    <!-- Search form -->
+                    <form method="get" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="search_query" class="form-control" placeholder="Search by Staff No or Name" value="{{ search_query }}">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <a href="{% url 'hr:kgn_staffs' %}" class="btn btn-secondary">Show All</a>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Table of staff members -->
+                    <div class="table-responsive">
+                        {% if staff_members %}
+                            <table class="table table-sm table-hover mb-0" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Staff No</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for staff in staff_members %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ staff.username }}</td>
+                                            <td>{{ staff.resume.full_name }}</td>
+                                            <td>{{ staff.email }}</td>
+                                            <td><a href="{% url 'hr:edit_staff' staff.id %}"><i class="fas fa-edit"></i></a></td>
+                                            <td><a href="{% url 'hr:delete_staff' staff.id %}"><i class="fas fa-trash-alt"></i></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="pagination mt-4">
+                                <span class="step-links">
+                                    {% if staff_members.has_previous %}
+                                        <a href="?page=1">&laquo; first</a>
+                                        <a href="?page={{ staff_members.previous_page_number }}">previous</a>
+                                    {% endif %}
+                                    
+                                    <span class="current-page">
+                                        Page {{ staff_members.number }} of {{ staff_members.paginator.num_pages }}.
+                                    </span>
+                                    
+                                    {% if staff_members.has_next %}
+                                        <a href="?page={{ staff_members.next_page_number }}">next</a>
+                                        <a href="?page={{ staff_members.paginator.num_pages }}">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% else %}
+                            <p>No staff members available.</p>
+                        {% endif %}
+                        <div class="text-center">
+                            <a href="{% url 'users:create_staff' %}" class="btn btn-primary">Add New Staff</a>
+                            
+                        </div>
+                    </div>
+                </div>
+                <!-- end card-body-->
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+</div>
+{% endblock content %}

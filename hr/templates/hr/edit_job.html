@@ -1,0 +1,124 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0 font-size-18">Kengen</h4>
+
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Vacancy</a></li>
+                            <li class="breadcrumb-item active">Create Vacancy</li>
+                        </ol>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>     
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <strong>Oops! There are errors in the form:</strong>
+                                <ul>
+                                    {% for field_errors in form.errors.values %}
+                                        {% for error in field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                            <div class="form-group row">
+                                <label for="{{ form.vacancy_title.id_for_label }}" class="col-sm-2 col-form-label">Vacancy</label>
+                                <div class="col-sm-5">
+                                    {{ form.title|as_crispy_field }}
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ form.ref|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.job_summary.id_for_label }}" class="col-sm-2 col-form-label">Job Description</label>
+                                <div class="col-sm-10">
+                                    {{ form.description|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.job_type.id_for_label }}" class="col-sm-2 col-form-label">Nature of Job</label>
+                                <div class="col-sm-5">
+                                    {{ form.vacancy_type|as_crispy_field }}
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ form.job_discipline|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.job_description.id_for_label }}" class="col-sm-2 col-form-label">Position Responsibilities</label>
+                                <div class="col-sm-10">
+                                    {{ form.position_responsibilities|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.posts_needed.id_for_label }}" class="col-sm-2 col-form-label">About Post</label>
+                                <div class="col-sm-5">
+                                    {{ form.posts_needed|as_crispy_field }}
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ form.reports_to|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label">Duration</label>
+                                <div class="col-sm-5">
+                                    {{ form.date_open|as_crispy_field }}
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ form.date_close|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label">Requirements</label>
+                                <div class="col-sm-5">
+                                    {{ form.min_educational_level|as_crispy_field }}
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ form.min_work_experience|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label">Set Requirements</label>
+                                <div class="col-sm-5">
+                                    {{ form.certifications_required|as_crispy_field }}
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ form.college_required|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row text-center">
+                                <div class="col-sm-10 offset-sm-2">
+                                    <button type="submit" class="btn btn-primary">submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- end card-body-->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        
+       <!--end row-->
+    </div>
+</div>
+{% endblock content %}

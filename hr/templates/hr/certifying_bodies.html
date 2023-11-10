@@ -1,0 +1,70 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0 font-size-18">Certifying Bodies</h4>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center"> <!-- Center the content -->
+            <div class="col-xl-12"> <!-- Adjust the width as needed -->
+                <div class="card">
+                    <div class="card-body">
+                        {% if c_bodies %}
+                        <div class="table-responsive mt-3 w-100">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Title</th> <!-- Add text-center class to center align header -->
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Loop through certifying bodies -->
+                                    {% for body in c_bodies %}
+                                        <tr>
+                                            <td class="text-center">{{ body.name }}</td> <!-- Add text-center class to center align data cell -->
+                                            <td class="text-center">
+                                                <!-- Edit/Update action with Font Awesome icon and Bootstrap spacing -->
+                                                <a href="{% url 'hr:edit_certifying_body' body.id %}" class="btn btn-warning mr-2">
+                                                    <i class="fas fa-pencil-alt"></i> Edit
+                                                </a>
+                                                
+                                                <!-- Delete action with Font Awesome icon and Bootstrap spacing -->
+                                                <a href="{% url 'hr:delete_certifying_body' body.id %}" class="btn btn-danger">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {% else %}
+                            <p class="text-center">No Certifying Bodies Available</p>
+                        {% endif %}
+                        
+                        <!-- Add New Certifying Body Button -->
+                        <div class="text-center mt-4">
+                            <a href="{% url 'hr:create_certifying_body' %}" class="btn btn-primary">Add New Certifying Body</a>
+                        </div>
+                    </div>
+                    <!-- end card-body -->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
+        
+    </div>
+</div>
+{% endblock content %}

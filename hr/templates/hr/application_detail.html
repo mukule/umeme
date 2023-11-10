@@ -1,0 +1,177 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0 font-size-18">Kengen</h4>
+
+                   
+                </div>
+            </div>
+        </div>     
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">Applicants For : {{ vacancy.title }} - {{ vacancy.vacancy_type }} - {{ vacancy.ref }}</h4>
+                        <p class="card-subtitle mb-4 text-center">Vacancy type: {{ vacancy.vacancy_type }} || Posts Needed: {{ vacancy.posts_needed }} || 
+                            Min Education Level: {{ vacancy.min_educational_level }} || Min Work Experience: {{ vacancy.min_work_experience }}</p>
+                            <!--filters row-->
+                            <section class="col-md-12 mx-auto shadow-sm mb-4" style="background-color: #fd7e14; text-align: center; border-radius: 10px; padding: 20px;">
+                                <form method="get">
+                                    <div class="form-row align-items-center">
+                                        <div class="col-md-2 input-group mb-2">
+                                            <select id="education_level" name="education_level" class="form-control">
+                                                <option value="" class="text-center">Min Education Level</option>
+                                                {% for level in educational_levels %}
+                                                    <option value="{{ level.id }}" {% if selected_education_level == level.id %}selected{% endif %}>
+                                                        {{ level.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 input-group mb-2">
+                                            <select id="ethnicity" name="ethnicity" class="form-control">
+                                                <option value="" class="text-center">Ethnicity</option>
+                                                {% for eth in ethnicities %}
+                                                    <option value="{{ eth.id }}" {% if selected_ethnicity == eth.id %}selected{% endif %}>
+                                                        {{ eth.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 input-group mb-2">
+                                            <select id="gender" name="gender" class="form-control">
+                                                <option value="" class="text-center">Gender</option>
+                                                <option value="male" {% if selected_gender == 'male' %}selected{% endif %}>Male</option>
+                                                <option value="female" {% if selected_gender == 'female' %}selected{% endif %}>Female</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 input-group mb-2">
+                                            <select id="disability" name="disability" class="form-control">
+                                                <option value="" class="text-center">Disability</option>
+                                                <option value="True" {% if selected_disability == 'True' %}selected{% endif %}>Yes</option>
+                                                <option value="False" {% if selected_disability == 'False' %}selected{% endif %}>No</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 input-group mb-2">
+                                            <input type="number" id="experience" name="experience" class="form-control" placeholder="Experience (years)">
+                                        </div>
+                                        <div class="col-md-2 input-group mb-2 text-center">
+                                            <input type="text" id="name_search" name="name_search" class="form-control" placeholder="Name Search">
+                                        </div>
+                                    </div>
+                                    <div class="form-row text-center">
+                                        <div class="col-md-6">
+                                            <button id="apply_filters" type="submit" class="btn btn-primary active">
+                                                <i class="fas fa-search"></i> Apply Filters
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <a href="?export_excel=true" class="btn btn-primary active">
+                                                <i class="fas fa-file-excel"></i>      Export to Excel
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                </form>
+                            </section>
+                             
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <div class="btn-group" role="group" aria-label="Filter Applications">
+                                        <a href="{% url 'hr:application_detail' vacancy_id=vacancy.id %}" class="btn btn-primary btn-block px-5 active">All Applications</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="btn-group" role="group" aria-label="Filter Applications">
+                                        <a href="{% url 'hr:application_detail_with_filter' vacancy_id=vacancy.id filter_criteria='qualified' %}" class="btn btn-success btn-block px-5 active">Qualified Applications</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="btn-group" role="group" aria-label="Filter Applications">
+                                        <a href="{% url 'hr:application_detail_with_filter' vacancy_id=vacancy.id filter_criteria='disqualified' %}" class="btn btn-danger btn-block px-5 active">Disqualified Applications</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="btn-group" role="group" aria-label="Filter Applications">
+                                        <a href="{% url 'hr:application_detail_with_filter' vacancy_id=vacancy.id filter_criteria='shortlisted' %}" class="btn btn-warning btn-block px-5 active">Shortlisted Applications</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                           
+                           
+                       
+                        {% if applications %}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Date Applied</th>
+                                            <th>Ref No.</th>
+                                            <th>Experience</th>
+                                            <th>Status</th>
+                                            <th>Disqualification Reason</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for application in applications %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{% url 'hr:applicant_resume' application.applicant.id %}">
+                                                        {{ application.applicant.get_full_name }} ({{application.applicant.username}})
+                                                    </a>
+                                                </td>
+                                                <td>{{ application.application_date|date:"F d, Y H:i A" }}</td>
+                                                <td>{{ application.reference_number }}</td>
+                                                <td>{{ application.work_experience }} years</td>
+                                                <td>
+                                                    {% if application.qualify %}
+                                                        <span class="badge badge-success">Qualified</span>
+                                                    {% else %}
+                                                        <span class="badge badge-danger">Not Qualified</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ application.disqualification_reason }} </td>
+                                                <td>
+                                                    {% if application.shortlisted %}
+                                                    <a href="{% url 'hr:shortlist' application.vacancy.id application.id %}">
+                                                        <i class="fas fa-times text-danger" title="Unshortlist">  Unshortlist</i>
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{% url 'hr:shortlist' application.vacancy.id application.id %}">
+                                                        <i class="fas fa-check text-success" title="Shortlist">Shortlist</i>
+                                                    </a>
+                                                {% endif %}
+                                                
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    
+                                </table>
+                                
+                            </div>
+                        {% else %}
+                            <p class="text-center">There are currently No applications for this Job</p>
+                        {% endif %}
+                    </div>
+                    <!-- end card-body-->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        
+       <!--end row-->
+    </div>
+</div>
+{% endblock content %}
