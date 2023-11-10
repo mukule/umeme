@@ -80,7 +80,7 @@ def user_profile(request):
 
 
 
-
+@login_required
 def staff(request):
     user = request.user
     resume = None
@@ -607,7 +607,7 @@ def delete_professional_summary(request):
     }
     return render(request, 'main/delete_professional_summary.html', context)
 
-
+@login_required
 def terms(request):
     # Retrieve the terms and conditions from the database
     user = request.user

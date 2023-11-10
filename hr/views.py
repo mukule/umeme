@@ -37,16 +37,13 @@ from users.decorators import *
 def dashboard(request):
     return render(request, 'hr/dashboard.html')
 
-
-@login_required
-
+@admins
 def system_users(request):
     users = CustomUser.objects.filter(access_level=0)
     return render(request, 'hr/users.html', {'users': users})
 
 
-@login_required
-
+@admins
 def jobs(request):
     search_query = request.GET.get('search')
     # Make sure 'job_discipline' matches the name in the template
@@ -83,9 +80,7 @@ def jobs(request):
 
     return render(request, 'hr/jobs.html', context)
 
-
-@login_required
-
+@system_admin_hr_post_required
 def edit_job(request, job_id):
     job = get_object_or_404(Vacancy, pk=job_id)
 
@@ -101,17 +96,14 @@ def edit_job(request, job_id):
     return render(request, 'hr/edit_job.html', {'form': form, 'job': job})
 
 
-@login_required
-
+@system_admin_hr_post_required
 def delete_job(request, job_id):
     job = get_object_or_404(Vacancy, pk=job_id)
     job.delete()
     messages.success(request, 'Vacancy Deleted successfully')
     return redirect('hr:jobs')
 
-
-@login_required
-
+@system_admin_hr_post_required
 def create_job(request):
     if request.method == 'POST':
         form = VacancyForm(request.POST)
@@ -127,15 +119,14 @@ def create_job(request):
     return render(request, 'hr/create_job.html', context)
 
 
-@login_required
+@system_admin_hr_publish_required
 def publish(request, job_id):
     job = Vacancy.objects.get(pk=job_id)
     job.published = not job.published
     job.save()
     return redirect('hr:jobs')
 
-
-@login_required
+@admins
 def applications(request):
     search_query = request.GET.get('search')
     job_discipline_filter = request.GET.get('job_discipline')
@@ -174,7 +165,7 @@ def applications(request):
     return render(request, 'hr/applications.html', context)
 
 
-@login_required
+@admins
 def application_detail(request, vacancy_id, filter_criteria=None):
     # Retrieve the vacancy object or return a 404 if it doesn't exist
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
@@ -306,7 +297,7 @@ def application_detail(request, vacancy_id, filter_criteria=None):
     return render(request, 'hr/application_detail.html', context)
 
 
-@login_required
+@system_admin_required
 def toggle_shortlist(request, vacancy_id, application_id):
     application = get_object_or_404(Application, pk=application_id)
 
@@ -318,7 +309,7 @@ def toggle_shortlist(request, vacancy_id, application_id):
     return redirect('hr:application_detail', vacancy_id=vacancy_id)
 
 
-@login_required
+@system_admin_hr_required
 def resume(request, user_id):
     # Retrieve the user (applicant) and related information
     applicant = get_object_or_404(CustomUser, pk=user_id)
@@ -378,7 +369,7 @@ def resume(request, user_id):
     return render(request, 'hr/resume.html', context)
 
 
-@login_required
+@admins
 def create_job_discipline(request):
     if request.method == 'POST':
         form = JobDisciplineForm(request.POST)
@@ -393,7 +384,7 @@ def create_job_discipline(request):
     return render(request, 'hr/create_job_discipline.html', {'form': form})
 
 
-@login_required
+@admins
 def job_disciplines(request):
     # Retrieve all job disciplines and annotate them with the vacancy count
     job_disciplines = JobDiscipline.objects.annotate(
@@ -402,7 +393,7 @@ def job_disciplines(request):
     return render(request, 'hr/job_disciplines.html', {'job_discipline': job_disciplines})
 
 
-@login_required
+@admins
 def update_job_discipline(request, job_discipline_id):
     job_discipline = get_object_or_404(JobDiscipline, pk=job_discipline_id)
 
@@ -418,7 +409,7 @@ def update_job_discipline(request, job_discipline_id):
     return render(request, 'hr/update_job_discipline.html', {'form': form, 'job_discipline': job_discipline})
 
 
-@login_required
+@admins
 def delete_job_discipline(request, job_discipline_id):
     job_discipline = get_object_or_404(JobDiscipline, pk=job_discipline_id)
 
@@ -426,7 +417,7 @@ def delete_job_discipline(request, job_discipline_id):
     return redirect('hr:job_disciplines')
 
 
-@login_required
+@admins
 def create_certifying_body(request):
     if request.method == 'POST':
         form = CertifyingBodyForm(request.POST)
@@ -440,13 +431,13 @@ def create_certifying_body(request):
     return render(request, 'hr/create_certifying_body.html', {'form': form})
 
 
-@login_required
+@admins
 def certifying_bodies(request):
     certifying_bodies = CertifyingBody.objects.all()
     return render(request, 'hr/certifying_bodies.html', {'c_bodies': certifying_bodies})
 
 
-@login_required
+@admins
 def edit_certifying_body(request, certifying_body_id):
     certifying_body = get_object_or_404(CertifyingBody, pk=certifying_body_id)
 
@@ -462,7 +453,7 @@ def edit_certifying_body(request, certifying_body_id):
     return render(request, 'hr/edit_certifying_body.html', {'form': form, 'c_body': certifying_body})
 
 
-@login_required
+@admins
 def delete_certifying_body(request, certifying_body_id):
     certifying_body = get_object_or_404(CertifyingBody, pk=certifying_body_id)
 
@@ -471,7 +462,7 @@ def delete_certifying_body(request, certifying_body_id):
     return redirect('hr:certifying_bodies')
 
 
-@login_required
+@admins
 def create_certificate(request):
     if request.method == 'POST':
         form = CertificateForm(request.POST)
@@ -485,13 +476,13 @@ def create_certificate(request):
     return render(request, 'hr/create_certificate.html', {'form': form})
 
 
-@login_required
+@admins
 def certificates(request):
     certificates = Certificate.objects.all()
     return render(request, 'hr/certificates.html', {'certificate': certificates})
 
 
-@login_required
+@admins
 def edit_certificate(request, certificate_id):
     # Get the certificate instance to be edited
     certificate = get_object_or_404(Certificate, pk=certificate_id)
@@ -508,7 +499,7 @@ def edit_certificate(request, certificate_id):
     return render(request, 'hr/edit_certificate.html', {'form': form, 'certificate': certificate})
 
 
-@login_required
+@admins
 def delete_certificate(request, certificate_id):
     # Get the certificate instance to be deleted
     certificate = get_object_or_404(Certificate, pk=certificate_id)
@@ -518,7 +509,7 @@ def delete_certificate(request, certificate_id):
     return redirect('hr:certificates')
 
 
-@login_required
+@admins
 def create_field_of_study(request):
     if request.method == 'POST':
         form = FieldOfStudyForm(request.POST)
@@ -532,7 +523,7 @@ def create_field_of_study(request):
     return render(request, 'hr/create_field_of_study.html', {'form': form})
 
 
-@login_required
+@admins
 def edit_field_of_study(request, field_of_study_id):
     field_of_study = FieldOfStudy.objects.get(pk=field_of_study_id)
 
@@ -548,7 +539,7 @@ def edit_field_of_study(request, field_of_study_id):
     return render(request, 'hr/edit_field_of_study.html', {'form': form})
 
 
-@login_required
+@admins
 def delete_field_of_study(request, field_of_study_id):
     field_of_study = FieldOfStudy.objects.get(pk=field_of_study_id)
 
@@ -557,19 +548,19 @@ def delete_field_of_study(request, field_of_study_id):
     return redirect('hr:fields_of_study')
 
 
-@login_required
+@admins
 def fields_of_study(request):
     fields_of_study = FieldOfStudy.objects.all()
     return render(request, 'hr/fields_of_study.html', {'fields_of_study': fields_of_study})
 
 
-@login_required
+@admins
 def edu_levels(request):
     edu_levels = EducationalLevel.objects.all()
     return render(request, 'hr/edu_levels.html', {'edu_levels': edu_levels})
 
 
-@login_required
+@admins
 def create_ethnicity(request):
     if request.method == 'POST':
         form = EthnicityForm(request.POST)
@@ -581,13 +572,13 @@ def create_ethnicity(request):
     return render(request, 'hr/create_ethnicity.html', {'form': form})
 
 
-@login_required
+@admins
 def ethnicities(request):
     ethnicities = Ethnicity.objects.all()
     return render(request, 'hr/ethnicities.html', {'ethnicities': ethnicities})
 
 
-@login_required
+@admins
 def edit_ethnicity(request, ethnicity_id):
     ethnicity = get_object_or_404(Ethnicity, id=ethnicity_id)
     if request.method == 'POST':
@@ -600,7 +591,7 @@ def edit_ethnicity(request, ethnicity_id):
     return render(request, 'hr/edit_ethnicity.html', {'form': form, 'ethnicity': ethnicity})
 
 
-@login_required
+@admins
 def delete_ethnicity(request, ethnicity_id):
     ethnicity = get_object_or_404(Ethnicity, id=ethnicity_id)
 
@@ -608,19 +599,19 @@ def delete_ethnicity(request, ethnicity_id):
     return redirect('hr:ethnicities')
 
 
-@login_required
+@admins
 def user_access_logs(request):
     user_logs = UserAccessLog.objects.all()
     return render(request, 'hr/user_logs.html', {'user_logs': user_logs})
 
 
-@login_required
+@admins
 def admin_access_logs(request):
     admin_logs = AdminAccessLog.objects.all()
     return render(request, 'hr/admin_logs.html', {'admin_logs': admin_logs})
 
 
-@login_required
+@admins
 def portal_reports(request):
     # Query to count users with access level 0
     access_level_0_count = CustomUser.objects.filter(access_level=0).count()
@@ -647,7 +638,7 @@ def portal_reports(request):
     return render(request, 'hr/portal_reports.html', context)
 
 
-@login_required
+@admins
 def vacancy_report(request):
     # Calculate the count of open vacancies
     open_vacancy_count = Vacancy.objects.filter(
@@ -694,7 +685,7 @@ def vacancy_report(request):
     })
 
 
-@login_required
+@admins
 def applications_reports(request):
     # Retrieve counts
     total_applications = Application.objects.count()
@@ -730,7 +721,7 @@ def applications_reports(request):
     return render(request, 'hr/application_reports.html', context)
 
 
-@login_required
+@admins
 def application_report(request, vacancy_id):
     # Retrieve the specific vacancy or return a 404 error if not found
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
@@ -760,7 +751,7 @@ def application_report(request, vacancy_id):
     return render(request, 'hr/application_report.html', context)
 
 
-@login_required
+@system_admin_hr_post_required
 def adms(request):
     search_query = request.GET.get('q')
     users_with_access_5 = []
@@ -781,6 +772,7 @@ def adms(request):
 
     return render(request, 'hr/adms.html', context)
 
+@system_admin_required
 def admin_role(request, admin_id):
     user_to_update = get_object_or_404(CustomUser, id=admin_id)
 
@@ -800,7 +792,7 @@ def admin_role(request, admin_id):
 
     return render(request, 'hr/admin_role.html', context)
 
-
+@system_admin_required
 def hr_admin(request):
     # Filter users with access level 5 and function values 1, 2, 3, 4, or 5
     users_with_access_and_function = CustomUser.objects.filter(
@@ -814,7 +806,7 @@ def hr_admin(request):
 
     return render(request, 'hr/hr.html', context)
 
-@login_required
+@system_admin_required
 def admin_register(request):
     if request.method == 'POST':
         form = AdminForm(request.POST)
@@ -852,7 +844,7 @@ def admin_register(request):
 
     return render(request, 'hr/admin_register.html', {'form': form})
 
-
+@admins
 def create_terms(request):
     if request.method == 'POST':
         form = TermsForm(request.POST)
@@ -873,6 +865,7 @@ def create_terms(request):
     return render(request, 'hr/create_terms.html', {'form': form})
 
 
+@system_admin_required
 def import_excel(request):
     if request.method == 'POST':
         form = ExcelImportForm(request.POST, request.FILES)
@@ -921,7 +914,7 @@ def import_excel(request):
 
     return render(request, 'hr/import_staffs.html', {'form': form})
 
-
+@system_admin_hr_post_required
 def staffs(request):
     # Retrieve all staff members with access level 5
     staff_members = CustomUser.objects.filter(access_level=5)
@@ -948,7 +941,7 @@ def staffs(request):
 
     return render(request, 'hr/staffs.html', context)
 
-
+@system_admin_required
 def edit_user(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)
 
@@ -971,7 +964,7 @@ def edit_user(request, user_id):
 
     return render(request, 'hr/edit_staff.html', context)
 
-
+@system_admin_required
 def delete_staff(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)
 
@@ -983,7 +976,7 @@ def delete_staff(request, user_id):
     # Redirect to the user list page after deleting
     return redirect('hr:kgn_staffs')
 
-
+@system_admin_required
 def reset_trials(request, user_id):
     # Get the admin user (you can implement admin authentication)
     # Get the user to reset trials for (or use get_object_or_404 to handle non-existent user)
@@ -1001,7 +994,7 @@ def reset_trials(request, user_id):
     # Redirect back to the admin panel or another appropriate page
     return redirect('hr:system_users')
 
-
+@system_admin_required
 def delete_users_with_access_level_5(request):
     if request.method == 'POST':
         # Delete users with access level 5

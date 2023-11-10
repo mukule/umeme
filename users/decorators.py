@@ -37,19 +37,21 @@ def system_admin_required(view_func):
         return redirect('users:denials')  # Redirect to an error view if not authorized
     return wrapped
 
-def system_admin_required(view_func):
+def system_admin_hr_required(view_func):
     def wrapped(request, *args, **kwargs):
         if request.user.is_authenticated and request.user.function in (1, 2) or request.user.is_superuser:  # Check for System Admin or HR functions
             return view_func(request, *args, **kwargs)
         return redirect('users:denials')  # Redirect to an error view if not authorized
     return wrapped
 
-def system_admin_hr_required(view_func):
+def system_admin_hr_post_required(view_func):
     def wrapped(request, *args, **kwargs):
         if request.user.is_authenticated and request.user.function in (1, 2, 3) or request.user.is_superuser:  # Check for System Admin, HR, or Post functions
             return view_func(request, *args, **kwargs)
         return redirect('users:denials')
     return wrapped
+
+
 
 def system_admin_hr_publish_required(view_func):
     def wrapped(request, *args, **kwargs):

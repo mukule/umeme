@@ -20,5 +20,5 @@ urlpatterns = [
     path("not_authorized/", views.not_authorized, name="not_authorized"),
     path('create_staff/', views.create_access_level_5_user, name='create_staff'),
     path("staff_no/", views.staff_no, name="staff_no"),
-    path("permission_denied/", views.not_allowed, name="denial"),
+    path("permission_denied/", views.not_allowed, name="denials"),
 ]
