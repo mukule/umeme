@@ -97,11 +97,14 @@
                             </div>
                             <div class="form-group row">
                                 <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label">Set Requirements</label>
-                                <div class="col-sm-5">
+                                <div class="col-sm-3">
                                     {{ form.certifications_required|as_crispy_field }}
                                 </div>
-                                <div class="col-sm-5">
+                                <div class="col-sm-3">
                                     {{ form.college_required|as_crispy_field }}
+                                </div>
+                                <div class="col-sm-3">
+                                    {{ form.membership_required|as_crispy_field }}
                                 </div>
                             </div>
                             <div class="form-group row text-center">

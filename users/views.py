@@ -207,7 +207,7 @@ def custom_login(request):
                         request, f"Hello {user.username}! You have been logged in.")
                     return redirect("/")
                 else:
-                   return redirect('users:staff_no')
+                    return redirect('users:staff_no')
             else:
                 messages.error(request, "Invalid username or password")
         else:
@@ -314,16 +314,8 @@ def password_reset_request(request):
                 email = EmailMessage(subject, message, to=[
                                      associated_user.email])
                 if email.send():
-                    messages.success(request,
-                                     """
-                        <h2>Password reset sent</h2><hr>
-                        <p>
-                            We've emailed you instructions for setting your password, if an account exists with the email you entered. 
-                            You should receive them shortly.<br>If you don't receive an email, please make sure you've entered the address 
-                            you registered with, and check your spam folder.
-                        </p>
-                        """
-                                     )
+                    return redirect('users:f_pass')
+
                 else:
                     messages.error(
                         request, "Problem sending reset password email, <b>SERVER PROBLEM</b>")
@@ -434,5 +426,11 @@ def create_access_level_5_user(request):
 
     return render(request, 'hr/create_staff.html', {'form': user_form})
 
+
 def not_allowed(request):
     return render(request, 'users/permission_denied.html')
+
+
+def f_pass(request):
+    user = request.user
+    return render(request, 'users/f_pass.html', {'user': user})

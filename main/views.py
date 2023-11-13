@@ -1,24 +1,21 @@
-from django.shortcuts import render,redirect,get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from users.models import *
 from .forms import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.utils import timezone
 from vacancies.models import *
+from datetime import *
 import pycountry
 from django.utils.dateparse import parse_date
 from django.db.utils import IntegrityError
-
-from users.decorators import access_level_check
-
-
+from django.utils import timezone
+from users.decorators import *
 
 
 # Create your views here.
 @access_level_check(user_access_level=5, redirect_view_name='vacancies:internal')
 def index(request):
     return render(request, 'main/index.html')
-
 
 
 @login_required
@@ -79,7 +76,6 @@ def user_profile(request):
     })
 
 
-
 @login_required
 def staff(request):
     user = request.user
@@ -111,6 +107,8 @@ def staff(request):
         work_experiences = WorkExperience.objects.filter(user=user)
         certifications = Certification.objects.filter(user=user)
 
+        print(memberships)
+
     context = {
         'resume': resume,
         'further_studies_instances': further_studies,
@@ -120,8 +118,6 @@ def staff(request):
     }
 
     return render(request, 'main/staff.html', context)
-
-
 
 
 @login_required
@@ -138,7 +134,8 @@ def basic_info(request, user_id):
 
     if user_info is None:
         initial_data['email_address'] = user.email
-        initial_data['full_name'] = user.get_full_name() or ''  # Use first and last name if available, otherwise use an empty string
+        # Use first and last name if available, otherwise use an empty string
+        initial_data['full_name'] = user.get_full_name() or ''
 
     if request.method == 'POST':
         form = ResumeForm(request.POST, instance=user_info)
@@ -155,10 +152,12 @@ def basic_info(request, user_id):
                 resume.county = 'N/A'
 
             resume.save()
-            messages.success(request, 'Your information has been updated successfully.')
+            messages.success(
+                request, 'Your information has been updated successfully.')
             return redirect('main:user_profile')
         else:
-            messages.error(request, 'There was an error in the form submission. Please check your inputs.')
+            messages.error(
+                request, 'There was an error in the form submission. Please check your inputs.')
     else:
         form = ResumeForm(instance=user_info, initial=initial_data)
 
@@ -168,10 +167,6 @@ def basic_info(request, user_id):
 
     return render(request, 'main/basic_info.html', context)
 
-
-
-
-   
 
 @login_required
 def basic_academic(request):
@@ -201,7 +196,8 @@ def update_basic_academic(request, instance_id):
         return redirect('main:user_profile')
 
     if request.method == 'POST':
-        form = EducationalInformationForm(request.POST, request.FILES, instance=basic_education)
+        form = EducationalInformationForm(
+            request.POST, request.FILES, instance=basic_education)
         if form.is_valid():
             form.save()
             return redirect('main:user_profile')
@@ -213,6 +209,7 @@ def update_basic_academic(request, instance_id):
         'form': form,
     }
     return render(request, 'main/update_basic_academic.html', context)
+
 
 @login_required
 def delete_basic_academic(request, instance_id):
@@ -236,7 +233,8 @@ def further_studies(request):
                 # Redirect to a different view if access_level is 5
                 return redirect('main:staff_profile')
 
-            return redirect('main:user_profile')  # Redirect to a success page or URL
+            # Redirect to a success page or URL
+            return redirect('main:user_profile')
 
     else:
         form = FurtherStudiesForm()
@@ -256,7 +254,8 @@ def update_further_studies(request, instance_id):
         return redirect('main:user_profile')
 
     if request.method == 'POST':
-        form = FurtherStudiesForm(request.POST, request.FILES, instance=further_studies)
+        form = FurtherStudiesForm(
+            request.POST, request.FILES, instance=further_studies)
         if form.is_valid():
             form.save()
             if user.access_level == 5:
@@ -272,15 +271,17 @@ def update_further_studies(request, instance_id):
     }
     return render(request, 'main/update_further_studies.html', context)
 
+
 @login_required
 def delete_further_studies(request, instance_id):
     user = request.user
     instance = get_object_or_404(FurtherStudies, pk=instance_id)
     instance.delete()
     if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
+        # Redirect to a different view if access_level is 5
+        return redirect('main:staff_profile')
     return redirect('main:user_profile')
+
 
 @login_required
 def certification(request):
@@ -311,12 +312,13 @@ def update_certification(request, instance_id):
         certification = Certification.objects.get(user=user, pk=instance_id)
     except Certification.DoesNotExist:
         if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
+            # Redirect to a different view if access_level is 5
+            return redirect('main:staff_profile')
         return redirect('main:user_profile')
 
     if request.method == 'POST':
-        form = CertificationForm(request.POST, request.FILES, instance=certification)
+        form = CertificationForm(
+            request.POST, request.FILES, instance=certification)
         if form.is_valid():
             form.save()
             if user.access_level == 5:
@@ -332,29 +334,45 @@ def update_certification(request, instance_id):
     }
     return render(request, 'main/update_certification.html', context)
 
+
 @login_required
 def delete_certification(request, instance_id):
     user = request.user
     instance = get_object_or_404(Certification, pk=instance_id)
     instance.delete()
     if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
+        # Redirect to a different view if access_level is 5
+        return redirect('main:staff_profile')
     return redirect('main:user_profile')
+
 
 @login_required
 def membership(request):
     user = request.user
+
     if request.method == 'POST':
         form = MembershipForm(request.POST, request.FILES)
         if form.is_valid():
             membership = form.save(commit=False)
             membership.user = request.user
+            membership.save()
+            messages.success(request, 'Membership successfully submitted!')
             if user.access_level == 5:
                 # Redirect to a different view if access_level is 5
                 return redirect('main:staff_profile')
-            membership.save()
             return redirect('main:user_profile')
+        else:
+            # If the form is not valid, display specific error messages
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+
+            # Add debug statements to see why the form is not being saved
+            print(f"Form data: {request.POST}")
+            print(f"Form errors: {form.errors}")
+            print(f"User: {user}")
+            print(f"User access level: {user.access_level}")
+
     else:
         form = MembershipForm()
 
@@ -362,6 +380,7 @@ def membership(request):
         'form': form,
     }
     return render(request, 'main/membership.html', context)
+
 
 @login_required
 def update_membership(request, instance_id):
@@ -388,18 +407,17 @@ def update_membership(request, instance_id):
     }
     return render(request, 'main/update_membership.html', context)
 
+
 @login_required
 def delete_membership(request, instance_id):
     user = request.user
     instance = get_object_or_404(Membership, pk=instance_id)
     instance.delete()
     if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
+        # Redirect to a different view if access_level is 5
+        return redirect('main:staff_profile')
     return redirect('main:user_profile')
 
-
-from django.utils import timezone
 
 @login_required
 def work_experience(request):
@@ -409,26 +427,30 @@ def work_experience(request):
         if form.is_valid():
             work_experience = form.save(commit=False)
             if work_experience.currently_working and work_experience.date_ended:
-                messages.error(request, "You cannot have an end date and be currently working here.")
+                messages.error(
+                    request, "You cannot have an end date and be currently working here.")
             elif not work_experience.currently_working and (not work_experience.date_started or not work_experience.date_ended):
-                messages.error(request, "Please provide both start and end dates or check 'Currently Working Here'.")
+                messages.error(
+                    request, "Please provide both start and end dates or check 'Currently Working Here'.")
             else:
                 work_experience.user = request.user
                 if work_experience.date_started and work_experience.date_ended:
                     delta = work_experience.date_ended - work_experience.date_started
                     years = delta.days // 365
-                    months = (delta.days % 365) // 30  # Calculate remaining months
+                    # Calculate remaining months
+                    months = (delta.days % 365) // 30
                     work_experience.years = years
                     work_experience.months = months
                 elif work_experience.date_started and work_experience.currently_working:
                     delta = timezone.now().date() - work_experience.date_started
                     years = delta.days // 365
-                    months = (delta.days % 365) // 30  # Calculate remaining months
+                    # Calculate remaining months
+                    months = (delta.days % 365) // 30
                     work_experience.years = years
                     work_experience.months = months
                 work_experience.save()
                 if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
+                    # Redirect to a different view if access_level is 5
                     return redirect('main:staff_profile')
                 return redirect('main:user_profile')
     else:
@@ -438,7 +460,6 @@ def work_experience(request):
         'form': form,
     }
     return render(request, 'main/work_experience.html', context)
-
 
 
 @login_required
@@ -454,9 +475,11 @@ def update_work_experience(request, instance_id):
         if form.is_valid():
             new_work_experience = form.save(commit=False)
             if new_work_experience.currently_working and new_work_experience.date_ended:
-                messages.error(request, "You cannot have an end date and be currently working here.")
+                messages.error(
+                    request, "You cannot have an end date and be currently working here.")
             elif not new_work_experience.currently_working and (not new_work_experience.date_started or not new_work_experience.date_ended):
-                messages.error(request, "Please provide both start and end dates or check 'Currently Working Here'.")
+                messages.error(
+                    request, "Please provide both start and end dates or check 'Currently Working Here'.")
             else:
                 if new_work_experience.date_started and new_work_experience.date_ended:
                     delta = new_work_experience.date_ended - new_work_experience.date_started
@@ -481,13 +504,15 @@ def update_work_experience(request, instance_id):
     }
     return render(request, 'main/update_work_experience.html', context)
 
+
 @login_required
 def delete_work_experience(request, instance_id):
     user = request.user
     instance = get_object_or_404(WorkExperience, pk=instance_id)
     instance.delete()
-    
+
     return redirect('main:user_profile')
+
 
 @login_required
 def referees(request):
@@ -536,11 +561,13 @@ def update_referee(request, instance_id):
     }
     return render(request, 'main/update_referee.html', context)
 
+
 @login_required
 def delete_referee(request, instance_id):
     instance = get_object_or_404(Referee, pk=instance_id)
     instance.delete()
     return redirect('main:user_profile')
+
 
 @login_required
 def career_objective(request):
@@ -554,9 +581,10 @@ def career_objective(request):
         form = ProfessionalSummaryForm(request.POST)
         if form.is_valid():
             if professional_summary:
-                messages.error(request, "You can only have one professional summary.")
+                messages.error(
+                    request, "You can only have one professional summary.")
                 return redirect('main:user_profile')
-            
+
             summary = form.save(commit=False)
             summary.user = user
             summary.save()
@@ -568,6 +596,7 @@ def career_objective(request):
         'form': form,
     }
     return render(request, 'main/professional_summary.html', context)
+
 
 @login_required
 def update_career_objective(request):
@@ -590,6 +619,7 @@ def update_career_objective(request):
     }
     return render(request, 'main/update_professional_summary.html', context)
 
+
 @login_required
 def delete_professional_summary(request):
     user = request.user
@@ -601,11 +631,12 @@ def delete_professional_summary(request):
     if request.method == 'POST':
         summary.delete()
         return redirect('main:user_profile')
-    
+
     context = {
         'summary': summary,
     }
     return render(request, 'main/delete_professional_summary.html', context)
+
 
 @login_required
 def terms(request):
@@ -622,11 +653,10 @@ def terms(request):
         except ProfileUpdate.DoesNotExist:
             # If no ProfileUpdate record exists, consider it as not changed.
             return render(request, 'main/pass_change.html')
-    terms = Terms.objects.first()  # Assuming you want to display the first (and only) set of terms
+    # Assuming you want to display the first (and only) set of terms
+    terms = Terms.objects.first()
 
     return render(request, 'main/terms.html', {'terms': terms})
-
-
 
 
 @login_required
@@ -644,7 +674,8 @@ def update_educational_level(request):
         form = UpdateEducationalLevelForm(request.POST, instance=resume)
         if form.is_valid():
             form.save()
-            return redirect('main:staff_profile')  # Redirect to a success page or URL
+            # Redirect to a success page or URL
+            return redirect('main:staff_profile')
 
     else:
         form = UpdateEducationalLevelForm(instance=resume)

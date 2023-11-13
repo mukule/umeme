@@ -4,77 +4,67 @@
 
 {% block content %}
 {% include '../main/includes/hero.html' %}
+
 <style>
-    /* Center the menu and style list items */
-.resume-menu {
-    list-style-type: none;
-    display: flex;
-    justify-content: center;
-    margin: 0;
-    padding: 20px;
-    background-color: #f5f5f5; /* Add a background color for the menu */
-    border-radius: 3px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.resume-menu li {
-    margin-right: 5px;
-}
-
-/* Style the links */
-.resume-menu a {
-    font-size: 14px; /* Increase the font size */
-    font-weight: bold;
-    text-decoration: none;
-    color: #333; /* Text color */
-    padding: 10px 20px; /* Add padding to increase click area */
-    border-bottom: 2px solid transparent; /* Initial border-bottom */
-    transition: border-bottom 0.3s ease; /* Smooth transition for the border */
-}
-
-.resume-menu a:hover {
-    border-bottom: 2px solid #007bff; /* Change the color on hover */
-}
-
-/* Use icons for links */
-.resume-menu a i {
-    margin-right: 5px;
-}
-
-/* Add a background color and text color for the active menu item */
-.resume-menu a.active {
-    background-color: #007bff;
-    color: #fff; /* Text color on active */
-    border-bottom: 2px solid #0056b3; /* Change the color and thickness on active */
-    border-radius: 3px;
-}
-
-/* Media query for small screens */
-@media (max-width: 768px) {
-    .resume-menu li a span {
-        display: none;
+    /* Style the resume cards */
+    .resume-cards {
+        display: flex;
+        justify-content: space-around;
+        margin: 5px; /* Reduced spacing */
     }
 
-    .resume-menu li a i {
-        display: inline;
+    .resume-card {
+        text-align: center;
+        padding: 20px;
+        flex: 0 0 calc(100% / 6 - 10px); /* Each card takes 1/6 of the width, considering reduced spacing */
+        margin: 5px; /* Adjusted spacing between cards */
+        background-color: #F4F4F4; /* Bootstrap secondary color */
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease; /* Added transform transition */
+        color: #6c757d;
     }
 
-    .resume-menu li a i:hover + span {
-        display: inline;
-    }
-}
-
-/* Media query for large screens */
-@media (min-width: 769px) {
-    .resume-menu li a span {
-        display: inline;
+    .resume-card:hover {
+        background-color: #0056b3;
+        transform: scale(1.05); /* Added scale on hover for a subtle zoom effect */
     }
 
-    .resume-menu li a i {
-        display: none;
+    /* Style the numbers within the cards */
+    .number-circle {
+        width: 30px;
+        height: 30px;
+        line-height: 30px; /* Center the number vertically */
+        background-color: #0056b3;
+        color: #fff; /* Bootstrap secondary color */
+        border-radius: 50%;
+        font-weight: bold;
+        margin-bottom: 10px;
+        margin-right: 5px; /* Add some space between the number and the text */
+        display: inline-block;
     }
-}
 
+    /* Style the text within the cards */
+    .resume-card span {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* Optional: Add styles for the active card */
+    .resume-card.active {
+        background-color: #004080; /* Updated active color */
+        transform: scale(1.05);
+        border: 2px solid #fff;
+        color: #fff;
+    }
+
+    /* Media query for smaller screens */
+    @media (max-width: 767px) {
+        .resume-card span {
+            display: none; /* Hide names on smaller screens */
+        }
+    }
 </style>
 
 
@@ -83,15 +73,45 @@
 <div class="page-content">
     <div class="container-fluid">
         <div class="row mt-4">
+            <div style="width: 100%;">
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #007bff;">
+                    <h4 style="margin-top: 3px;">Update your Resume to apply!</h4>
+                    <p style="margin-bottom: 4px;">Update your Details on the Resume from 1-6 to for you to be able to apply for opportunities</p>
+                </div>
+            </div>            
             <div class="col-xl-12">
-                <ul class="resume-menu">
-                    <li><a href="javascript:void(0);" onclick="showSection('personal', this)"><i class="fas fa-briefcase"></i> <span>Education level</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('education2', this)"><i class="fas fa-graduation-cap"></i> <span>College/University</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('certs', this)"><i class="fas fa-certificate"></i> <span>Professional Certificates</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('memberships', this)"><i class="fas fa-users"></i> <span>Professional Memberships</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('experience', this)"><i class="fas fa-briefcase"></i> <span>Work Experience</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('review', this)"><i class="fas fa-check"></i> <span>Review Details</span></a></li>
-                </ul>
+                <div class="resume-cards">
+                    <div class="resume-card" onclick="showSection('personal', this)">
+                        <div class="number-circle">1</div>
+                        <span>Education level</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('education2', this)">
+                        <div class="number-circle">2</div>
+                        <span>College/University</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('certs', this)">
+                        <div class="number-circle">3</div>
+                        <span>Professional Certificates</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('memberships', this)">
+                        <div class="number-circle">4</div>
+                        <span>Professional Memberships</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('experience', this)">
+                        <div class="number-circle">5</div>
+                        <span>Work Experience</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('review', this)">
+                        <div class="number-circle">6</div>
+                        <span>Review Details</span>
+                    </div>
+                </div>
+                
                 
                 <hr>
                 <div class="resume-section" id="bio">

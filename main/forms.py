@@ -11,35 +11,41 @@ GENDER_CHOICES = Gender.objects.all().values_list('name', 'name')
 COUNTY_CHOICES = County.objects.all().values_list('name', 'name')
 
 # Generate country choices using pycountry
-COUNTRY_CHOICES = [(country.alpha_2, country.name) for country in pycountry.countries]
+COUNTRY_CHOICES = [(country.alpha_2, country.name)
+                   for country in pycountry.countries]
 
 
 class ResumeForm(forms.ModelForm):
     full_name = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Name'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Full Name'}),
         label='Full Name',
         required=True
     )
     email_address = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'}),
+        widget=forms.EmailInput(
+            attrs={'class': 'form-control', 'placeholder': 'Email Address'}),
         label='Email Address',
         required=True
     )
     phone = forms.CharField(
         max_length=10,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Phone'}),
         label='Phone',
         required=True
     )
     id_number = forms.CharField(
         max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ID Number'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'ID Number'}),
         label='ID Number',
         required=True
     )
     dob = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date of Birth', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date of Birth', 'type': 'date'}),
         label='Date of Birth',
         required=True
     )
@@ -69,7 +75,8 @@ class ResumeForm(forms.ModelForm):
     )
     religion = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Religion'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Religion'}),
         label='Religion',
         required=False
     )
@@ -86,7 +93,8 @@ class ResumeForm(forms.ModelForm):
     )
     disability_number = forms.CharField(
         max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Disability Number'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Disability Number'}),
         label='Disability Number',
         required=False
     )
@@ -118,15 +126,18 @@ class ResumeForm(forms.ModelForm):
             'educational_level', 'field_of_study'
         ]
 
+
 class EducationalInformationForm(forms.ModelForm):
     name_of_the_school = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name of the School'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Name of the School'}),
         label='Name of the School', required=True
     )
     index_number = forms.CharField(
         max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'index Number'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'index Number'}),
         label='Index Number', required=True
     )
     certification = forms.ChoiceField(
@@ -135,16 +146,19 @@ class EducationalInformationForm(forms.ModelForm):
         label='Certification', required=True
     )
     date_started = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
         label='Date Started', required=True
     )
     date_ended = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
         label='Date Ended', required=False
     )
     grade_attained = forms.CharField(
         max_length=10,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Grade Attained'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Grade Attained'}),
         label='Grade Attained', required=True
     )
     certificate = forms.FileField(
@@ -158,7 +172,8 @@ class EducationalInformationForm(forms.ModelForm):
             if not certificate.name.endswith('.pdf'):
                 raise forms.ValidationError('Only PDF files are allowed.')
             if certificate.size > 1 * 1024 * 1024:  # 5MB
-                raise forms.ValidationError('File size must be no more than 1MB.')
+                raise forms.ValidationError(
+                    'File size must be no more than 1MB.')
         return certificate
 
     class Meta:
@@ -174,34 +189,38 @@ class FurtherStudiesForm(forms.ModelForm):
 
     institution_name = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Institution Name'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Institution Name'}),
         label='Institution Name', required=True
     )
     certifications = forms.ModelChoiceField(
         queryset=certification_choices,
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Levels of study',empty_label="--Select Levels of Study--"
+        label='Levels of study', empty_label="--Select Levels of Study--"
     )
     course_undertaken = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Course Undertaken'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Course Undertaken'}),
         label='Course Undertaken', required=False
     )
     date_started = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
         label='Date Started', required=False
     )
     date_ended = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
         label='Date Ended', required=False
     )
     grade = forms.ModelChoiceField(
-    queryset=Class.objects.all(),
-    widget=forms.Select(attrs={'class': 'form-control'}),
-    label='Class Attained',
-    required=False,
-    empty_label="--Select Class--"  # This sets the placeholder text
-)
+        queryset=Class.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Class Attained',
+        required=False,
+        empty_label="--Select Class--"  # This sets the placeholder text
+    )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         label='Certificate File(pdfs only Not more than 1mb)', required=False
@@ -213,7 +232,8 @@ class FurtherStudiesForm(forms.ModelForm):
             if not certificate.name.endswith('.pdf'):
                 raise forms.ValidationError('Only PDF files are allowed.')
             if certificate.size > 1 * 1024 * 1024:  # 5MB
-                raise forms.ValidationError('File size must be no more than 1MB.')
+                raise forms.ValidationError(
+                    'File size must be no more than 1MB.')
         return certificate
 
     class Meta:
@@ -224,7 +244,6 @@ class FurtherStudiesForm(forms.ModelForm):
         ]
 
 
-
 class CertificationForm(forms.ModelForm):
     class Meta:
         model = Certification
@@ -232,7 +251,8 @@ class CertificationForm(forms.ModelForm):
 
     name = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Certification Name'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Certification Name'}),
         label='Certification Name', required=True
     )
     certifying_body = forms.ModelChoiceField(
@@ -241,7 +261,8 @@ class CertificationForm(forms.ModelForm):
         label='Certifying Body', required=True
     )
     date_attained = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Attained', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date Attained', 'type': 'date'}),
         label='Date Awarded the Certificate', required=False
     )
     certificate = forms.FileField(
@@ -257,25 +278,29 @@ class CertificationForm(forms.ModelForm):
             if certificate.size > 1 * 1024 * 1024:  # 5MB
                 raise ValidationError('File size must be no more than 5MB.')
         return certificate
-    
+
 
 class MembershipForm(forms.ModelForm):
     class Meta:
         model = Membership
-        fields = ['membership_title', 'membership_number', 'date_joined', 'certificate']
+        fields = ['membership_title', 'membership_number',
+                  'date_joined', 'certificate']
 
     membership_title = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Membership Title'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Membership Title'}),
         label='Membership Title', required=True
     )
     membership_number = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Membership Number'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Membership Number'}),
         label='Membership Number', required=True
     )
     date_joined = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Joined', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date Joined', 'type': 'date'}),
         label='Date Awarded the certificate', required=False
     )
     certificate = forms.FileField(
@@ -284,7 +309,8 @@ class MembershipForm(forms.ModelForm):
     )
     membership_body = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Membership Body'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Membership Body'}),
         label='Membership Body',
         required=True
     )
@@ -295,49 +321,60 @@ class MembershipForm(forms.ModelForm):
             if not certificate.name.endswith('.pdf'):
                 raise forms.ValidationError('Only PDF files are allowed.')
             if certificate.size > 1 * 1024 * 1024:  # 5MB
-                raise forms.ValidationError('File size must be no more than 5MB.')
+                raise forms.ValidationError(
+                    'File size must be no more than 1MB.')
         return certificate
+
 
 class WorkExperienceForm(forms.ModelForm):
     class Meta:
         model = WorkExperience
-        fields = ['company_name', 'position', 'date_started', 'date_ended', 'company_address', 'company_phone', 'responsibilities', 'currently_working']
+        fields = ['company_name', 'position', 'date_started', 'date_ended',
+                  'company_address', 'company_phone', 'responsibilities', 'currently_working']
 
     company_name = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company Name'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Company Name'}),
         label='Company Name', required=True
     )
     position = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Position'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Position'}),
         label='Position', required=True
     )
     date_started = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
         label='Date Started', required=False
     )
     date_ended = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
         label='Date Ended', required=False
     )
     company_address = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company Address'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Company Address'}),
         label='Company Address', required=False
     )
     company_phone = forms.CharField(
         max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company Phone'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Company Phone'}),
         label='Company Phone', required=False
     )
     responsibilities = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Responsibilities'}),
+        widget=forms.Textarea(
+            attrs={'class': 'form-control', 'placeholder': 'Responsibilities'}),
         label='Responsibilities', required=False
     )
     currently_working = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         label='Currently Working Here', required=False
     )
+
 
 class RefereeForm(forms.ModelForm):
     class Meta:
@@ -346,28 +383,34 @@ class RefereeForm(forms.ModelForm):
 
     full_name = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Name'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Full Name'}),
         label='Full Name', required=True
     )
     organization = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Organization'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Organization'}),
         label='Organization', required=True
     )
     designation = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Designation'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Designation'}),
         label='Designation', required=True
     )
     phone = forms.CharField(
         max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Phone'}),
         label='Phone', required=True
     )
     email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+        widget=forms.EmailInput(
+            attrs={'class': 'form-control', 'placeholder': 'Email'}),
         label='Email', required=True
     )
+
 
 class ProfessionalSummaryForm(forms.ModelForm):
     class Meta:
@@ -375,7 +418,8 @@ class ProfessionalSummaryForm(forms.ModelForm):
         fields = ['career_objective']
 
     career_objective = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Career Objective', 'rows': 5}),
+        widget=forms.Textarea(
+            attrs={'class': 'form-control', 'placeholder': 'Career Objective', 'rows': 5}),
         label='Career Objective', required=True
     )
 

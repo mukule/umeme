@@ -80,7 +80,6 @@ SESSION_COOKIE_AGE = 1800  # 30 minutes
 SESSION_SAVE_EVERY_REQUEST = True
 
 
-
 WSGI_APPLICATION = 'career.wsgi.application'
 
 
@@ -96,10 +95,9 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306',
-        
+
     }
 }
-
 
 
 # Password validation
@@ -137,7 +135,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 
-
 STATIC_URL = 'static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -157,13 +154,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'pop.kenyaweb.com'
 EMAIL_FROM = 'nelson@kenyaweb.co.ke'
 EMAIL_HOST_USER = 'nelson@kenyaweb.co.ke'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = '@NLS2023'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 'nelson@kenyaweb.co.ke'
 
 ADMIN_EMAIL = 'nelson@kenyaweb.co.ke'
-PASSWORD_RESET_TIMEOUT = 1800 # 4 hrs
+PASSWORD_RESET_TIMEOUT = 1800  # 4 hrs
 
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
@@ -179,5 +176,3 @@ CKEDITOR_CONFIGS = {
         ],
     },
 }
-
-
