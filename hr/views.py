@@ -226,12 +226,13 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             work_experience = user.work_experiences.first()
             certifications = user.certifications.all()
 
-            full_name = user.get_full_name()
+            full_name = resume.full_name
             username = user.username  # Add this line to get the username
 
             application_data = {
                 # Include username in the "Name" field
-                'Name': f"{full_name} ({username})",
+                'Username/Staff No.': username,
+                'Full Name': full_name,
                 'Date Applied': application.application_date.strftime("%Y-%m-%d %H:%M:%S"),
                 'Reference Number': application.reference_number,
                 'Experience': f"{application.work_experience} years",
@@ -241,24 +242,33 @@ def application_detail(request, vacancy_id, filter_criteria=None):
                 'Ethnicity': resume.ethnicity.name if resume.ethnicity else '',
                 'Gender': resume.gender if resume.gender else '',
                 'Disability': 'Yes' if resume.disability else 'No',
+                'High School': '', 
+                'College/University': '',  
+                'Work Experience': '', 
             }
 
             if basic_education:
-                application_data['Basic Education'] = basic_education.name_of_the_school
-                application_data['Basic Education Certification'] = basic_education.certification
-                application_data['Basic Education Grade'] = basic_education.grade_attained
-                application_data['Basic Education Dates'] = f"{basic_education.date_started} - {basic_education.date_ended}"
+                # Separate lines for High School details
+                school_name = f"Name of the School: {basic_education.name_of_the_school}"
+                certification = f"Certification: {basic_education.certification}"
+                grade_attained = f"Grade Attained: {basic_education.grade_attained}"
+                date_range = f"Dates: {basic_education.date_started} - {basic_education.date_ended}"
+
+                application_data['High School'] = f"{school_name}\r\n{certification}\r\n{grade_attained}\r\n{date_range}"
+
+                
+
+
+
 
             if further_studies:
-                application_data['Further Studies'] = further_studies.institution_name
-                application_data['Further Studies Certification'] = further_studies.certifications.certification_name
-                application_data['Further Studies Course'] = further_studies.course_undertaken
-                application_data['Further Studies Dates'] = f"{further_studies.date_started} - {further_studies.date_ended}"
+                application_data['College/University'] = f"{further_studies.institution_name}, {further_studies.certifications.certification_name}, {further_studies.course_undertaken}, {further_studies.date_started} - {further_studies.date_ended}"
 
+            
             if work_experience:
-                application_data['Company Name'] = work_experience.company_name
-                application_data['Position'] = work_experience.position
-                application_data['Work Experience Dates'] = f"{work_experience.date_started} - {work_experience.date_ended}"
+                # Combine work experience details into one cell
+                work_experience_details = f"{work_experience.company_name}, {work_experience.position}, {work_experience.date_started} - {work_experience.date_ended}"
+                application_data['Work Experience'] = work_experience_details
 
             if certifications:
                 application_data['Certifications'] = ', '.join(
@@ -268,11 +278,11 @@ def application_detail(request, vacancy_id, filter_criteria=None):
 
         # Define column headers
         headers = [
-            'Name', 'Date Applied', 'Reference Number', 'Experience', 'Status', 'Shortlisted',
+            'Username/Staff No.', 'Full Name', 'Date Applied', 'Reference Number', 'Experience', 'Status', 'Shortlisted',
             'Educational Level', 'Ethnicity', 'Gender', 'Disability',
-            'Basic Education', 'Basic Education Certification', 'Basic Education Grade', 'Basic Education Dates',
-            'Further Studies', 'Further Studies Certification', 'Further Studies Course', 'Further Studies Dates',
-            'Company Name', 'Position', 'Work Experience Dates',
+            'High School',
+            'College/University',
+            'Work Experience',
             'Certifications',
         ]
 

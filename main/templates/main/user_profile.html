@@ -5,80 +5,127 @@
 {% block content %}
 {% include '../main/includes/hero.html' %}
 <style>
-    .resume-menu {
-        list-style-type: none;
+    /* Style the resume cards */
+    .resume-cards {
         display: flex;
-        justify-content: center; /* Center the menu */
+        justify-content: space-around;
+        flex-wrap: wrap; /* Allow the cards to wrap to the next row */
+        margin: 5px; /* Reduced spacing */
     }
 
-    .resume-menu li {
-        margin-right: 20px;
+    .resume-card {
+        text-align: center;
+        padding: 20px;
+        flex: 0 0 calc(100% / 12 - 10px); /* Each card takes 1/12 of the width, considering reduced spacing */
+        margin: 5px; /* Adjusted spacing between cards */
+        background-color: #F4F4F4; /* Bootstrap secondary color */
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease; /* Added transform transition */
+        color: #6c757d;
     }
 
-    .resume-section {
-        display: none;
+    .resume-card:hover {
+        background-color: #0056b3;
+        transform: scale(1.05); /* Added scale on hover for a subtle zoom effect */
     }
 
-    /* Increase font size and make it bold */
-    .resume-menu a {
-        font-size: 12px;
+    /* Style the numbers within the cards */
+    .number-circle {
+        width: 30px;
+        height: 30px;
+        line-height: 30px; /* Center the number vertically */
+        background-color: #0056b3;
+        color: #fff; /* Bootstrap secondary color */
+        border-radius: 50%;
         font-weight: bold;
-        text-decoration: none; /* Remove the default underline */
-        position: relative;
+        margin-bottom: 10px;
+        margin-right: 5px; /* Add some space between the number and the text */
+        display: inline-block;
     }
 
-    /* Media query for small screens */
-    @media (max-width: 768px) {
-        .resume-menu li a span {
-            display: none;
-        }
-
-        .resume-menu li a i {
-            display: inline;
-        }
-
-        .resume-menu li a i:hover + span {
-            display: inline;
-        }
+    /* Style the text within the cards */
+    .resume-card span {
+        font-size: 14px;
+        font-weight: bold;
     }
 
-    /* Media query for large screens */
-    @media (min-width: 769px) {
-        .resume-menu li a span {
-            display: inline;
-        }
-
-        .resume-menu li a i {
-            display: none;
-        }
+    /* Optional: Add styles for the active card */
+    .resume-card.active {
+        background-color: #004080; /* Updated active color */
+        transform: scale(1.05);
+        border: 2px solid #fff;
+        color: #fff;
     }
 
-    /* Add a border-bottom to the active menu item */
-    .resume-menu a.active {
-        border-bottom: 3px solid #007bff; /* Adjust the color and thickness as needed */
+    /* Media query for smaller screens */
+    @media (max-width: 767px) {
+        .resume-card {
+            flex: 0 0 calc(100% / 12 - 10px); /* Each card takes 1/12 of the width on smaller screens */
+        }
+
+        .resume-card span {
+            display: none; /* Hide names on smaller screens */
+        }
     }
 </style>
-
 
 
 
 <div class="page-content">
     <div class="container-fluid">
         <div class="row mt-4">
+            <div style="width: 100%;">
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #007bff;">
+                    <h4 style="margin-top: 3px;">Update your Resume to apply!</h4>
+                    <p style="margin-bottom: 4px;">Update your Details on the Resume from 1-8 to for you to be able to apply for opportunities</p>
+                </div>
+            </div>    
             <div class="col-xl-12">
-                <ul class="resume-menu">
-                    <li><a href="javascript:void(0);" onclick="showSection('bio', this)"><i class="fas fa-user"></i> <span>Bio</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('personal', this)"><i class="fas fa-briefcase"></i> <span>Career Statement</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('education', this)"><i class="fas fa-graduation-cap"></i> <span>High School</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('education2', this)"><i class="fas fa-graduation-cap"></i> <span>College/University</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('certs', this)"><i class="fas fa-certificate"></i> <span>Professional Certificates</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('memberships', this)"><i class="fas fa-users"></i> <span>Professional Memberships</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('experience', this)"><i class="fas fa-briefcase"></i> <span>Work Experience</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('referee', this)"><i class="fas fa-shield-alt"></i> <span>Referee</span></a></li>
-                    <li><a href="javascript:void(0);" onclick="showSection('review', this)"><i class="fas fa-check"></i> <span>Review Details</span></a></li>
-                </ul>
+                <div class="resume-cards">
+                    <div class="resume-card" onclick="showSection('bio', this)">
+                        <div class="number-circle">1</div>
+                        <span>Bio</span>
+                    </div>
                 
-                <hr>
+                    <div class="resume-card" onclick="showSection('education', this)">
+                        <div class="number-circle">2</div>
+                        <span>High School</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('education2', this)">
+                        <div class="number-circle">3</div>
+                        <span>College/University</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('certs', this)">
+                        <div class="number-circle">4</div>
+                        <span>Professional Certificates</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('memberships', this)">
+                        <div class="number-circle">5</div>
+                        <span>Professional Memberships</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('experience', this)">
+                        <div class="number-circle">6</div>
+                        <span>Work Experience</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('referee', this)">
+                        <div class="number-circle">7</div>
+                        <span>Referee</span>
+                    </div>
+                
+                    <div class="resume-card" onclick="showSection('review', this)">
+                        <div class="number-circle">8</div>
+                        <span>Review Details</span>
+                    </div>
+                </div>
+                
+               
                 <div class="resume-section" id="bio">
                     <h2 class="mt-4 mb-4 text-center">Bio Information</h2>
                     <hr>
@@ -567,19 +614,7 @@
                                         </div>
                                         <hr class="mb-1"><hr class="mt-0">
                                         <!--end user section -->
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <h4 class="card-title">Career Objective</h4>
-                                                {% if professional_summary %}
-                                                <p class="card-subtitle">{{ professional_summary.career_objective }}</p>
-                                                {% else %}
-                                                <div class="alert alert-primary text-center active" role="alert">
-                                                    This applicant has no Career Objective set
-                                                </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <hr>
+                                       
                                         <!--end career objective section -->
                                         <div class="row">
                                             <div class="col-md-6">

@@ -107,7 +107,6 @@ def staff(request):
         work_experiences = WorkExperience.objects.filter(user=user)
         certifications = Certification.objects.filter(user=user)
 
-        print(memberships)
 
     context = {
         'resume': resume,
