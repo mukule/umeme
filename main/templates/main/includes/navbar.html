@@ -102,7 +102,7 @@
                 {% if user.is_authenticated %}
                 {% if user.access_level != 5 %}
                     <li class="nav-item">
-                        <a class="nav-link" href="">
+                        <a class="nav-link" href="https://www.kengen.co.ke/index.php/our-company/who-we-are.html" target="_blank">
                             Why Kengen
                         </a>
                     </li>
@@ -116,16 +116,17 @@
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="{% url 'main:how' %}">
                 How to apply
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="">
-                FAQS
+                <a class="nav-link" href="https://www.kengen.co.ke/index.php/information-center/faqs.html" target="_blank">
+                    FAQS
                 </a>
             </li>
+            
             {% if user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'vacancies:applications' %}">

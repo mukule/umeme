@@ -24,23 +24,20 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
         <style>
-          /* Style for the alert container */
+        
             #alert-container {
                 position: fixed;
-                top: 50px; /* Adjust the top position as needed */
-                right: 10px; /* Adjust the right position as needed */
-                z-index: 9999; /* Ensure the alerts appear above other content */
+                top: 50px; 
+                right: 10px; 
+                z-index: 9999; 
             }
 
-            /* Style for individual alert messages */
             .alert {
-                /* Other styles for your alerts (success, error, info, warning) */
-                /* Adjust the margin or padding to create separation between alerts */
-                margin-bottom: 10px; /* Adjust the margin as needed */
-                /* Ensure the alerts have a transparent background to overlay other content */
-                /* Optionally, add box-shadow or border for a visual distinction */
+              
+                margin-bottom: 10px;
+               
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-                /* Add padding or other styles to the alerts as needed */
+              
                 padding: 10px;
             }
 
@@ -74,7 +71,7 @@
     <script src="{% static 'invoice/js/html2canvas.min.js' %}"></script>
     <script src="{% static 'invoice/js/html2pdf.min.js' %}"></script>
     <script>
-        // JavaScript to toggle password visibility
+        
         document.querySelectorAll('.toggle-password').forEach(function(icon) {
             icon.addEventListener('click', function() {
                 var input = icon.closest('.input-group').querySelector('input');
@@ -88,10 +85,10 @@
     </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Get the JSON data from the template context
+        
         var jsonData = JSON.parse('{{ job_disciplines_with_counts_json|escapejs }}');
     
-        // Extract data for labels and values
+       
         var labels = jsonData.map(function(item) {
             return item.name;
         });
@@ -100,7 +97,7 @@
             return item.vacancy_count;
         });
     
-        // Generate random colors for the bars
+       
         var colors = labels.map(function() {
             return '#' + (Math.random().toString(16) + '0000000').slice(2, 8);
         });
@@ -120,11 +117,11 @@
             options: {
                 plugins: {
                     datalabels: {
-                        color: 'black', // Label text color
-                        anchor: 'end', // Position of the label
-                        align: 'top', // Alignment of the label
+                        color: 'black', 
+                        anchor: 'end', 
+                        align: 'top', 
                         formatter: function(value) {
-                            return value; // Display the value as the label
+                            return value; 
                         },
                     },
                 },
@@ -140,19 +137,19 @@
     });
     </script>
 
-    <!-- Add this script to your HTML template -->
+   
 <script>
-    // Get the JSON data for the pie chart from the template context
+   
     var pieChartData = JSON.parse('{{ pie_chart_data_json|escapejs }}');
 
-    // Extract data for labels and values
+    
     var labels = ['Open Vacancies', 'Closed Vacancies'];
     var dataValues = [pieChartData.open_vacancy_count, pieChartData.closed_vacancy_count];
 
-    // Define custom colors for the pie chart
+    
     var colors = ['#33FF45', '#FF5733'];
 
-    // Create the Chart.js pie chart
+    
     var ctx = document.getElementById('vacancyPieChart').getContext('2d');
     var vacancyPieChart = new Chart(ctx, {
         type: 'pie',
@@ -178,13 +175,13 @@
             },
             plugins: {
                 datalabels: {
-                    display: true, // Display labels on each section
-                    color: 'white', // Color of the labels
+                    display: true, 
+                    color: 'white', 
                     font: {
-                        size: 14 // Font size of the labels
+                        size: 14 
                     },
                     formatter: function(value, context) {
-                        return value + ' vacancies'; // Format the label to include "vacancies"
+                        return value + ' vacancies'; 
                     }
                 }
             },
@@ -272,10 +269,10 @@
 </script>
 
 <script>
-    // Parse the JSON data from the view
+    
     var graphData = {{ graph_data_json|safe }};
 
-    // Get the canvas element and create a chart
+    
     var ctx = document.getElementById('barGraphs').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'bar',
@@ -308,18 +305,18 @@
 
 <script>
     $(document).ready(function () {
-        // Initially hide the "Disability Number" field if "Disability" is not checked
+        
         if (!$('#id_disability').is(':checked')) {
             $('#disability-number-field').hide();
         }
 
-        // Add a change event handler to the "Disability" checkbox
+       
         $('#id_disability').change(function () {
             if ($(this).is(':checked')) {
-                // Show the "Disability Number" field if "Disability" is checked
+               
                 $('#disability-number-field').show();
             } else {
-                // Hide the "Disability Number" field if "Disability" is not checked
+                
                 $('#disability-number-field').hide();
             }
         });
@@ -328,19 +325,19 @@
 
 <script>
     $(document).ready(function () {
-        // Initially hide the "County" field
+        
         $("#county-field").hide();
     
-        // Add a change event handler to the "Country of Residence" dropdown
+        
         $("#id_country_of_residence").change(function () {
-            // Log the selected value for debugging
+            
             console.log("Selected country: " + $(this).val());
             
             if ($(this).val() === "KE") {
-                // Show the "County" field if "Kenya" is selected
+                
                 $("#county-field").show();
             } else {
-                // Hide the "County" field if a country other than "Kenya" is selected
+                
                 $("#county-field").hide();
             }
         });
@@ -365,7 +362,7 @@
         menuLink.classList.add('active');
     }
 
-    // Show the "Bio" section and its corresponding menu item as active on page load
+    
     document.addEventListener("DOMContentLoaded", function () {
         showSection('review', document.querySelector('.resume-menu a'));
     });
@@ -375,7 +372,7 @@
 
 <script>
     $(document).ready(function () {
-        // Handle the confirmation when the modal is shown
+        
         $('#confirmDeleteModal').on('show.bs.modal', function (e) {
             const applicationId = $(e.relatedTarget).data('application-id');
             const deleteUrl = "{% url 'vacancies:delete_application' 0 %}".replace('0', applicationId);
@@ -386,7 +383,7 @@
 
 <script>
     $(document).ready(function () {
-        // Handle the confirmation when the modal is shown
+        
         $('#confirmResubmitModal').on('show.bs.modal', function (e) {
             const applicationId = $(e.relatedTarget).data('application-id');
             const recallUrl = "{% url 'vacancies:recall_application' 0 %}".replace('0', applicationId);

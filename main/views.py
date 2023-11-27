@@ -685,3 +685,6 @@ def update_educational_level(request):
     }
 
     return render(request, 'main/edu_level.html', context)
+
+def how(request):
+    return render(request, 'main/how.html')

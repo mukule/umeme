@@ -31,4 +31,5 @@ urlpatterns = [
     path('terms/', views.terms, name='terms'),
     path('staff/', views.staff, name='staff_profile'),
     path('update_educational_level/', views.update_educational_level, name='edu_level'),
+    path('how_to_apply/', views.how, name='how'),
 ]
