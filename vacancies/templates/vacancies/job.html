@@ -82,7 +82,7 @@
                         <form method="post">
                             {% csrf_token %}
                             <button type="submit" name="toggle_read" class="btn btn-lg btn-primary-outline">
-                                {% if terms.read %}
+                                {% if terms.is_read %}
                                     <i class="fas fa-times"></i> Terms and Conditions
                                 {% else %}
                                     <i class="fas fa-check"></i> Terms and Conditions
@@ -93,7 +93,7 @@
                     
                     
                     <div class="text-center mt-2 mb-2">
-                        {% if terms.read %}
+                        {% if terms.is_read %}
                             <a href="{% url 'vacancies:apply' vacancy_id=vacancy.id %}" class="btn btn-lg btn-primary active">Apply this Job</a>
                         {% else %}
                             <button class="btn btn-lg btn-primary" disabled>Apply this Attachment</button>

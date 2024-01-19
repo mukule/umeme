@@ -53,12 +53,14 @@ def jobs(request):
 def job(request, vacancy_id):
     job = get_object_or_404(Vacancy, id=vacancy_id,
                             vacancy_type='employment', published=True)
-    terms = Terms.objects.first()  # You can adjust this query based on your requirements
+    terms = Terms.objects.first()
+
     if terms is not None:
         if request.method == 'POST':
             if 'toggle_read' in request.POST:
-                terms.read = not terms.read
+                terms.is_read = not terms.is_read  # Toggle the value
                 terms.save()
+
     return render(request, 'vacancies/job.html', {'vacancy': job, 'terms': terms})
 
 
