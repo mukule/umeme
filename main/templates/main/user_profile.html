@@ -717,13 +717,15 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             {% if further_studies_instances %}
-                                                            {% for further_studies in further_studies_instances %}
-                                                            <div class="alert alert-warning shadow-sm" role="alert">
-                                                                <a href="{{ further_studies.certificate.url }}" target="_blank">
-                                                                    <i class="fas fa-file-pdf"></i> College/University Certificate
-                                                                </a>
-                                                            </div>
-                                                            {% endfor %}
+                                                           {%if further_studies.certificate%}
+                                                           {% for further_studies in further_studies_instances %}
+                                                           <div class="alert alert-warning shadow-sm" role="alert">
+                                                               <a href="{{ further_studies.certificate.url }}" target="_blank">
+                                                                   <i class="fas fa-file-pdf"></i> College/University Certificate
+                                                               </a>
+                                                           </div>
+                                                           {% endfor %}
+                                                           {%endif%}
                                                             {% else %}
                                                             <div class="alert alert-primary text-center active" role="alert">
                                                                 No college certificate

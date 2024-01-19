@@ -223,7 +223,7 @@ class FurtherStudiesForm(forms.ModelForm):
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdfs only Not more than 1mb)', required=False
+        label='Certificate File(pdfs only Not more than 1mb)',
     )
 
     def clean_certificate(self):
@@ -267,7 +267,7 @@ class CertificationForm(forms.ModelForm):
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdfs only, Not more than 1Mb)', required=False
+        label='Certificate File(pdfs only, Not more than 1Mb)'
     )
 
     def clean_certificate(self):
@@ -305,7 +305,7 @@ class MembershipForm(forms.ModelForm):
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Membership Certificate File(pdfs only, Not more than 1Mb)', required=False
+        label='Membership Certificate File(pdfs only, Not more than 1Mb)',
     )
     membership_body = forms.CharField(
         max_length=50,

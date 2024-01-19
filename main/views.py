@@ -107,7 +107,6 @@ def staff(request):
         work_experiences = WorkExperience.objects.filter(user=user)
         certifications = Certification.objects.filter(user=user)
 
-
     context = {
         'resume': resume,
         'further_studies_instances': further_studies,
@@ -685,6 +684,7 @@ def update_educational_level(request):
     }
 
     return render(request, 'main/edu_level.html', context)
+
 
 def how(request):
     return render(request, 'main/how.html')
