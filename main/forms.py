@@ -194,7 +194,7 @@ class FurtherStudiesForm(forms.ModelForm):
         label='Institution Name', required=True
     )
     certifications = forms.ModelChoiceField(
-        queryset=certification_choices,
+        queryset=EducationalLevel.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Levels of study', empty_label="--Select Levels of Study--"
     )
