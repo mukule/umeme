@@ -6,6 +6,8 @@
 {% include '../main/includes/hero.html' %}
 <div class="page-content">
     <div class="container-fluid">
+        <h2 class="mt-4 mb-4 text-center">Add High School information</h2>
+        <hr>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if form.errors %}
@@ -24,26 +26,26 @@
                 <div class="col-md-6">
                     {{ form.name_of_the_school|as_crispy_field }}
                 </div>
+
                 <div class="col-md-6">
-                    {{ form.index_number|as_crispy_field }}
+                    {{ form.certification|as_crispy_field }}
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
                     {{ form.date_started|as_crispy_field }}
                 </div>
+                
                 <div class="col-md-6">
                     {{ form.date_ended|as_crispy_field }}
                 </div>
             </div>
             <div class="row">
+               
                 <div class="col-md-6">
-                    {{ form.certification|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
                     {{ form.grade_attained|as_crispy_field }}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     {{ form.certificate|as_crispy_field }}
                 </div>
                 

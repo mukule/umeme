@@ -53,15 +53,18 @@ def jobs(request):
 def job(request, vacancy_id):
     job = get_object_or_404(Vacancy, id=vacancy_id,
                             vacancy_type='employment', published=True)
-    terms = Terms.objects.first()
 
-    if terms is not None:
-        if request.method == 'POST':
-            if 'toggle_read' in request.POST:
-                terms.is_read = not terms.is_read  # Toggle the value
-                terms.save()
+    # Get the UserAcceptedTerms instance for the logged-in user
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=request.user
+    )
 
-    return render(request, 'vacancies/job.html', {'vacancy': job, 'terms': terms})
+    context = {
+        'vacancy': job,
+        'user_accepted_terms': user_accepted_terms,
+    }
+
+    return render(request, 'vacancies/job.html', context)
 
 
 def internships(request):
@@ -281,15 +284,18 @@ def apply(request, vacancy_id):
     application.save()
     mail_subject = f"Application successful for {vacancy.title}"
     user_message = format_html(
-        "Thank you for applying for the {} position. Your application reference number is <strong>{}</strong>. We will review your application and notify you of the status.",
+        "Thank you for applying for the {} position. Your application reference number is {}. Note that only shortlisted applicant will be contacted.",
         vacancy.title,
         application.reference_number
     )
     user_email = EmailMessage(mail_subject, user_message, to=[user.email])
-    user_email.send()
-    request.session['application_id'] = application.id
-
-    return redirect('vacancies:apply_succ')
+    try:
+        user_email.send()
+        request.session['application_id'] = application.id
+        return redirect('vacancies:apply_succ')
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('vacancies:apply_fail')
 
 
 def application_succ(request):
@@ -534,3 +540,7 @@ def internal_detail(request, vacancy_id):
         'user_has_accepted_terms': user_has_accepted_terms,  # Include this in the context
     }
     return render(request, 'vacancies/internal_detail.html', context)
+
+
+def apply_fail(request):
+    return render(request, 'vacancies/apply_fail.html')

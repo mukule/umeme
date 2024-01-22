@@ -132,8 +132,8 @@ def basic_info(request, user_id):
 
     if user_info is None:
         initial_data['email_address'] = user.email
-        # Use first and last name if available, otherwise use an empty string
         initial_data['full_name'] = user.get_full_name() or ''
+        initial_data['id_number'] = user.id_number
 
     if request.method == 'POST':
         form = ResumeForm(request.POST, instance=user_info)
@@ -288,12 +288,21 @@ def certification(request):
         form = CertificationForm(request.POST, request.FILES)
         if form.is_valid():
             certification = form.save(commit=False)
-            certification.user = request.user
-            certification.save()
-            if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
-            return redirect('main:user_profile')
+
+            # Check if the name is not blank before saving
+            if certification.name.strip():
+                certification.user = request.user
+                certification.save()
+
+                if user.access_level == 5:
+                    # Redirect to a different view if access_level is 5
+                    return redirect('main:staff_profile')
+
+                return redirect('main:user_profile')
+            else:
+                # Display an error message if the name is blank
+                messages.error(
+                    request, 'You cannot submit a Blank Certification')
     else:
         form = CertificationForm()
 
@@ -352,24 +361,25 @@ def membership(request):
         form = MembershipForm(request.POST, request.FILES)
         if form.is_valid():
             membership = form.save(commit=False)
-            membership.user = request.user
-            membership.save()
-            messages.success(request, 'Membership successfully submitted!')
-            if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
-            return redirect('main:user_profile')
+
+            if membership.membership_title.strip():
+                membership.user = request.user
+                membership.save()
+                messages.success(request, 'Membership successfully submitted!')
+
+                if user.access_level == 5:
+
+                    return redirect('main:staff_profile')
+
+                return redirect('main:user_profile')
+            else:
+                # Display an error message if the name is blank
+                messages.error(request, 'Membership Title cannot be blank.')
         else:
             # If the form is not valid, display specific error messages
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
-
-            # Add debug statements to see why the form is not being saved
-            print(f"Form data: {request.POST}")
-            print(f"Form errors: {form.errors}")
-            print(f"User: {user}")
-            print(f"User access level: {user.access_level}")
 
     else:
         form = MembershipForm()
@@ -517,6 +527,7 @@ def referees(request):
     user = request.user
     referees_list = Referee.objects.filter(user=user)
 
+    # Check if the user already has 3 referees
     if referees_list.count() >= 3:
         messages.error(request, "You can only have a maximum of 3 referees.")
         return redirect('main:user_profile')
@@ -524,10 +535,14 @@ def referees(request):
     if request.method == 'POST':
         form = RefereeForm(request.POST)
         if form.is_valid():
-            referee = form.save(commit=False)
-            referee.user = user
-            referee.save()
-            return redirect('main:user_profile')
+            # Check again before saving to prevent exceeding the limit
+            if referees_list.count() < 3:
+                referee = form.save(commit=False)
+                referee.user = user
+                referee.save()
+                return redirect('main:user_profile')
+            else:
+                messages.error(request, "You can only 3 referees required.")
     else:
         form = RefereeForm()
 

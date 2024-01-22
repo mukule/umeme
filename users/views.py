@@ -1,7 +1,9 @@
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 import logging
 from .models import Staff
 import re
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model, login
 from .forms import *
 from django.contrib import messages
@@ -25,6 +27,10 @@ import random
 import string
 from urllib.parse import urlencode
 from django.http import QueryDict
+from vacancies.models import *
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.utils.translation import gettext_lazy as _
 
 
 def is_system_admin(user):
@@ -298,31 +304,43 @@ def password_change(request):
 @user_not_authenticated
 def password_reset_request(request):
     if request.method == 'POST':
-        form = PasswordResetForm(request.POST)
+        form = CustomPasswordResetForm(request.POST)
         if form.is_valid():
             user_email = form.cleaned_data['email']
-            associated_user = get_user_model().objects.filter(Q(email=user_email)).first()
-            if associated_user:
-                subject = "Password Reset request"
-                message = render_to_string("users/template_reset_password.html", {
-                    'user': associated_user,
-                    'domain': get_current_site(request).domain,
-                    'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
-                    'token': account_activation_token.make_token(associated_user),
-                    "protocol": 'https' if request.is_secure() else 'http'
-                })
-                email = EmailMessage(subject, message, to=[
-                                     associated_user.email])
-                if email.send():
-                    return redirect('users:f_pass')
+            user_id_number = form.cleaned_data['id_number']
 
+            # Add your custom logic to get the user based on the provided email and id_number
+            try:
+                associated_user = get_user_model().objects.get(
+                    email=user_email, id_number=user_id_number)
+            except get_user_model().DoesNotExist:
+                associated_user = None
+
+            if associated_user:
+                if associated_user.id_number == user_id_number:
+                    subject = _("Password Reset request")
+                    message = render_to_string("users/template_reset_password.html", {
+                        'user': associated_user,
+                        'domain': get_current_site(request).domain,
+                        'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
+                        'token': account_activation_token.make_token(associated_user),
+                        "protocol": 'https' if request.is_secure() else 'http'
+                    })
+                    email = EmailMessage(subject, message, to=[
+                                         associated_user.email])
+                    if email.send():
+                        return redirect('users:f_pass')
+                    else:
+                        messages.error(
+                            request, _("Problem sending reset password email, SERVER PROBLEM"))
                 else:
                     messages.error(
-                        request, "Problem sending reset password email, <b>SERVER PROBLEM</b>")
+                        request, _("Email does not match with ID number."))
+            else:
+                messages.error(
+                    request, _("No user account found associated with the email or invalid email"))
 
-            return redirect('/')
-
-    form = PasswordResetForm()
+    form = CustomPasswordResetForm()
     return render(
         request=request,
         template_name="users/password_reset.html",
@@ -434,3 +452,26 @@ def not_allowed(request):
 def f_pass(request):
     user = request.user
     return render(request, 'users/f_pass.html', {'user': user})
+
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    user.delete()
+    return redirect('hr:system_users')
+
+
+def terms_acceptance(request, vacancy_id):
+    user = request.user
+
+    # Get or create UserAcceptedTerms instance for the user
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=user
+    )
+
+    # Toggle the 'accepted' field
+    user_accepted_terms.accepted = not user_accepted_terms.accepted
+    user_accepted_terms.save()
+
+    # Redirect back to the 'job' view with the vacancy_id parameter
+    return redirect('vacancies:job', vacancy_id=vacancy_id)

@@ -6,6 +6,8 @@
 {% include '../main/includes/hero.html' %}
 <div class="page-content">
     <div class="container-fluid">
+        <h2 class="mt-4 mb-4 text-center">Update Referee Details</h2>
+        <hr>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if form.errors %}
@@ -40,7 +42,7 @@
                 </div>
             </div>
            <div class="text-center">
-            <button type="submit" class="btn btn-primary active">Save</button>
+            <button type="submit" class="btn btn-primary active">Submit</button>
            </div>
         </form>
     </div>

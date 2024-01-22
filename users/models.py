@@ -24,7 +24,6 @@ class CustomUser(AbstractUser):
         (3, 'Post'),
         (4, 'Publish'),
         (5, 'Shortlist'),
-
     )
 
     staff_no = models.CharField(max_length=20, unique=True, null=True)
@@ -40,6 +39,9 @@ class CustomUser(AbstractUser):
         default=0,  # Default to 0 for "Not Specified"
     )
 
+    id_number = models.CharField(
+        max_length=8, unique=True, blank=True, null=True)
+
     def image_upload_to(self, filename):
         return os.path.join('Users', self.username, filename)
 
@@ -49,7 +51,7 @@ class CustomUser(AbstractUser):
     )
 
     def __str__(self):
-        return self.username
+        return f"{self.username}"
 
 
 class ProfileUpdate(models.Model):
@@ -212,14 +214,11 @@ class BasicEducation(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name='basic_education')
     name_of_the_school = models.CharField(
         max_length=255, blank=True, null=True)
-    index_number = models.CharField(
-        max_length=20, blank=True, null=True, unique=True)
     certification_choices = (
-        ('KCPE', 'Kenya Certificate of Primary Education (KCPE)'),
         ('KCSE', 'Kenya Certificate of Secondary Education (KCSE)'),
     )
     certification = models.CharField(
-        max_length=10, choices=certification_choices, blank=True, null=True)
+        max_length=10, choices=certification_choices, default='kcse', blank=True, null=True)
     date_started = models.DateField(blank=True, null=True)
     date_ended = models.DateField(blank=True, null=True)
     grade_attained = models.CharField(max_length=10, blank=True, null=True)

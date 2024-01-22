@@ -79,7 +79,7 @@
             <div style="width: 100%;">
                 <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #007bff;">
                     <h4 style="margin-top: 3px;">Update your Resume to apply!</h4>
-                    <p style="margin-bottom: 4px;">Update your Details on the Resume from 1-8 to for you to be able to apply for opportunities</p>
+                    <p style="margin-bottom: 4px;">Update your Details on the Resume from 1-7 to for you to be able to apply for opportunities</p>
                 </div>
             </div>    
             <div class="col-xl-12">
@@ -308,7 +308,7 @@
                                         <div class="col-xl-12">
                                             <div class="card border-0">
                                                 <div class="card-body">
-                                                    <h4 class="card-title">Collage/University</h4>
+                                                    <h4 class="card-title">College/University</h4>
                                                     <p class="card-subtitle mb-4">For further studies after high school</p>
                                                     
                                                     <div class="table-responsive">
@@ -701,57 +701,63 @@
                                                     <h4 class="card-title">Documents</h4>
                                                     <div class="row">
                                                         <div class="col-md-4">
+                                                            
                                                             {% if basic_education_instances %}
                                                             {% for basic_education in basic_education_instances %}
-                                                            <div class="alert alert-warning shadow-sm" role="alert">
-                                                                <a href="{{ basic_education_instances.certificate.url }}" target="_blank">
-                                                                    <i class="fas fa-file-pdf"></i> KCSE Certificate
-                                                                </a>
-                                                            </div>
+                                                                {% if basic_education.certificate %}
+                                                                    <div class="alert alert-warning shadow-sm" role="alert">
+                                                                        <a href="{{ basic_education.certificate.url }}" target="_blank" data-toggle="tooltip" data-placement="top" title="Click to view certificate">
+                                                                            <i class="fas fa-file-pdf"></i> KCSE Certificate
+                                                                        </a>
+                                                                    </div>
+                                                                {% else %}
+                                                                    <div class="alert alert-info text-center" role="alert">
+                                                                        You have not Added any Document for High School
+                                                                    </div>
+                                                                {% endif %}
                                                             {% endfor %}
-                                                            {% else %}
-                                                            <div class="alert alert-primary text-center active" role="alert">
-                                                                No KCSE certificate
-                                                            </div>
-                                                            {% endif %}
+                                                        {% endif %}
+                                                        
                                                         </div>
                                                         <div class="col-md-4">
                                                             {% if further_studies_instances %}
-                                                           {%if further_studies.certificate%}
-                                                           {% for further_studies in further_studies_instances %}
-                                                           <div class="alert alert-warning shadow-sm" role="alert">
-                                                               <a href="{{ further_studies.certificate.url }}" target="_blank">
-                                                                   <i class="fas fa-file-pdf"></i> College/University Certificate
-                                                               </a>
-                                                           </div>
-                                                           {% endfor %}
-                                                           {%endif%}
-                                                            {% else %}
+                                                            {% for further_studies in further_studies_instances %}
+                                                                {% if further_studies.certificate %}
+                                                                    <div class="alert alert-warning shadow-sm" role="alert">
+                                                                        <a href="{{ further_studies.certificate.url }}" target="_blank" data-toggle="tooltip" data-placement="top" title="Click to view certificate">
+                                                                            <i class="fas fa-file-pdf"></i> College/University Certificate
+                                                                        </a>
+                                                                    </div>
+                                                                {% else %}
+                                                                    <div class="alert alert-info text-center" role="alert">
+                                                                        You have not Added any Document for College/University
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% else %}
                                                             <div class="alert alert-primary text-center active" role="alert">
                                                                 No college certificate
                                                             </div>
-                                                            {% endif %}
+                                                        {% endif %}
+                                                        
                                                         </div>
                                                         <div class="col-md-4">
                                                             {% if membership_instances %}
                                                             {% for membership in membership_instances %}
-                                                            {% if membership.certificate %}
-                                                            <div class="alert alert-warning shadow-sm" role="alert">
-                                                                <a href="{{ membership.certificate.url }}" target="_blank">
-                                                                    <i class="fas fa-file-pdf"></i> Membership Certificate
-                                                                </a>
-                                                            </div>
-                                                            {% else %}
-                                                            <div class="alert alert-primary text-center active" role="alert">
-                                                                No membership certificate attached
-                                                            </div>
-                                                            {% endif %}
+                                                                {% if membership.certificate %}
+                                                                    <div class="alert alert-warning shadow-sm" role="alert">
+                                                                        <a href="{{ membership.certificate.url }}" target="_blank" data-toggle="tooltip" data-placement="top" title="Click to view membership certificate">
+                                                                            <i class="fas fa-file-pdf"></i> Membership Certificate
+                                                                        </a>
+                                                                    </div>
+                                                                {% else %}
+                                                                    <div class="alert alert-primary text-center active" role="alert">
+                                                                        No membership certificate attached
+                                                                    </div>
+                                                                {% endif %}
                                                             {% endfor %}
-                                                            {% else %}
-                                                            <div class="alert alert-primary text-center active" role="alert">
-                                                                No proffesional Membership Found
-                                                            </div>
-                                                            {% endif %}
+                                                        {% endif %}
+
                                                         </div>
                                                     </div>
                                                 </div>

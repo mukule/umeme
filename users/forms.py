@@ -11,10 +11,13 @@ class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(
         help_text='A valid email address, please.', required=True)
 
+    id_number = forms.CharField(
+        max_length=8, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ID Number'}))
+
     class Meta:
         model = get_user_model()
         fields = ['username', 'first_name', 'last_name',
-                  'email', 'password1', 'password2']
+                  'email', 'id_number', 'password1', 'password2']
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
@@ -28,14 +31,17 @@ class UserRegistrationForm(UserCreationForm):
             {'class': 'form-control', 'placeholder': 'Last Name'})
         self.fields['email'].widget.attrs.update(
             {'class': 'form-control', 'placeholder': 'Email Address'})
+        self.fields['id_number'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'ID Number'})
         self.fields['password1'].widget.attrs.update(
             {'class': 'form-control', 'placeholder': 'Password'})
         self.fields['password2'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Confirm Password'})
+            {'class': 'form-control', 'placeholder': 'Confirm Password', 'id': 'show_hide_password'})
 
     def save(self, commit=True):
         user = super(UserRegistrationForm, self).save(commit=False)
         user.email = self.cleaned_data['email']
+        user.id_number = self.cleaned_data['id_number']
         if commit:
             user.save()
         return user
@@ -116,9 +122,20 @@ class SetPasswordForm(SetPasswordForm):
         fields = ['new_password1', 'new_password2']
 
 
-class PasswordResetForm(PasswordResetForm):
-    def __init__(self, *args, **kwargs):
-        super(PasswordResetForm, self).__init__(*args, **kwargs)
+class CustomPasswordResetForm(PasswordResetForm):
+    id_number = forms.CharField(
+        max_length=8,
+        required=True,
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'ID Number'})
+    )
+
+    email = forms.EmailField(
+        max_length=254,
+        required=True,
+        widget=forms.EmailInput(
+            attrs={'class': 'form-control', 'placeholder': 'Email'})
+    )
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -144,14 +161,17 @@ class CustomUserCreationForm(forms.ModelForm):
         model = CustomUser
         fields = ['username', 'first_name', 'last_name', 'email']
 
+
 class UpdateFunctionForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['function', 'username', 'email']  # Include 'username' and 'email' fields
+        # Include 'username' and 'email' fields
+        fields = ['function', 'username', 'email']
 
     def __init__(self, *args, **kwargs):
         super(UpdateFunctionForm, self).__init__(*args, **kwargs)
         # Set the 'readonly' attribute for 'username' and 'email' fields
         self.fields['username'].widget.attrs['readonly'] = True
         self.fields['email'].widget.attrs['readonly'] = True
-        self.fields['function'].widget = forms.Select(choices=CustomUser.FUNCTION_CHOICES)
+        self.fields['function'].widget = forms.Select(
+            choices=CustomUser.FUNCTION_CHOICES)

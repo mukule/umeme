@@ -6,6 +6,8 @@
 {% include '../main/includes/hero.html' %}
 <div class="page-content">
     <div class="container-fluid">
+        <h2 class="mt-4 mb-4 text-center">Update Professional Memberships</h2>
+        <hr>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if form.errors %}

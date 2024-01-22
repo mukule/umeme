@@ -79,17 +79,15 @@ class Application(models.Model):
 
 class Terms(models.Model):
     text = models.TextField()
-    is_read = models.BooleanField(default=False)
 
     def __str__(self):
         return "Terms and Conditions"
 
 
 class UserAcceptedTerms(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    terms = models.ForeignKey(Terms, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     accepted = models.BooleanField(default=False)
     accepted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} accepted {self.terms}"
+        return f"{self.user.username} accepted terms"

@@ -10,6 +10,7 @@ MARITAL_STATUS_CHOICES = MaritalStatus.objects.all().values_list('name', 'name')
 GENDER_CHOICES = Gender.objects.all().values_list('name', 'name')
 COUNTY_CHOICES = County.objects.all().values_list('name', 'name')
 
+
 # Generate country choices using pycountry
 COUNTRY_CHOICES = [(country.alpha_2, country.name)
                    for country in pycountry.countries]
@@ -21,100 +22,104 @@ class ResumeForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Full Name'}),
         label='Full Name',
-        required=True
+
     )
     email_address = forms.EmailField(
         widget=forms.EmailInput(
             attrs={'class': 'form-control', 'placeholder': 'Email Address'}),
         label='Email Address',
-        required=True
+
     )
     phone = forms.CharField(
         max_length=10,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Phone'}),
         label='Phone',
-        required=True
+
     )
     id_number = forms.CharField(
         max_length=20,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'ID Number'}),
         label='ID Number',
-        required=True
+
     )
     dob = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date of Birth', 'type': 'date'}),
         label='Date of Birth',
-        required=True
+
     )
     country_of_birth = forms.ChoiceField(
         choices=[('', 'Select Country')] + COUNTRY_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Country of Birth',
-        required=True
+
     )
     country_of_residence = forms.ChoiceField(
         choices=[('', 'Select Country')] + COUNTRY_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Country of Residence',
-        required=True
+
     )
     county = forms.ChoiceField(
         choices=[('', 'Select County')] + list(COUNTY_CHOICES),
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='County',
-        required=False
+
+
     )
     ethnicity = forms.ModelChoiceField(
         queryset=Ethnicity.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Ethnicity',
-        required=False
+        empty_label='Select Ethnicity'
+
     )
     religion = forms.CharField(
         max_length=255,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Religion'}),
         label='Religion',
-        required=False
+
     )
     gender = forms.ChoiceField(
         choices=[('', 'Select Gender')] + list(GENDER_CHOICES),
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Gender',
-        required=True
+
     )
     disability = forms.BooleanField(
-        required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        label='Do you have a disability?'
+
+        widget=forms.CheckboxInput(attrs={'class': 'form-control'}),
+        label='PWD?'
     )
     disability_number = forms.CharField(
         max_length=20,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Disability Number'}),
         label='Disability Number',
-        required=False
+
     )
     marital_status = forms.ChoiceField(
         choices=[('', 'Select Marital Status')] + list(MARITAL_STATUS_CHOICES),
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Marital Status',
-        required=False
+
     )
     educational_level = forms.ModelChoiceField(
         queryset=EducationalLevel.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Highest Education Level',
-        required=False
+        empty_label='Select Highest Education Level'
+
     )
     field_of_study = forms.ModelChoiceField(
         queryset=FieldOfStudy.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Field of Study',
-        required=False
+        empty_label='Select Field of Study'
+
     )
 
     class Meta:
@@ -133,12 +138,6 @@ class EducationalInformationForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Name of the School'}),
         label='Name of the School', required=True
-    )
-    index_number = forms.CharField(
-        max_length=20,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'index Number'}),
-        label='Index Number', required=True
     )
     certification = forms.ChoiceField(
         choices=BasicEducation.certification_choices,
@@ -179,7 +178,7 @@ class EducationalInformationForm(forms.ModelForm):
     class Meta:
         model = BasicEducation
         fields = [
-            'name_of_the_school', 'index_number', 'certification',
+            'name_of_the_school', 'certification',
             'date_started', 'date_ended', 'grade_attained', 'certificate'
         ]
 
@@ -253,12 +252,14 @@ class CertificationForm(forms.ModelForm):
         max_length=255,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Certification Name'}),
-        label='Certification Name', required=True
+        label='Certification Name', required=False
     )
     certifying_body = forms.ModelChoiceField(
         queryset=CertifyingBody.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Certifying Body', required=True
+        label='Certifying Body', required=False,
+        empty_label='Select Certifying Body'
+
     )
     date_attained = forms.DateField(
         widget=forms.DateInput(
@@ -267,7 +268,8 @@ class CertificationForm(forms.ModelForm):
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdfs only, Not more than 1Mb)'
+        label='Certificate File(pdfs only, Not more than 1Mb)', required=False,
+
     )
 
     def clean_certificate(self):
@@ -290,13 +292,13 @@ class MembershipForm(forms.ModelForm):
         max_length=255,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Membership Title'}),
-        label='Membership Title', required=True
+        label='Membership Title', required=False
     )
     membership_number = forms.CharField(
         max_length=50,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Membership Number'}),
-        label='Membership Number', required=True
+        label='Membership Number', required=False
     )
     date_joined = forms.DateField(
         widget=forms.DateInput(
@@ -305,14 +307,14 @@ class MembershipForm(forms.ModelForm):
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Membership Certificate File(pdfs only, Not more than 1Mb)',
+        label='Membership Certificate File(pdfs only, Not more than 1Mb)', required=False
     )
     membership_body = forms.CharField(
         max_length=50,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Membership Body'}),
         label='Membership Body',
-        required=True
+        required=False
     )
 
     def clean_certificate(self):
@@ -372,7 +374,7 @@ class WorkExperienceForm(forms.ModelForm):
     )
     currently_working = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        label='Currently Working Here', required=False
+        label='Current Position(Current Job)', required=False
     )
 
 

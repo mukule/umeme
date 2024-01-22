@@ -31,23 +31,27 @@
                                     <tr>
                                         <th>Full Name</th>
                                         <th>Email</th>
+                                        <th>ID Number</th>
                                         <th>Gender</th>
                                         <th>Age (years)</th>
                                         <th>Ethnicity</th>
                                         <th>Active</th>
                                         <th>Registered</th>
+                                        <th>Delete user</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for user in users %}
                                         <tr>
-                                            <td>{{ user.username }} {{ user.first_name }} {{ user.last_name }}</td>
+                                            <td>{{ user.first_name }} {{ user.last_name }}</td>
                                             <td>{{ user.email }}</td>
+                                            <td>{{ user.id_number }}</td>
                                             <td>{{ user.resume.get_gender_display }}</td>
                                             <td>{{ user.resume.age }}</td>
                                             <td>{{ user.resume.ethnicity }}</td>
                                             <td>{% if user.is_active %}Yes{% else %}No{% endif %}</td>
                                             <td>{{ user.date_joined }}</td>
+                                            <td><a href="{% url 'users:del_user' user.id %}"  class="btn btn-danger">Delete</a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
