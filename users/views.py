@@ -460,7 +460,7 @@ def delete_user(request, user_id):
     user.delete()
     return redirect('hr:system_users')
 
-
+@login_required
 def terms_acceptance(request, vacancy_id):
     user = request.user
 
@@ -475,3 +475,52 @@ def terms_acceptance(request, vacancy_id):
 
     # Redirect back to the 'job' view with the vacancy_id parameter
     return redirect('vacancies:job', vacancy_id=vacancy_id)
+
+@login_required
+def internal_terms_acceptance(request, vacancy_id):
+    user = request.user
+
+    # Get or create UserAcceptedTerms instance for the user
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=user
+    )
+
+    # Toggle the 'accepted' field
+    user_accepted_terms.accepted = not user_accepted_terms.accepted
+    user_accepted_terms.save()
+
+    # Redirect back to the 'job' view with the vacancy_id parameter
+    return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
+
+@login_required
+def internship_terms_acceptance(request, vacancy_id):
+    user = request.user
+
+    # Get or create UserAcceptedTerms instance for the user
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=user
+    )
+
+    # Toggle the 'accepted' field
+    user_accepted_terms.accepted = not user_accepted_terms.accepted
+    user_accepted_terms.save()
+
+    # Redirect back to the 'job' view with the vacancy_id parameter
+    return redirect('vacancies:internship', vacancy_id=vacancy_id)
+
+@login_required
+def attachment_terms_acceptance(request, vacancy_id):
+    user = request.user
+
+    # Get or create UserAcceptedTerms instance for the user
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=user
+    )
+
+    # Toggle the 'accepted' field
+    user_accepted_terms.accepted = not user_accepted_terms.accepted
+    user_accepted_terms.save()
+
+    # Redirect back to the 'job' view with the vacancy_id parameter
+    return redirect('vacancies:attachment', vacancy_id=vacancy_id)
+

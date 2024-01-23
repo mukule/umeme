@@ -671,7 +671,7 @@
                                                 {% endfor %}
                                                 {% else %}
                                                 <div class="alert alert-primary text-center active" role="alert">
-                                                    You have updated your Employement History
+                                                    You have Not updated your Employement History
                                                 </div>
                                                 {% endif %}
                                                 
@@ -681,7 +681,22 @@
                                          <hr>
                                             <!--docs and memberships -->
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
+                                                    <h4 class="card-title">Certifications</h4>
+                                                    {% if certification_instances %}
+                                                    {% for cert in certification_instances %}
+                                                    <p class="card-subtitle mb-2">
+                                                        <b>{{ cert.name }} - {{ cert.certifying_body }}<br></b>
+                                                        {{ cert.date_attained }}
+                                                     </p>
+                                                    {% endfor %}
+                                                    {% else %}
+                                                    <div class="alert alert-primary text-center active" role="alert">
+                                                        No certification Added
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-md-3">
                                                     <h4 class="card-title">Professional Membership</h4>
                                                     {% if membership_instances %}
                                                     {% for membership in membership_instances %}

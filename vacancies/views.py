@@ -103,13 +103,11 @@ def internships(request):
 def internship(request, vacancy_id):
     internship = get_object_or_404(
         Vacancy, id=vacancy_id, vacancy_type='internship', published=True)
-    terms = Terms.objects.first()  # You can adjust this query based on your requirements
-    if terms is not None:
-        if request.method == 'POST':
-            if 'toggle_read' in request.POST:
-                terms.read = not terms.read
-                terms.save()
-    return render(request, 'vacancies/internship.html', {'vacancy': internship, 'terms': terms})
+    
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=request.user
+    )
+    return render(request, 'vacancies/internship.html', {'vacancy': internship, 'user_accepted_terms': user_accepted_terms})
 
 
 def attachments(request):
@@ -120,8 +118,8 @@ def attachments(request):
     attachments = Vacancy.objects.filter(
         vacancy_type='attachment',
         published=True,
-        date_open__lte=current_date,  # Filter for open attachments based on date
-        date_close__gte=current_date,  # Filter for open attachments based on date
+        date_open__lte=current_date,  
+        date_close__gte=current_date,  
     )
 
     if search_query:
@@ -149,19 +147,13 @@ def attachment(request, vacancy_id):
     attachment = get_object_or_404(
         Vacancy, id=vacancy_id, vacancy_type='attachment', published=True)
 
-    terms = Terms.objects.first()  # You can adjust this query based on your requirements
-
-    if terms is not None:  # Check if terms object exists
-        if request.method == 'POST':
-            # Check if the form was submitted
-            if 'toggle_read' in request.POST:
-                # Toggle the 'read' field
-                terms.read = not terms.read
-                terms.save()
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=request.user
+    )
 
     context = {
         'vacancy': attachment,
-        'terms': terms,  # Include the terms in the context
+        'user_accepted_terms': user_accepted_terms, 
     }
     return render(request, 'vacancies/attachment.html', context)
 
@@ -239,7 +231,22 @@ def apply(request, vacancy_id):
             return redirect('vacancies:attachment', vacancy_id=vacancy_id)
         elif vacancy.vacancy_type == 'Internship':
             return redirect('vacancies:internship', vacancy_id=vacancy_id)
-
+        
+    referee_count = Referee.objects.filter(user=request.user).count()
+    if referee_count < 3:
+            if user.access_level != 5:
+                messages.error(
+                    request, 'You don\'t have enough referees to apply. 3 referees are required.')
+                if vacancy.vacancy_type == 'Internal':
+                    return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
+                elif vacancy.vacancy_type == 'Employment':
+                    return redirect('vacancies:job', vacancy_id=vacancy_id)
+                elif vacancy.vacancy_type == 'Attachment':
+                    return redirect('vacancies:attachment', vacancy_id=vacancy_id)
+                elif vacancy.vacancy_type == 'Internship':
+                    return redirect('vacancies:internship', vacancy_id=vacancy_id)
+   
+       
     # Get the user's resume and calculate total work experience
     user_resume = get_object_or_404(Resume, user=user)
     user_work_experience = WorkExperience.objects.filter(user=user)
@@ -284,7 +291,7 @@ def apply(request, vacancy_id):
     application.save()
     mail_subject = f"Application successful for {vacancy.title}"
     user_message = format_html(
-        "Thank you for applying for the {} position. Your application reference number is {}. Note that only shortlisted applicant will be contacted.",
+        "Thank you for applying for the {} position. Your application reference number is {}. Note that only shortlisted applicants will be Contacted.",
         vacancy.title,
         application.reference_number
     )
@@ -383,6 +390,14 @@ def reapply_application(request, application_id):
             messages.error(
                 request, 'College/Further studies are required for this vacancy. Please add your further studies to apply.')
             return redirect_to_appropriate_vacancy_page(vacancy)
+        
+        referee_count = Referee.objects.filter(user=request.user).count()
+      
+        if referee_count < 3:
+            if user.access_level != 5:
+                messages.error(
+                    request, 'You don\'t have enough referees to apply. 3 referees are required.')
+                return redirect_to_appropriate_vacancy_page(vacancy)
 
         # Get the user's resume and calculate total work experience
         user_resume = get_object_or_404(Resume, user=request.user)
@@ -510,34 +525,17 @@ def internal_detail(request, vacancy_id):
     # Retrieve the specific vacancy by ID or return a 404 error if not found
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
 
-    terms = Terms.objects.first()  # You can adjust this query based on your requirements
-
     user = request.user
 
-    if terms is not None:  # Check if terms object exists
-        if request.method == 'POST':
-            # Check if the form was submitted
-            if 'toggle_acceptance' in request.POST:
-                # Toggle the user's acceptance of the terms
-                user_accepted_terms = UserAcceptedTerms.objects.filter(
-                    user=user, terms=terms).first()
+   
 
-                if user_accepted_terms:
-                    # If the user has previously accepted the terms, remove the acceptance
-                    user_accepted_terms.delete()
-                else:
-                    # If the user has not previously accepted the terms, create a new record to accept them
-                    UserAcceptedTerms.objects.create(
-                        user=user, terms=terms, accepted=True)
-
-    # Check if the user has accepted the terms
-    user_has_accepted_terms = UserAcceptedTerms.objects.filter(
-        user=user, terms=terms).exists()
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=user
+    )
 
     context = {
         'vacancy': vacancy,
-        'terms': terms,  # Include the terms in the context
-        'user_has_accepted_terms': user_has_accepted_terms,  # Include this in the context
+        'user_accepted_terms': user_accepted_terms,  # Include this in the context
     }
     return render(request, 'vacancies/internal_detail.html', context)
 

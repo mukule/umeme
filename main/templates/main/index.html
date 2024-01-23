@@ -76,11 +76,12 @@
                         <div class="card-deck-wrapper">
                             <div class="card-deck">
                                 <!-- Card 1 -->
+                               <a href="{% url 'vacancies:attachments' %}">
                                 <div class="card mb-4 shadow-sm border-0">
                                     <img class="card-img-top img-fluid" src="{% static 'dashboard/images/media/sm-7.png' %}" alt="Card image cap">
                                     <div class="card-body">
                                         <h5 class="card-title text-center">Attachment opportunities</h5>
-                                        <p class="card-text">
+                                        <p class="card-text text-center mb-3" style="text-decoration: none !important;">
                                             You wish to relate theory to market realities?</p>
                                         <p class="card-text text-center">
                                             <a href="{% url 'vacancies:attachments' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm">
@@ -89,12 +90,14 @@
                                         </p>
                                     </div>
                                 </div>
+                               </a>
                                 <!-- Card 2 -->
+                               <a href="{% url 'vacancies:internships' %}">
                                 <div class="card mb-4 shadow-sm border-0">
                                     <img class="card-img-top img-fluid" src="{% static 'dashboard/images/media/sm-6.png' %}" alt="Card image cap">
                                     <div class="card-body">
                                         <h5 class="card-title text-center">Internship opportunities</h5>
-                                        <p class="card-text">
+                                        <p class="card-text text-center mb-3">
                                             Are you looking for internship opportunity with us?</p>
                                         <p class="card-text text-center">
                                             <a href="{% url 'vacancies:internships' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm">
@@ -103,12 +106,14 @@
                                         </p>
                                     </div>
                                 </div>
+                               </a>
                                 <!-- Card 3 -->
+                               <a href="{% url 'vacancies:jobs' %}">
                                 <div class="card mb-4 shadow-sm border-0">
                                     <img class="card-img-top img-fluid" src="{% static 'dashboard/images/media/sm-5.png' %}" alt="Card image cap">
                                     <div class="card-body">
                                         <h5 class="card-title text-center">Employment Opportunities</h5>
-                                        <p class="card-text">You want to grow your career with KenGen?</p>
+                                        <p class="card-text text-center mb-3">You want to grow your career with KenGen?</p>
                                         <p class="card-text text-center">
                                             <a href="{% url 'vacancies:jobs' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm">
                                                 Explore Opportunities
@@ -116,6 +121,7 @@
                                         </p>
                                     </div>
                                 </div>
+                               </a>
                             </div>
                         </div>
                     </div>

@@ -58,31 +58,27 @@
                         <h4 class="card-title mt-4">Nature of Job</h4>
                         <p>{{ vacancy.vacancy_type }}</p>
 
-                        <div class="text-center">
-                            <form method="post">
-                                {% csrf_token %}
-                                <button type="submit" name="toggle_read" class="btn btn-lg btn-primary-outline">
-                                    {% if terms.read %}
-                                        <i class="fas fa-times"></i> Terms and Conditions
-                                    {% else %}
-                                        <i class="fas fa-check"></i> Terms and Conditions
-                                    {% endif %}
-                                </button>
-                            </form>
-                        </div>
+                    </div>  <div class="text-center">
+                        {% if user_accepted_terms.accepted %}
+                        <a href="{% url 'users:attachment_terms_acceptance' vacancy_id=vacancy.id %}">  <i class="fas btn-primary active fa-check-square"> </i></a><a href="{% url 'main:terms' %}">Terms and Conditions Accepted</a>
+                        {%else%}
+                        <a href="{% url 'users:attachment_terms_acceptance' vacancy_id=vacancy.id %}" > <i class="btn btn-danger active far fa-square"></i> </a><a href="{% url 'main:terms' %}"> Accept Terms and Conditions</a>
+                        {%endif%}
+                    
+                    </div>
                         
                         
-                        <div class="text-center mt-4">
-                            {% if terms.read %}
-                                <a href="{% url 'vacancies:apply' vacancy_id=vacancy.id %}" class="btn btn-lg btn-primary active">Apply this Attachment</a>
-                            {% else %}
-                                <button class="btn btn-lg btn-primary" disabled>Apply this Attachment</button>
-                                <!-- Optionally, you can provide a message explaining why the button is disabled -->
-                                <div class="text-center mt-4 alert-danger">
-                                    <a href="{% url 'main:terms' %}">Read Terms and Conditions</a>
-                                </div>
-                            {% endif %}
-                        </div>
+                    <div class="text-center mt-2 mb-2">
+                        {% if user_accepted_terms.accepted %}
+                        <a href="{% url 'vacancies:apply' vacancy_id=vacancy.id %}" class="btn btn-lg btn-primary active">Apply this Job</a>
+                        {% else %}
+                        <button class="btn btn-lg btn-primary" disabled>
+                            Apply this Job
+                        </button>
+                        <small class="form-text text-muted">Accept terms and conditions to apply</small>
+                        
+                        {% endif %}
+                    </div>
                         
                     </div>
                 </div>

@@ -50,7 +50,13 @@
                                                 <td>{{ application.reference_number }}</td>
                                                 <td>{{ application.application_date }}</td>
                                                 <td>{{ application.vacancy.date_close }}</td>  
-                                                <td>Application status</td>  
+                                                <td>
+                                                    {% if application.vacancy.date_close > today_date %}
+                                                    <p class="text-center">Applications Ongoing</p>
+                                                    {%else%}
+                                                    <p class="text-center">Processing</p>
+                                                    {%endif%}
+                                                </td>  
                                                 {% if application.vacancy.date_close > today_date %}
                                                 <td>
                                                     <a href="#" id="confirmButton" data-toggle="modal" data-target="#confirmResubmitModal" data-application-id="{{ application.id }}">
