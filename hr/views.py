@@ -562,7 +562,7 @@ def create_job_discipline(request):
             form.save()
             messages.success(request, "Job discipline added succesfully")
             # Redirect to a success page after creating the discipline
-            return redirect('hr:job_disclipines')
+            return redirect('hr:job_disciplines')
     else:
         form = JobDisciplineForm()
 
