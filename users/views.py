@@ -31,7 +31,7 @@ from vacancies.models import *
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.translation import gettext_lazy as _
-
+from django.contrib.auth.hashers import check_password
 
 def is_system_admin(user):
     return user.is_superuser or (user.access_level == 'system admin')
@@ -170,6 +170,7 @@ logger = logging.getLogger(__name__)
 
 @user_not_authenticated
 def custom_login(request):
+    error_messages = []
     if request.method == "POST":
         form = UserLoginForm(request=request, data=request.POST)
         if form.is_valid():
@@ -215,16 +216,16 @@ def custom_login(request):
                 else:
                     return redirect('users:staff_no')
             else:
-                messages.error(request, "Invalid username or password")
+                error_messages.append("Invalid username or password")
         else:
             for error in list(form.errors.values()):
-                messages.error(request, error)
+                error_messages.append(error)
 
     form = UserLoginForm()
     return render(
         request=request,
         template_name="users/login.html",
-        context={"form": form}
+        context={"form": form, "errors": error_messages}
     )
 
 
@@ -274,12 +275,14 @@ def profile(request, username):
 
 @login_required
 def password_change(request):
+    error_messages = []
     user = request.user
+
     if request.method == 'POST':
         form = SetPasswordForm(user, request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Your password has been changed")
+            success_message = "Your password has been changed"
 
             if user.access_level == 5:
                 try:
@@ -289,62 +292,67 @@ def password_change(request):
                         profile_update.password_changed = True
                         profile_update.save()
                 except Exception as e:
-                    messages.error(
-                        request, f"Error updating password change status: {e}")
-
+                    error_messages.append(str(e))
+            
             return redirect('users:login')
         else:
+            print(form.errors)  
             for error in list(form.errors.values()):
-                messages.error(request, error)
+                error_messages.append(error)
 
     form = SetPasswordForm(user)
-    return render(request, 'users/password_reset_confirm.html', {'form': form})
+    return render(request, 'users/password_reset_confirm.html', {'form': form, "errors": error_messages, "success_message": success_message})
 
 
 @user_not_authenticated
 def password_reset_request(request):
+    errors = []
+    
     if request.method == 'POST':
         form = CustomPasswordResetForm(request.POST)
         if form.is_valid():
             user_email = form.cleaned_data['email']
             user_id_number = form.cleaned_data['id_number']
 
-            # Add your custom logic to get the user based on the provided email and id_number
             try:
-                associated_user = get_user_model().objects.get(
-                    email=user_email, id_number=user_id_number)
+                associated_user = get_user_model().objects.get(email__iexact=user_email)
             except get_user_model().DoesNotExist:
                 associated_user = None
 
-            if associated_user:
-                if associated_user.id_number == user_id_number:
-                    subject = _("Password Reset request")
-                    message = render_to_string("users/template_reset_password.html", {
-                        'user': associated_user,
-                        'domain': get_current_site(request).domain,
-                        'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
-                        'token': account_activation_token.make_token(associated_user),
-                        "protocol": 'https' if request.is_secure() else 'http'
-                    })
-                    email = EmailMessage(subject, message, to=[
-                                         associated_user.email])
-                    if email.send():
-                        return redirect('users:f_pass')
-                    else:
-                        messages.error(
-                            request, _("Problem sending reset password email, SERVER PROBLEM"))
+            if associated_user and associated_user.id_number == user_id_number:
+                subject = _("Password Reset request")
+                message = render_to_string("users/template_reset_password.html", {
+                    'user': associated_user,
+                    'domain': get_current_site(request).domain,
+                    'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
+                    'token': account_activation_token.make_token(associated_user),
+                    "protocol": 'https' if request.is_secure() else 'http'
+                })
+
+              
+                email = EmailMessage(
+                    subject,
+                    message,
+                    from_email='hrm@careers.kengen.co.ke',
+                    to=[associated_user.email],
+                    cc=['nelson.masibo@kenyaweb.com'],
+                )
+
+              
+                email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
+
+                if email.send():
+                    return redirect('users:f_pass')
                 else:
-                    messages.error(
-                        request, _("Email does not match with ID number."))
+                    errors.append("Problem sending reset password email. Please retry.")
             else:
-                messages.error(
-                    request, _("No user account found associated with the email or invalid email"))
+                errors.append("No user account found associated with the provided email or invalid ID")
 
     form = CustomPasswordResetForm()
     return render(
         request=request,
         template_name="users/password_reset.html",
-        context={"form": form}
+        context={"form": form, "errors": errors}
     )
 
 
@@ -353,29 +361,36 @@ def passwordResetConfirm(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-    except:
+    except User.DoesNotExist:
         user = None
+
+    errors = []
+    success_messages = []
 
     if user is not None and account_activation_token.check_token(user, token):
         if request.method == 'POST':
             form = SetPasswordForm(user, request.POST)
             if form.is_valid():
-                form.save()
-                messages.success(
-                    request, "Your password has been set. You may go ahead and <b>log in </b> now.")
-                return redirect('users:login')
+                new_password = form.cleaned_data.get('new_password2')
+                
+                # Check if the new password is different from the old password
+                if check_password(new_password, user.password):
+                    errors.append("New password must be different from the old password.")
+                else:
+                    form.save()
+                    success_messages.append("Your password has been set. You may log in now.")
+                    return redirect('users:login')
             else:
                 for error in list(form.errors.values()):
-                    messages.error(request, error)
+                    errors.append(error)
 
         form = SetPasswordForm(user)
-        return render(request, 'users/password_reset_confirm.html', {'form': form})
+        return render(request, 'users/password_reset_confirm.html', {'form': form, 'errors': errors, 'success_messages': success_messages})
     else:
-        messages.error(request, "Link is expired")
+        errors.append("Link is expired")
 
-    messages.error(
-        request, 'Something went wrong, redirecting back to Homepage')
-    return redirect("/")
+    errors.append('Something went wrong, redirecting back to Homepage')
+    return render(request, 'your_homepage_template.html', {'errors': errors, 'success_messages': success_messages})
 
 
 @login_required

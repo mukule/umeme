@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-h0s!-rriaajvd%^-4+pns(nk1@pg=dj59+-6d3m##@ve13b@m)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'vacancies',
     'hr',
     'ckeditor',
+    'error_handling',
 
 ]
 
