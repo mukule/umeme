@@ -115,11 +115,16 @@ class UserLoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput(
         attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
-
 class SetPasswordForm(SetPasswordForm):
+    old_password = forms.CharField(
+        label=("Current Password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'current-password'}),
+    )
+
     class Meta:
         model = get_user_model()
-        fields = ['new_password1', 'new_password2']
+        fields = ['old_password', 'new_password1', 'new_password2']
 
 
 class CustomPasswordResetForm(PasswordResetForm):

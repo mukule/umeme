@@ -44,7 +44,7 @@ def not_authorized(request):
     )
 
 
-# Create your views here.
+
 @user_not_authenticated
 def register(request):
     if request.method == "POST":
@@ -54,7 +54,11 @@ def register(request):
             user.is_active = False
             user.save()
             activateEmail(request, user, form.cleaned_data.get('email'))
-            return redirect('/')
+            
+            success_message = f'Dear {user}, please go to your email {form.cleaned_data.get("email")} inbox and click on the received activation link to confirm and complete the registration. Note: Check your spam folder.'
+            
+            messages.success(request, success_message)
+            return redirect('users:register')
 
         else:
             for error in list(form.errors.values()):
@@ -71,25 +75,27 @@ def register(request):
 
 
 def activateEmail(request, user, to_email):
-    mail_subject = 'Activate your user account.'
+    mail_subject = 'KenGen Careers Portal - Activate your user account.'
     message = render_to_string('users/template_activate_account.html', {
-        'user': user.username,
+        'user': user,
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': account_activation_token.make_token(user),
         'protocol': 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(mail_subject, message, to=[to_email])
+    email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke', to=[to_email], cc=['nelson.masibo@kenyaweb.com'],)
+    email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
+    
     if email.send():
-        messages.success(request, f'Dear <b>{user}</b>, please go to you email <b>{to_email}</b> inbox and click on \
-            received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.')
+        return True
     else:
-        messages.error(
-            request, f'Problem sending confirmation email to {to_email}, check if you typed it correctly.')
+        return False
 
 
 def activate(request, uidb64, token):
     User = get_user_model()
+    success_message = error_message = None
+
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -100,14 +106,19 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
 
-        messages.success(
-            request, 'Thank you for your email confirmation. Now you can login your account.')
+        success_message = 'Thank you for your email confirmation. Now you can log in to your account.'
+        messages.success(request, success_message)
         return redirect('users:login')
+    
+        
     else:
-        messages.error(request, 'Activation link is invalid!')
+        error_message = 'Activation link is invalid, or has expired, Please Conduct admin for more Details'
 
-    return redirect('/')
-
+    return render(
+        request=request,
+        template_name="main/index.html",
+        context={"error_message": error_message}
+    )
 
 def secure(request, uidb64, token):
     User = get_user_model()
@@ -124,7 +135,7 @@ def secure(request, uidb64, token):
         # Log in the user
         login(request, user)
 
-        messages.success(request, 'Gracious, Change Password Now and Apply .')
+        messages.success(request, 'Password Updated succesfully.')
         return redirect('users:password_change')
     else:
         messages.error(request, 'Password change link is invalid!')
@@ -171,6 +182,7 @@ logger = logging.getLogger(__name__)
 @user_not_authenticated
 def custom_login(request):
     error_messages = []
+    
     if request.method == "POST":
         form = UserLoginForm(request=request, data=request.POST)
         if form.is_valid():
@@ -181,7 +193,7 @@ def custom_login(request):
 
             if user is not None:
                 if user.access_level == 5:
-                    # Check if the user's password has been changed in ProfileUpdate
+                   
                     try:
                         profile_update, created = ProfileUpdate.objects.get_or_create(
                             user=user, defaults={'password_changed': False})
@@ -194,7 +206,6 @@ def custom_login(request):
                             f"Error checking or creating ProfileUpdate: {e}")
 
                 if user.access_level != 5 or (user.access_level == 5 and profile_update.password_changed):
-                    # Log in users with access level other than 5 and level 5 with changed password
                     login(request, user)
 
                     if user.access_level in (1, 2, 3, 4):
@@ -238,7 +249,10 @@ def sendActivationLink(request, user, to_email):
         'token': account_activation_token.make_token(user),
         'protocol': 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(mail_subject, message, to=[to_email])
+    email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke', to=[to_email], cc=['nelson.masibo@kenyaweb.com'],)
+    email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
+
+    
     if email.send():
         messages.success(
             request, f'Hello <b>{user},an email has been sent to {to_email}')
@@ -281,7 +295,22 @@ def password_change(request):
     if request.method == 'POST':
         form = SetPasswordForm(user, request.POST)
         if form.is_valid():
+            old_password = form.cleaned_data['old_password']
+            new_password1 = form.cleaned_data['new_password1']
+
+            # Check if the old password matches the user's current password
+            if not user.check_password(old_password):
+                messages.error(request, "Your Current password is incorrect.")
+                return redirect('users:password_change')
+
+            # Check if the new password is the same as the old password
+            if old_password == new_password1:
+                messages.error(request, "Your new password must be different from the Current password.")
+                return redirect('users:password_change')
+
+            # Save the new password
             form.save()
+
             success_message = "Your password has been changed"
 
             if user.access_level == 5:
@@ -293,15 +322,15 @@ def password_change(request):
                         profile_update.save()
                 except Exception as e:
                     error_messages.append(str(e))
-            
+
+            messages.success(request, success_message)
             return redirect('users:login')
         else:
-            print(form.errors)  
             for error in list(form.errors.values()):
-                error_messages.append(error)
+                messages.error(request, error)
 
     form = SetPasswordForm(user)
-    return render(request, 'users/password_reset_confirm.html', {'form': form, "errors": error_messages, "success_message": success_message})
+    return render(request, 'users/password_reset_confirm.html', {'form': form, "errors": error_messages})
 
 
 @user_not_authenticated

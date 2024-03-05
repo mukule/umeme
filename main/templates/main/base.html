@@ -51,8 +51,8 @@
 
 <body>
     {% include 'main/includes/navbar.html' %}
-    {% include '../main/includes/messaging.html' %}
-    
+    <!-- {% include '../main/includes/messaging.html' %}
+     -->
     {% block content %}
     
     {% endblock content %}
@@ -406,6 +406,22 @@
                 $('#show_hide_password i').addClass("bx-show");
             }
         });
+    });
+</script>
+
+<!-- Check if there is an error message and display a Bootstrap alert -->
+<script>
+    $(document).ready(function(){
+        {% if error_message %}
+            var errorMessage = '{{ error_message|escapejs }}';  // Escape JavaScript special characters
+            var alertHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                                errorMessage +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                                    '<span aria-hidden="true">&times;</span>' +
+                                '</button>' +
+                            '</div>';
+            $('body').prepend(alertHtml);
+        {% endif %}
     });
 </script>
 

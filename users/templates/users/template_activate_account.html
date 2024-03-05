@@ -1,7 +1,13 @@
 {% autoescape off %}
-Hi {{ user.username }},
+Dear {{ user.first_name }} {{ user.last_name }},
 
-Please click on the link below to confirm your registration:
+This is an email after you registered with KenGen Careers Portal. If this email is not meant for you, kindly trash it.
+
+To activate your account, Please click on the link below
 
 http://{{ domain }}{% url 'users:activate' uidb64=uid token=token %}
+
+Regards,
+KenGen Careers Portal
+
 {% endautoescape %}

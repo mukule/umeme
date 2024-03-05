@@ -27,7 +27,17 @@
                                         {% endfor %}
                                     </div>
                                 {% endif %}
-                                
+
+                                {% if messages %}
+                                {% for message in messages %}
+                                    {% if message.tags == 'success' %}
+                                        <div class="alert alert-success alert-dismissible" role="alert">
+                                           
+                                            {{ message|safe|escape }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
                                     <form method="POST">
                                         {% csrf_token %}
                                         <fieldset class="form-group">

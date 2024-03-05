@@ -13,11 +13,20 @@
                             <div class="col-lg-12">
                                 <div class="p-5">
                                     <div class="text-center mb-3">
-                                        <a href="#" style="width: 50; height: 50;" class="text-dark font-size-22 font-family-secondary">
-                                            <i class="fas fa-user-alt"></i>
+                                        <a href="#" class="text-dark font-size-22 font-family-secondary">
+                                            <i class="fas fa-user-alt" style="font-size: 50px; color: #703B97;"></i>
                                         </a>
                                     </div>
                                     <h1 class="h5 mb-4 text-center">Register</h1>
+
+                                    {% if messages %}
+                                    <div class="alert alert-info text-center" role="alert" >
+                                        {% for message in messages %}
+                                            {{ message }}
+                                            <br>
+                                        {% endfor %}
+                                    </div>
+                                    {%endif%}
                                     <form method="POST">
                                         {% csrf_token %}
                                         <div class="row">

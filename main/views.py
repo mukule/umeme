@@ -653,7 +653,7 @@ def delete_professional_summary(request):
 
 @login_required
 def terms(request):
-    # Retrieve the terms and conditions from the database
+   
     user = request.user
     print(user)
 

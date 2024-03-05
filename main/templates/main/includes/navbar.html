@@ -18,35 +18,30 @@
         <div class="d-flex align-items-center">
         
                            
-        
             <div class="dropdown d-inline-block ml-2">
-                <button type="button" class="btn header-item waves-effect waves-light" id="page-header-user-dropdown"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {% if user.is_authenticated %}
-                    <img class="rounded-circle header-profile-user" src="{{ user.profile.url }}"
-                                        alt="Profile Pic">
-                    <span class="d-none d-sm-inline-block ml-1">  {{ user.username }}</span>
-                    <i class="mdi mdi-chevron-down d-none d-sm-inline-block"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item d-flex align-items-center justify-content-between" href="javascript:void(0)">
-                        <span><a href="{% url 'users:logout' %}">Logout</a></span>
-                    </a>
-                    <a class="dropdown-item d-flex align-items-center justify-content-between" href="javascript:void(0)">
-                        <span><a href="{% url 'users:profile' user.username %}">My Profile</a></span>
-                    </a>
-                </div>
+                {% if user.is_authenticated %}
+                    <button type="button" class="btn header-item waves-effect waves-light" id="page-header-user-dropdown"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img class="rounded-circle header-profile-user" src="{{ user.profile.url }}" alt="Profile Pic">
+                        <span class="d-none d-sm-inline-block ml-1">{{ user.username }}</span>
+                        <i class="mdi mdi-chevron-down d-none d-sm-inline-block"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item d-flex align-items-center justify-content-between" href="{% url 'users:logout' %}">
+                            <span>Logout</span>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center justify-content-between" href="{% url 'users:profile' user.username %}">
+                            <span>My Profile</span>
+                        </a>
+                    </div>
                 {% else %}
-            </div>
-           
-                <a href="{% url 'users:login' %}" class="logo">
-                    <i class="fas fa-unlock-alt"></i>
-                     <span>
-                      Login
-                     </span>
-                 </a>
-     
+                    <a href="{% url 'users:login' %}" class="logo">
+                        <i class="fas fa-unlock-alt"></i>
+                        <span>Login</span>
+                    </a>
                 {% endif %}
+            </div>
+            
            
             
         </div>
@@ -61,7 +56,7 @@
                     {% if user.is_authenticated and user.access_level == 5 %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'vacancies:internal' %}">
-                            Jobs
+                            Home
                         </a>
                     </li>
                     <li class="nav-item">
@@ -74,7 +69,7 @@
                         {% if not user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="/">
-                                Jobs
+                                Home
                             </a>
                         </li>
                     {% endif %}
@@ -109,11 +104,13 @@
                 {% endif %}
             {% endif %}
 
+                {% if user.is_authenticated %}
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'main:terms' %}">
-                      T&Cs
-                  </a>
-              </li>
+                    <a class="nav-link" href="{% url 'main:terms' %}">
+                        T&Cs
+                    </a>
+                </li>
+                {%  endif %}
 
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'main:how' %}">
