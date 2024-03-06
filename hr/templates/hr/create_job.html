@@ -39,16 +39,27 @@
                             </div>
                             {% endif %}
                             <div class="form-group row">
-                                <label for="{{ form.vacancy_title.id_for_label }}" class="col-sm-2 col-form-label">Vacancy</label>
-                                <div class="col-sm-5">
+                                <label for="{{ form.vacancy_title.id_for_label }}" class="col-sm-2 col-form-label text-right">Vacancy Title:</label>
+                                <div class="col-sm-10">
                                     {{ form.title|as_crispy_field }}
                                 </div>
-                                <div class="col-sm-5">
+                               
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.vacancy_title.id_for_label }}" class="col-sm-2 col-form-label text-right">Job Ref No:</label>
+    
+                                <div class="col-sm-10">
                                     {{ form.ref|as_crispy_field }}
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="{{ form.job_summary.id_for_label }}" class="col-sm-2 col-form-label">Job Description</label>
+                                <label for="{{ form.job_type.id_for_label }}" class="col-sm-2 col-form-label">Nature of Job</label>
+                                <div class="col-sm-10">
+                                    {{ form.vacancy_type|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.job_summary.id_for_label }}" class="col-sm-2 col-form-label text-right">Job Description</label>
                                 <div class="col-sm-10">
                                     {{ form.description|as_crispy_field }}
                                 </div>

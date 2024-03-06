@@ -3,8 +3,10 @@ from vacancies.models import *
 from django.contrib.auth.forms import UserCreationForm
 from users.models import CustomUser
 from ckeditor.widgets import CKEditorWidget
-
 from django import forms
+from vacancies.models import *
+
+VACANCY_CHOICES = [('', 'Select Vacancy Type')] + list(Vacancy.VACANCY_TYPES)
 
 
 class VacancyForm(forms.ModelForm):
@@ -12,7 +14,7 @@ class VacancyForm(forms.ModelForm):
         model = Vacancy
         fields = '__all__'
         widgets = {
-            'vacancy_type': forms.Select(attrs={'class': 'form-control'}),
+            'vacancy_type': forms.Select(attrs={'class': 'form-control'}, choices=VACANCY_CHOICES),
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vacancy Title'}),
             'ref': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vacancy Reference'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Opportunity Description'}),
