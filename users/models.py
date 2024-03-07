@@ -32,11 +32,11 @@ class CustomUser(AbstractUser):
 
     access_level = models.PositiveIntegerField(
         choices=ACCESS_LEVEL_CHOICES,
-        default=0,  # Default to 0 for "None" or "Not Specified"
+        default=0,
     )
     function = models.PositiveIntegerField(
         choices=FUNCTION_CHOICES,
-        default=0,  # Default to 0 for "Not Specified"
+        default=0,
     )
 
     id_number = models.CharField(

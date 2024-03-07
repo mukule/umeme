@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'users',
     'vacancies',
     'hr',
-    'ckeditor',
+    'tinymce',
     'error_handling',
 
 ]
@@ -162,18 +162,3 @@ DEFAULT_FROM_EMAIL = 'nelson@kenyaweb.co.ke'
 
 ADMIN_EMAIL = 'nelson@kenyaweb.co.ke'
 PASSWORD_RESET_TIMEOUT = 1800  # 4 hrs
-
-
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'Custom',
-        'height': 300,
-        'width': 300,
-        'toolbar_Custom': [
-            ['Bold', 'Italic', 'Underline'],
-            ['NumberedList', 'BulletedList'],
-            ['Link', 'Unlink'],
-        ],
-    },
-}

@@ -1,7 +1,6 @@
 from django.db import models
 from users.models import *
 
-# Create your models here.
 
 
 class JobDiscipline(models.Model):
@@ -14,7 +13,7 @@ class JobDiscipline(models.Model):
 class Vacancy(models.Model):
     VACANCY_TYPES = (
         ('Internal', 'Internal'),
-        ('Employment', 'Career'),
+        ('Careers', 'Career'),
         ('Internship', 'Internship'),
         ('Attachment', 'Attachment'),
     )
@@ -37,6 +36,9 @@ class Vacancy(models.Model):
     certifications_required = models.BooleanField(default=False)
     college_required = models.BooleanField(default=False)
     membership_required = models.BooleanField(default=False)
+    created_by = models.CharField(max_length=255, null=True, blank=True)
+    last_updated_by = models.CharField(max_length=255, null=True, blank=True)
+
 
     def __str__(self):
         return self.title

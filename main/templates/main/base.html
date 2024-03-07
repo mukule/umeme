@@ -24,6 +24,7 @@
         <script src="{% static 'chartjs-plugin-datalabels.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+        <script src="https://cdn.tiny.cloud/1/lerfxjpprarjgvet77nm4cfqug2ijiszwy5cutphytaygx9g/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
         <style>
         
             #alert-container {
@@ -414,7 +415,7 @@
 <script>
     $(document).ready(function(){
         {% if error_message %}
-            var errorMessage = '{{ error_message|escapejs }}';  // Escape JavaScript special characters
+            var errorMessage = '{{ error_message|escapejs }}';
             var alertHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
                                 errorMessage +
                                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
@@ -425,6 +426,40 @@
         {% endif %}
     });
 </script>
+
+<script>
+    tinymce.init({
+       selector: '#mce1',
+       theme: 'silver',
+       force_br_newlines : false,
+       force_p_newlines : false,
+       forced_root_block : '',
+       width: '100%',	
+     
+       plugins: [
+         'advlist autolink link lists  print preview hr  spellchecker',
+         'searchreplace wordcount visualblocks visualchars  fullscreen',
+         'save contextmenu directionality emoticons paste textcolor'
+       ],
+       toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | print preview  fullpage | forecolor backcolor emoticons'
+     }); 
+
+     tinymce.init({
+       selector: '#mce2',
+       theme: 'silver',
+       force_br_newlines : false,
+       force_p_newlines : false,
+       forced_root_block : '',
+       width: '100%',	
+     
+       plugins: [
+         'advlist autolink link lists  print preview hr  spellchecker',
+         'searchreplace wordcount visualblocks visualchars  fullscreen',
+         'save contextmenu directionality emoticons paste textcolor'
+       ],
+       toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | print preview  fullpage | forecolor backcolor emoticons'
+     }); 
+       </script>
 
 
 </body>

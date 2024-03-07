@@ -1,0 +1,165 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0 font-size-18">Dashboard</h4>
+
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="{% url 'hr:jobs' %}">Vacancies</a></li>
+                            <li class="breadcrumb-item active">Vacancy Details</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center mb-2" style="color: #FD7E14;">Vacancy Details - {{job.title}} - {{job.ref}}</h2>
+
+                        <div class="row mt-4">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Vacancy Title:</p></label>
+                            <div class="col-sm-10">
+                               {{job.title}}
+                            </div>
+                           
+                        </div>
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Job Ref No.:</p></label>
+                            <div class="col-sm-10">
+                               {{job.ref}}
+                            </div>
+                           
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Job Type:</p></label>
+                            <div class="col-sm-10">
+                               {{job.vacancy_type}}
+                            </div>
+                           
+                        </div>
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Job Description:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.description|safe }}
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Job Descipline:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.job_discipline}}
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Responsibilities:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.position_responsibilities|safe }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Reports To:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.reports_to }}
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Posts Needed:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.posts_needed }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Date Open:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.date_open }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Date Close:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.date_close }}
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Created By</p></label>
+                            <div class="col-sm-10">
+                                {{ job.created_by }}
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>last updated By</p></label>
+                            <div class="col-sm-10">
+                                {%if job.last_updated_by %}
+                                {{ job.last_updated_by }}
+                                {%else%}
+                                Not Updated
+                                {%endif%}
+                            </div>
+                        </div>
+                       
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Min Education Level:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.min_educational_level }}
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <label class="col-sm-2 text-right" style="font-size: 16px; font-weight: bold;"><p>Minimum Work Experience:</p></label>
+                            <div class="col-sm-10">
+                                {{ job.min_work_experience }}
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="row mt-1">
+                            {%if job.certifications_required%}
+                            <div class="col-sm-3">
+                               Certifications Required
+                            </div>
+                            {%endif%}
+                            {%if job.college_required%}
+                            <div class="col-sm-3">
+                               College/University/Higher Education Required
+                            </div>
+                            {%endif%}
+                            {%if job.membership_required%}
+                            <div class="col-sm-3">
+                               Membership Required
+                            </div>
+                            {%endif%}
+                        </div>
+                        
+                    </div>
+                    <div class="card-footer text-center">
+                        <div class="form-group row text-center">
+                            <div class="col-sm-12 offset-sm-12 text-center">
+                                <a href="{% url 'hr:edit_job' job.id %}" class="btn btn-primary">Edit Vacancy<a>
+                               
+                                <a href="{% url 'hr:jobs' %}" class="btn btn-primary ml-2">Back to Jobs</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+               
+            </div>
+
+           
+        </div>
+       
+    </div>
+</div>
+{% endblock content %}

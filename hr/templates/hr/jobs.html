@@ -71,27 +71,29 @@
                                 <table class="table table-sm table-hover mb-0">
                                     <thead>
                                         <tr>
+                                            <th>#</th>
                                             <th>Position</th>
                                             <th>Date Open</th>
                                             <th>Date Close</th>
                                             <th>Category</th>
                                             <th>Type</th>
-                                            <th>Applications</th>
+                                            <th>Applied</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Loop through job vacancies -->
+                                        
                                         {% for job in jobs %}
                                             <tr>
-                                                <td>{{ job.title }}</td>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td><a href="{% url 'hr:job_detail' job.id %}">{{ job.title }}</a></td>
                                                 <td>{{ job.date_open }}</td>
                                                 <td>{{ job.date_close }}</td>
                                                 <td>{{ job.job_discipline }}</td>
                                                 <td>{{ job.vacancy_type }}</td>
                                                 <td>{{ job.application_count }}</td>
                                                 <td>
-                                                    <!-- Actions for each job -->
+                                                    
                                                     {% if job.published %}
                                                     <a href="{% url 'hr:publish' job.id %}">
                                                         <i class="fas fa-eye-slash text-danger" title="Unpublish"></i>
@@ -116,11 +118,14 @@
                         {% else %}
                             <p class="text-center">No jobs available at the moment.</p>
                         {% endif %}
+                       
+                    </div>
+                    <div class="card-footer">
                         <div class="text-center">
                             <a href="{% url 'hr:create_job' %}" class="btn btn-primary active">Add New</a>
                         </div>
                     </div>
-                    <!-- end card-body-->
+                  
                 </div>
                 <!-- end card -->
             </div>

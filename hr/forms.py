@@ -2,23 +2,52 @@ from django import forms
 from vacancies.models import *
 from django.contrib.auth.forms import UserCreationForm
 from users.models import CustomUser
-from ckeditor.widgets import CKEditorWidget
+from tinymce.widgets import TinyMCE
 from django import forms
 from vacancies.models import *
 
-VACANCY_CHOICES = [('', 'Select Vacancy Type')] + list(Vacancy.VACANCY_TYPES)
-
-
 class VacancyForm(forms.ModelForm):
+    VACANCY_CHOICES = [('', '-- Select Nature of Job --')] + list(Vacancy.VACANCY_TYPES)
+
+    vacancy_type = forms.ChoiceField(
+        choices=VACANCY_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True,
+        label=''
+    )
+
+    min_educational_level = forms.ModelChoiceField(
+        queryset=EducationalLevel.objects.all(),
+        empty_label='--Select Minimum Education Level--',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True,
+        label='Educational Level'
+    )
+
+    job_discipline = forms.ModelChoiceField(
+        queryset=JobDiscipline.objects.all(),
+        empty_label='--Select Job Discipline--',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True,
+        label=''
+    )
+
+    position_responsibilities = forms.CharField(
+        widget=TinyMCE(attrs={'id': 'mce1', 'class': 'form-control'}),
+        label=''
+    )
+
+    description = forms.CharField(
+        widget=TinyMCE(attrs={'id': 'mce2', 'class': 'form-control'}),
+        label=''
+    )
+
     class Meta:
         model = Vacancy
         fields = '__all__'
         widgets = {
-            'vacancy_type': forms.Select(attrs={'class': 'form-control'}, choices=VACANCY_CHOICES),
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vacancy Title'}),
             'ref': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vacancy Reference'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Opportunity Description'}),
-            'position_responsibilities': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Position Responsibilities'}),
             'reports_to': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Reports To'}),
             'date_open': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Open', 'type': 'date'}),
             'date_close': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Close', 'type': 'date'}),
@@ -32,11 +61,8 @@ class VacancyForm(forms.ModelForm):
             'membership_required': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         labels = {
-            'vacancy_type': '',
             'title': '',
             'ref': '',
-            'description': '',
-            'position_responsibilities': 'Position Responsibilities',
             'reports_to': 'Reports to',
             'date_open': 'Date Open',
             'date_close': 'Date Close',
@@ -138,4 +164,4 @@ class AdminForm(UserCreationForm):
 
 
 class TermsForm(forms.Form):
-    text = forms.CharField(widget=CKEditorWidget(attrs={'id': 'terms_text'}))
+    text = forms.CharField(widget=TinyMCE(attrs={'id': 'mce3', 'class': 'form-control'})),

@@ -109,15 +109,28 @@ def create_job(request):
     if request.method == 'POST':
         form = VacancyForm(request.POST)
         if form.is_valid():
-            vacancy = form.save()
-            messages.success(
-                request, f'Vacancy "{vacancy.title}" created successfully.')
+            vacancy = form.save(commit=False)
+            user = request.user
+            vacancy.created_by = f'{user.first_name} {user.last_name}' if user.first_name and user.last_name else user.username
+            vacancy.save()
+            messages.success(request, f'Vacancy "{vacancy.title}" created successfully.')
             return redirect('hr:jobs')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'Error in {field}: {error}')
     else:
         form = VacancyForm()
 
     context = {'form': form}
     return render(request, 'hr/create_job.html', context)
+
+@admins
+def job_detail(request, vacancy_id):
+    job = get_object_or_404(Vacancy, pk=vacancy_id)
+
+    context = {'job': job}
+    return render(request, 'hr/job_detail.html', context)
 
 
 @system_admin_hr_publish_required
