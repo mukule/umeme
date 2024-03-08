@@ -23,10 +23,10 @@ def jobs(request):
     current_date = date.today()  # Get the current date
 
     jobs = Vacancy.objects.filter(
-        vacancy_type='employment',
+        vacancy_type='Careers',
         published=True,
-        date_open__lte=current_date,  # Filter for open jobs based on date
-        date_close__gte=current_date,  # Filter for open jobs based on date
+        date_open__lte=current_date,  
+        date_close__gte=current_date,  
     )
 
     if search_query:

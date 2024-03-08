@@ -149,32 +149,6 @@ def generate_random_password(length=10):
     return password
 
 
-@user_passes_test(is_system_admin, login_url='users:not_authorized')
-def hrs(request):
-    if request.method == "POST":
-        form = PortalManagementForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=True)
-            access_level_display = user.get_access_level_display()
-            success_message = f'{access_level_display} user created successfully.'
-            messages.success(request, success_message)
-            return redirect('/')
-        else:
-            for error in list(form.errors.values()):
-                messages.error(request, error)
-    else:
-        initial_password = generate_random_password()  # Generate the initial password
-        form = PortalManagementForm(
-            initial={'password1': initial_password, 'password2': initial_password})
-
-        print(initial_password)
-
-    return render(
-        request=request,
-        template_name="admin/hrs.html",
-        context={"form": form, "initial_password": initial_password}
-    )
-
 
 logger = logging.getLogger(__name__)
 
@@ -393,33 +367,29 @@ def passwordResetConfirm(request, uidb64, token):
     except User.DoesNotExist:
         user = None
 
-    errors = []
-    success_messages = []
-
     if user is not None and account_activation_token.check_token(user, token):
         if request.method == 'POST':
-            form = SetPasswordForm(user, request.POST)
+            form = ResetPasswordForm(user, request.POST)
             if form.is_valid():
                 new_password = form.cleaned_data.get('new_password2')
                 
-                # Check if the new password is different from the old password
                 if check_password(new_password, user.password):
-                    errors.append("New password must be different from the old password.")
+                    messages.error(request, "New password must be different from the old password.")
                 else:
                     form.save()
-                    success_messages.append("Your password has been set. You may log in now.")
+                    messages.success(request, "Your password has been set. You may log in now.")
                     return redirect('users:login')
             else:
                 for error in list(form.errors.values()):
-                    errors.append(error)
+                    messages.error(request, error)
 
-        form = SetPasswordForm(user)
-        return render(request, 'users/password_reset_confirm.html', {'form': form, 'errors': errors, 'success_messages': success_messages})
+        form = ResetPasswordForm(user)
+        return render(request, 'users/password_change.html', {'form': form})
     else:
-        errors.append("Link is expired")
+        messages.error(request, "Link is expired")
 
-    errors.append('Something went wrong, redirecting back to Homepage')
-    return render(request, 'your_homepage_template.html', {'errors': errors, 'success_messages': success_messages})
+    messages.error(request, 'Something went wrong, redirecting back to Homepage')
+    return render('/')
 
 
 @login_required

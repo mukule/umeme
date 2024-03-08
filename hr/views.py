@@ -88,9 +88,14 @@ def edit_job(request, job_id):
     if request.method == 'POST':
         form = VacancyForm(request.POST, instance=job)
         if form.is_valid():
+            user = request.user
+            job.last_updated_by = f'{user.first_name} {user.last_name}' if user.first_name and user.last_name else user.username
             form.save()
             messages.success(request, 'Vacancy updated successfully')
             return redirect('hr:jobs')
+        else:
+            # Add error messages for invalid form data
+            messages.error(request, 'Error updating vacancy. Please correct the errors below.')
     else:
         form = VacancyForm(instance=job)
 
@@ -133,7 +138,8 @@ def job_detail(request, vacancy_id):
     return render(request, 'hr/job_detail.html', context)
 
 
-@system_admin_hr_publish_required
+# @system_admin_hr_publish_required
+@system_admin_hr_post_required
 def publish(request, job_id):
     job = Vacancy.objects.get(pk=job_id)
     job.published = not job.published

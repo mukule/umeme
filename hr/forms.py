@@ -7,14 +7,14 @@ from django import forms
 from vacancies.models import *
 
 class VacancyForm(forms.ModelForm):
-    VACANCY_CHOICES = [('', '-- Select Nature of Job --')] + list(Vacancy.VACANCY_TYPES)
+    # VACANCY_CHOICES = [('', '-- Select Nature of Job --')] + list(Vacancy.VACANCY_TYPES)
 
-    vacancy_type = forms.ChoiceField(
-        choices=VACANCY_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True,
-        label=''
-    )
+    # vacancy_type = forms.ChoiceField(
+    #     choices=VACANCY_CHOICES,
+    #     widget=forms.Select(attrs={'class': 'form-control'}),
+    #     required=True,
+    #     label=''
+    # )
 
     min_educational_level = forms.ModelChoiceField(
         queryset=EducationalLevel.objects.all(),

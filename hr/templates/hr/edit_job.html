@@ -13,7 +13,7 @@
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">Vacancy</a></li>
-                            <li class="breadcrumb-item active">Create Vacancy</li>
+                            <li class="breadcrumb-item active">Edit Vacancy</li>
                         </ol>
                     </div>
                     
@@ -24,52 +24,78 @@
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {% if form.errors %}
-                            <div class="alert alert-danger">
-                                <strong>Oops! There are errors in the form:</strong>
-                                <ul>
-                                    {% for field_errors in form.errors.values %}
-                                        {% for error in field_errors %}
-                                            <li>{{ error }}</li>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                        <h2 class="text-center mb-2">Edit Vacancy</h2>
+
+                        <div>
+                            {% if messages %}
+                            {% for message in messages %}
+                                {% if message.tags == 'success' %}
+                                    <div class="alert alert-success alert-dismissible" role="alert">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                        {{ message|safe|escape }}
+                                    </div>
+                                {% elif message.tags == 'error' %}
+                                    <div class="alert alert-danger alert-dismissible" role="alert">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                        {{ message|safe }}
+                                    </div>
+                                {% elif message.tags == 'info' %}
+                                    <div class="alert alert-info alert-dismissible" role="alert">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                        {{ message|safe|escape }}
+                                    </div>
+                                {% elif message.tags == 'warning' %}
+                                    <div class="alert alert-warning alert-dismissible" role="alert">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                        {{ message|safe|escape }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                             {% endif %}
+                        </div>
+                        <form method="post" enctype="multipart/form-data" class="mt-2">
+                            {% csrf_token %}
                             <div class="form-group row">
-                                <label for="{{ form.vacancy_title.id_for_label }}" class="col-sm-2 col-form-label">Vacancy</label>
-                                <div class="col-sm-5">
+                                <label for="{{ form.vacancy_title.id_for_label }}" class="col-sm-2 col-form-label text-right">Vacancy Title:</label>
+                                <div class="col-sm-10">
                                     {{ form.title|as_crispy_field }}
                                 </div>
-                                <div class="col-sm-5">
+                               
+                            </div>
+                            <div class="form-group row">
+                                <label for="{{ form.vacancy_title.id_for_label }}" class="col-sm-2 col-form-label text-right">Job Ref No:</label>
+    
+                                <div class="col-sm-10">
                                     {{ form.ref|as_crispy_field }}
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="{{ form.job_summary.id_for_label }}" class="col-sm-2 col-form-label">Job Description</label>
+                                <label for="{{ form.job_type.id_for_label }}" class="col-sm-2 col-form-label text-right">Nature of Job:</label>
                                 <div class="col-sm-10">
-                                    {{ form.description|as_crispy_field }}
+                                    {{ form.vacancy_type|as_crispy_field }}
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="{{ form.job_type.id_for_label }}" class="col-sm-2 col-form-label">Nature of Job</label>
-                                <div class="col-sm-5">
-                                    {{ form.vacancy_type|as_crispy_field }}
-                                </div>
-                                <div class="col-sm-5">
+                                <label for="{{ form.job_type.id_for_label }}" class="col-sm-2 col-form-label text-right">Vacancy Type:</label>
+                                <div class="col-sm-10">
                                     {{ form.job_discipline|as_crispy_field }}
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="{{ form.job_description.id_for_label }}" class="col-sm-2 col-form-label">Position Responsibilities</label>
+                                <label for="{{ form.job_summary.id_for_label }}" class="col-sm-2 col-form-label text-right">Job Summery</label>
+                                <div class="col-sm-10">
+                                    {{ form.description|as_crispy_field }}
+                                </div>
+                            </div>
+                           
+                            <div class="form-group row">
+                                <label for="{{ form.job_description.id_for_label }}" class="col-sm-2 col-form-label text-right">Job Description</label>
                                 <div class="col-sm-10">
                                     {{ form.position_responsibilities|as_crispy_field }}
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="{{ form.posts_needed.id_for_label }}" class="col-sm-2 col-form-label">About Post</label>
+                                <label for="{{ form.posts_needed.id_for_label }}" class="col-sm-2 col-form-label text-right">About Post</label>
                                 <div class="col-sm-5">
                                     {{ form.posts_needed|as_crispy_field }}
                                 </div>
@@ -78,7 +104,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label">Duration</label>
+                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label text-right">Duration</label>
                                 <div class="col-sm-5">
                                     {{ form.date_open|as_crispy_field }}
                                 </div>
@@ -87,7 +113,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label">Requirements</label>
+                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label text-right">Requirements</label>
                                 <div class="col-sm-5">
                                     {{ form.min_educational_level|as_crispy_field }}
                                 </div>
@@ -95,23 +121,29 @@
                                     {{ form.min_work_experience|as_crispy_field }}
                                 </div>
                             </div>
+                            <div class="form-group-row text-center">
+                                <div class="h2">Optional Requirements</div>
+                            </div>
                             <div class="form-group row">
-                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label">Set Requirements</label>
+                                <label for="{{ form.date_open.id_for_label }}" class="col-sm-2 col-form-label text-right">Set Requirements</label>
                                 <div class="col-sm-3">
                                     {{ form.certifications_required|as_crispy_field }}
                                 </div>
                                 <div class="col-sm-3">
                                     {{ form.college_required|as_crispy_field }}
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 mb-2">
                                     {{ form.membership_required|as_crispy_field }}
                                 </div>
                             </div>
                             <div class="form-group row text-center">
-                                <div class="col-sm-10 offset-sm-2">
-                                    <button type="submit" class="btn btn-primary">submit</button>
+                                <div class="col-sm-12 offset-sm-12">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                   
+                                    <a href="{% url 'hr:jobs' %}" class="btn btn-primary ml-2">Cancel</a>
                                 </div>
                             </div>
+                            
                         </form>
                     </div>
                     <!-- end card-body-->

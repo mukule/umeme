@@ -66,44 +66,6 @@ class UserEditForm(forms.ModelForm):
             {'class': 'form-control', 'placeholder': 'Email Address'})
 
 
-class PortalManagementForm(UserCreationForm):
-    email = forms.EmailField(
-        help_text='A valid email address, please.', required=True)
-    access_level = forms.ChoiceField(
-        choices=CustomUser.ACCESS_LEVEL_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True,
-    )
-
-    class Meta:
-        model = get_user_model()
-        fields = ['username', 'email',
-                  'access_level', 'password1', 'password2']
-
-    def __init__(self, *args, **kwargs):
-        super(PortalManagementForm, self).__init__(
-            *args, **kwargs)  # Use correct form class name
-
-        # Add CSS classes to form fields
-        self.fields['username'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Username'})
-        self.fields['email'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Email Address'})
-        self.fields['access_level'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Access Level'})
-        self.fields['password1'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Password'})
-        self.fields['password2'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Confirm Password'})
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-        return user
-
-
 class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(UserLoginForm, self).__init__(*args, **kwargs)
@@ -125,6 +87,16 @@ class SetPasswordForm(SetPasswordForm):
     class Meta:
         model = get_user_model()
         fields = ['old_password', 'new_password1', 'new_password2']
+
+class ResetPasswordForm(SetPasswordForm):
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(user, *args, **kwargs)
+        # Remove the old_password field for password reset
+        del self.fields['old_password']
+
+    class Meta:
+        model = get_user_model()
+        fields = ['new_password1', 'new_password2']
 
 
 class CustomPasswordResetForm(PasswordResetForm):

@@ -10,15 +10,8 @@ class JobDiscipline(models.Model):
         return self.name
 
 
-class Vacancy(models.Model):
-    VACANCY_TYPES = (
-        ('Internal', 'Internal'),
-        ('Careers', 'Career'),
-        ('Internship', 'Internship'),
-        ('Attachment', 'Attachment'),
-    )
 
-    vacancy_type = models.CharField(max_length=20, choices=VACANCY_TYPES)
+class Vacancy(models.Model):
     title = models.CharField(max_length=255)
     ref = models.CharField(max_length=50, unique=True)
     description = models.TextField()
