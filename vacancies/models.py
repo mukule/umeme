@@ -9,9 +9,25 @@ class JobDiscipline(models.Model):
     def __str__(self):
         return self.name
 
+class JobType(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+    description = models.TextField()
+    banner = models.ImageField(upload_to='job_type_banners/', null=True, blank=True)
+    icon = models.ImageField(upload_to='job_type_icons/', null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def vacancy_count(self):
+        """
+        Calculate and return the count of vacancies for this job type.
+        """
+        return self.vacancy_set.count()
+
 
 
 class Vacancy(models.Model):
+    job_type = models.ForeignKey(JobType, on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=255)
     ref = models.CharField(max_length=50, unique=True)
     description = models.TextField()
