@@ -25,8 +25,8 @@ def jobs(request):
     jobs = Vacancy.objects.filter(
         vacancy_type='Careers',
         published=True,
-        date_open__lte=current_date,  
-        date_close__gte=current_date,  
+        date_open__lte=current_date,
+        date_close__gte=current_date,
     )
 
     if search_query:
@@ -103,7 +103,7 @@ def internships(request):
 def internship(request, vacancy_id):
     internship = get_object_or_404(
         Vacancy, id=vacancy_id, vacancy_type='internship', published=True)
-    
+
     user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
         user=request.user
     )
@@ -118,8 +118,8 @@ def attachments(request):
     attachments = Vacancy.objects.filter(
         vacancy_type='attachment',
         published=True,
-        date_open__lte=current_date,  
-        date_close__gte=current_date,  
+        date_open__lte=current_date,
+        date_close__gte=current_date,
     )
 
     if search_query:
@@ -153,7 +153,7 @@ def attachment(request, vacancy_id):
 
     context = {
         'vacancy': attachment,
-        'user_accepted_terms': user_accepted_terms, 
+        'user_accepted_terms': user_accepted_terms,
     }
     return render(request, 'vacancies/attachment.html', context)
 
@@ -231,22 +231,21 @@ def apply(request, vacancy_id):
             return redirect('vacancies:attachment', vacancy_id=vacancy_id)
         elif vacancy.vacancy_type == 'Internship':
             return redirect('vacancies:internship', vacancy_id=vacancy_id)
-        
+
     referee_count = Referee.objects.filter(user=request.user).count()
     if referee_count < 3:
-            if user.access_level != 5:
-                messages.error(
-                    request, 'You don\'t have enough referees to apply. 3 referees are required.')
-                if vacancy.vacancy_type == 'Internal':
-                    return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
-                elif vacancy.vacancy_type == 'Employment':
-                    return redirect('vacancies:job', vacancy_id=vacancy_id)
-                elif vacancy.vacancy_type == 'Attachment':
-                    return redirect('vacancies:attachment', vacancy_id=vacancy_id)
-                elif vacancy.vacancy_type == 'Internship':
-                    return redirect('vacancies:internship', vacancy_id=vacancy_id)
-   
-       
+        if user.access_level != 5:
+            messages.error(
+                request, 'You don\'t have enough referees to apply. 3 referees are required.')
+            if vacancy.vacancy_type == 'Internal':
+                return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
+            elif vacancy.vacancy_type == 'Employment':
+                return redirect('vacancies:job', vacancy_id=vacancy_id)
+            elif vacancy.vacancy_type == 'Attachment':
+                return redirect('vacancies:attachment', vacancy_id=vacancy_id)
+            elif vacancy.vacancy_type == 'Internship':
+                return redirect('vacancies:internship', vacancy_id=vacancy_id)
+
     # Get the user's resume and calculate total work experience
     user_resume = get_object_or_404(Resume, user=user)
     user_work_experience = WorkExperience.objects.filter(user=user)
@@ -390,9 +389,9 @@ def reapply_application(request, application_id):
             messages.error(
                 request, 'College/Further studies are required for this vacancy. Please add your further studies to apply.')
             return redirect_to_appropriate_vacancy_page(vacancy)
-        
+
         referee_count = Referee.objects.filter(user=request.user).count()
-      
+
         if referee_count < 3:
             if user.access_level != 5:
                 messages.error(
@@ -493,7 +492,6 @@ def internal(request):
             return render(request, 'main/pass_change.html')
     search_query = request.GET.get('search')
 
-    # Get the current date
     today = date.today()
 
     staff_vacancies = Vacancy.objects.filter(
@@ -526,8 +524,6 @@ def internal_detail(request, vacancy_id):
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
 
     user = request.user
-
-   
 
     user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
         user=user

@@ -100,6 +100,25 @@
 
         <div class="row">
             <div class="col-md-6 col-xl-3">
+                <div class="card border-primary">
+                   <a href="{% url 'hr:job_types' %}">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h5 class="card-title mb-0 text-center">
+                                <i class="fas fa-briefcase fa-3x"></i>
+                            </h5>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="card-title mb-0 text-center">Job Types</h5>
+                            </div>
+                        </div>
+                    </div>
+                   </a>
+                </div>
+            </div> <!-- end col-->
+
+            <div class="col-md-6 col-xl-3">
                 <a href="{% url 'hr:certifying_bodies' %}">
                     <div class="card border-primary">
                         <div class="card-body">
@@ -156,6 +175,11 @@
                 </div>
             </div> <!-- end col-->
 
+        </div>
+        <!-- end row -->
+
+        <div class="row">
+            
             <div class="col-md-6 col-xl-3">
                 <div class="card border-primary">
                     <a href="{% url 'hr:edu_levels' %}">
@@ -174,10 +198,7 @@
                     </a>
                 </div>
             </div> <!-- end col-->
-        </div>
-        <!-- end row -->
-
-        <div class="row">
+            
             <div class="col-md-6 col-xl-3">
                 <a href="{% url 'hr:ethnicities' %}">
                     <div class="card border-primary">
@@ -228,25 +249,6 @@
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <h5 class="card-title mb-0 text-center">Admin Logs</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div> <!-- end col-->
-
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-primary">
-                    <a href="{% url 'hr:portal_reports' %}">
-                        <div class="card-body">
-                            <div class="mb-4">
-                                <h5 class="card-title mb-0 text-center">
-                                    <i class="fas fa-chart-bar fa-3x"></i>
-                                </h5>
-                            </div>
-                            <div class="row mb-4">
-                                <div class-="col-12">
-                                    <h5 class="card-title mb-0 text-center">Portal Reports</h5>
                                 </div>
                             </div>
                         </div>
@@ -306,6 +308,25 @@
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <h5 class="card-title mb-0 text-center">Staffs</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div> <!-- end col-->
+
+            <div class="col-md-6 col-xl-3">
+                <a href="{% url 'hr:portal_reports' %}">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h5 class="card-title mb-0 text-center">
+                                    <i class="fas fa-chart-bar fa-3x"></i>
+                                </h5>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="card-title mb-0 text-center">System Reports</h5>
                                 </div>
                             </div>
                         </div>

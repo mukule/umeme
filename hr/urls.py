@@ -5,6 +5,12 @@ app_name = 'hr'
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
     path("system_users/", views.system_users, name="system_users"),
+    path("job_types/", views.job_types, name="job_types"),
+    path("create_job_type", views.create_job_type,
+         name="create_job_type"),
+    path('edit/<int:job_type_id>/', views.edit_job_type, name='edit_job_type'),
+    path('delete/<int:job_type_id>/',
+         views.delete_job_type, name='delete_job_type'),
     path("jobs/", views.jobs, name="jobs"),
     path("create_job/", views.create_job, name="create_job"),
     path('job_detail/<int:vacancy_id>/', views.job_detail, name='job_detail'),
@@ -72,8 +78,8 @@ urlpatterns = [
     path('reset_trials/<int:user_id>/', views.reset_trials, name='reset_trials'),
     path('delete_users/', views.delete_users_with_access_level_5,
          name='delete_users-staffs'),
-     path('hr_admins/', views.hr_admin,
+    path('hr_admins/', views.hr_admin,
          name='hr_admins'),
-     path('admins/<int:admin_id>/', views.admin_role, name='admin_role'),
-     
+    path('admins/<int:admin_id>/', views.admin_role, name='admin_role'),
+
 ]

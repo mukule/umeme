@@ -2,18 +2,20 @@ from django.db import models
 from users.models import *
 
 
-
 class JobDiscipline(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
 
+
 class JobType(models.Model):
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
-    banner = models.ImageField(upload_to='job_type_banners/', null=True, blank=True)
-    icon = models.ImageField(upload_to='job_type_icons/', null=True, blank=True)
+    banner = models.ImageField(
+        default='default/banner.jpg', upload_to='job_type_banners/', null=True, blank=True)
+    icon = models.ImageField(default='default/icon.png',
+                             upload_to='job_type_icons/', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -23,7 +25,6 @@ class JobType(models.Model):
         Calculate and return the count of vacancies for this job type.
         """
         return self.vacancy_set.count()
-
 
 
 class Vacancy(models.Model):
@@ -47,7 +48,6 @@ class Vacancy(models.Model):
     membership_required = models.BooleanField(default=False)
     created_by = models.CharField(max_length=255, null=True, blank=True)
     last_updated_by = models.CharField(max_length=255, null=True, blank=True)
-
 
     def __str__(self):
         return self.title

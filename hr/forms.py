@@ -6,6 +6,7 @@ from tinymce.widgets import TinyMCE
 from django import forms
 from vacancies.models import *
 
+
 class VacancyForm(forms.ModelForm):
     # VACANCY_CHOICES = [('', '-- Select Nature of Job --')] + list(Vacancy.VACANCY_TYPES)
 
@@ -164,4 +165,17 @@ class AdminForm(UserCreationForm):
 
 
 class TermsForm(forms.Form):
-    text = forms.CharField(widget=TinyMCE(attrs={'id': 'mce3', 'class': 'form-control'})),
+    text = forms.CharField(widget=TinyMCE(
+        attrs={'id': 'mce3', 'class': 'form-control'})),
+
+
+class JobTypeForm(forms.ModelForm):
+    class Meta:
+        model = JobType
+        fields = ['name', 'description', 'banner', 'icon']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'banner': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'icon': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+        }

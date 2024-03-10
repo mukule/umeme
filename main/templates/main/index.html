@@ -5,56 +5,29 @@
 <div class="carousel-container">
     <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
         <div class="carousel-inner">
-           
-            <div class="carousel-item active">
-                <div style="position: relative;">
-                    <img class="d-block img-fluid" src="{% static 'dashboard/images/media/Aef001.jpg' %}" alt="First slide" style="width: 100%;">
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+
+            {% for job_type in job_types %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div style="position: relative;">
+                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    </div>
+                    <div class="carousel-caption mt-md-4 d-none d-md-block">
+                        <h3 class="text-white">{{ job_type.name }}</h3>
+                        <p>{{ job_type.description }}</p>
+                        <a href="{% url 'vacancies:jobs' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm mb-0">
+                            Explore Opportunities
+                        </a>
+                    </div>
                 </div>
-                <div class="carousel-caption mt-md-4 d-none d-md-block">
-                    <h3 class="text-white">Employment Opportunities</h3>
-                    <p>You want to grow your career with KenGen?</p>
-                    <a href="{% url 'vacancies:jobs' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm mb-0">
-                        Explore Open Jobs
-                    </a>
-                </div>
-            </div>
-          
-            <div class="carousel-item">
-                <div style="position: relative;">
-                    <img class="d-block img-fluid" src="{% static 'dashboard/images/media/Aef002.jpg' %}" alt="Second slide" style="width: 100%;">
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
-                </div>
-                <div class="carousel-caption mt-md-4 d-none d-md-block">
-                    <h3 class="text-white">Internship opportunities</h3>
-                    <p>Are you looking for an internship opportunity with us?</p>
-                    <a href="{% url 'vacancies:internships' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm mb-0">
-                        Explore Open Internships
-                    </a>
-                </div>
-            </div>
-          
-            <div class="carousel-item">
-                <div style="position: relative;">
-                    <img class="d-block img-fluid" src="{% static 'dashboard/images/media/Aef003.jpg' %}" alt="Third slide" style="width: 100%;">
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
-                </div>
-                <div class="carousel-caption mt-md-4 d-none d-md-block">
-                    <h3 class="text-white">Industrial attachments</h3>
-                    <p>You wish to relate theory to market realities?</p>
-                    <a href="{% url 'vacancies:attachments' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm mb-0">
-                        Explore Open Attachments
-                    </a>
-                </div>
-            </div>
+            {% endfor %}
+
         </div>
-       
     </div>
 </div>
 
 
 
-<!-- Card Deck Section -->
 <div id="layout-wrapper">
     <div class="main-content">
         <div class="container-fluid">
@@ -64,53 +37,22 @@
                     <div class="col-12">
                         <div class="card-deck-wrapper">
                             <div class="card-deck">
-                               
-                               <a href="{% url 'vacancies:attachments' %}">
-                                <div class="card mb-4 shadow-sm border-0">
-                                    <img class="card-img-top img-fluid" src="{% static 'dashboard/images/media/sm-7.png' %}" alt="Card image cap">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-center">Attachment opportunities</h5>
-                                        <p class="card-text text-center mb-3" style="text-decoration: none !important;">
-                                            You wish to relate theory to market realities?</p>
-                                        <p class="card-text text-center">
-                                            <a href="{% url 'vacancies:attachments' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm">
-                                                Explore Opportunities
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>
-                               </a>
-                              
-                               <a href="{% url 'vacancies:internships' %}">
-                                <div class="card mb-4 shadow-sm border-0">
-                                    <img class="card-img-top img-fluid" src="{% static 'dashboard/images/media/sm-6.png' %}" alt="Card image cap">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-center">Internship opportunities</h5>
-                                        <p class="card-text text-center mb-3">
-                                            Are you looking for internship opportunity with us?</p>
-                                        <p class="card-text text-center">
-                                            <a href="{% url 'vacancies:internships' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm">
-                                                Explore Opportunities
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>
-                               </a>
-                              
-                               <a href="{% url 'vacancies:jobs' %}">
-                                <div class="card mb-4 shadow-sm border-0">
-                                    <img class="card-img-top img-fluid" src="{% static 'dashboard/images/media/sm-5.png' %}" alt="Card image cap">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-center">Employment Opportunities</h5>
-                                        <p class="card-text text-center mb-3">You want to grow your career with KenGen?</p>
-                                        <p class="card-text text-center">
-                                            <a href="{% url 'vacancies:jobs' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm">
-                                                Explore Opportunities
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>
-                               </a>
+                                {% for job_type in job_types %}
+                                    <a href="">
+                                        <div class="card mb-4 shadow-sm border-0">
+                                            <img class="card-img-top img-fluid" src="{{ job_type.icon.url }}" alt="{{ job_type.name }} Icon">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-center">{{ job_type.name }}</h5>
+                                                <p class="card-text text-center mb-3">{{ job_type.description }}</p>
+                                                <p class="card-text text-center">
+                                                    <a href="" class="btn btn-primary btn-rounded active btn-lg shadow-sm">
+                                                        Explore Opportunities
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>

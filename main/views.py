@@ -12,10 +12,12 @@ from django.utils import timezone
 from users.decorators import *
 
 
-# Create your views here.
 @access_level_check(user_access_level=5, redirect_view_name='vacancies:internal')
 def index(request):
-    return render(request, 'main/index.html')
+    job_types = JobType.objects.exclude(name="Internal")
+    print(job_types)
+
+    return render(request, 'main/index.html', {'job_types': job_types})
 
 
 @login_required
@@ -30,34 +32,26 @@ def user_profile(request):
             if not profile_update.password_changed:
                 return render(request, 'main/password_change_required.html')
         except ProfileUpdate.DoesNotExist:
-            # If no ProfileUpdate record exists, consider it as not changed.
+
             return render(request, 'main/password_change_required.html')
 
-    # Retrieve the resume details of the logged-in user
     try:
         resume = Resume.objects.get(user=user)
     except Resume.DoesNotExist:
         resume = None
 
-    # Retrieve all basic education instances of the logged-in user
     basic_education_instances = BasicEducation.objects.filter(user=user)
 
-    # Retrieve all further studies instances of the logged-in user
     further_studies_instances = FurtherStudies.objects.filter(user=user)
 
-    # Retrieve all certification instances of the logged-in user
     certification_instances = Certification.objects.filter(user=user)
 
-    # Retrieve all membership instances of the logged-in user
     membership_instances = Membership.objects.filter(user=user)
 
-    # Retrieve all work experience instances of the logged-in user
     work_experience_instances = WorkExperience.objects.filter(user=user)
 
-    # Retrieve all referee instances of the logged-in user
     referee_instances = Referee.objects.filter(user=user)
 
-    # Retrieve the professional summary of the logged-in user
     try:
         professional_summary = ProfessionalSummary.objects.get(user=user)
     except ProfessionalSummary.DoesNotExist:
@@ -653,7 +647,7 @@ def delete_professional_summary(request):
 
 @login_required
 def terms(request):
-   
+
     user = request.user
     print(user)
 

@@ -32,11 +32,10 @@ from users.decorators import *
 from openpyxl.styles import Alignment
 
 
-
-
 @admins
 def dashboard(request):
     return render(request, 'hr/dashboard.html')
+
 
 @admins
 def system_users(request):
@@ -45,11 +44,50 @@ def system_users(request):
 
 
 @admins
+def job_types(request):
+    job_types_list = JobType.objects.all()
+    return render(request, 'hr/job_types.html', {'job_types': job_types_list})
+
+
+@admins
+def create_job_type(request):
+    if request.method == 'POST':
+        form = JobTypeForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('hr:job_types')
+    else:
+        form = JobTypeForm()
+
+    return render(request, 'hr/create_job_type.html', {'form': form})
+
+
+def edit_job_type(request, job_type_id):
+    job_type = get_object_or_404(JobType, id=job_type_id)
+
+    if request.method == 'POST':
+        form = JobTypeForm(request.POST, request.FILES, instance=job_type)
+        if form.is_valid():
+            form.save()
+            return redirect('hr:job_types')
+    else:
+        form = JobTypeForm(instance=job_type)
+
+    return render(request, 'hr/edit_job_type.html', {'form': form, 'job_type': job_type})
+
+
+def delete_job_type(request, job_type_id):
+    job_type = get_object_or_404(JobType, id=job_type_id)
+
+    job_type.delete()
+    return redirect('hr:job_types')
+
+
+@admins
 def jobs(request):
     search_query = request.GET.get('search')
-    # Make sure 'job_discipline' matches the name in the template
+
     job_discipline_filter = request.GET.get('job_discipline')
-    # Make sure 'vacancy_type' matches the name in the template
     vacancy_type_filter = request.GET.get('vacancy_type')
 
     jobs = Vacancy.objects.all()
@@ -81,6 +119,7 @@ def jobs(request):
 
     return render(request, 'hr/jobs.html', context)
 
+
 @system_admin_hr_post_required
 def edit_job(request, job_id):
     job = get_object_or_404(Vacancy, pk=job_id)
@@ -95,7 +134,8 @@ def edit_job(request, job_id):
             return redirect('hr:jobs')
         else:
             # Add error messages for invalid form data
-            messages.error(request, 'Error updating vacancy. Please correct the errors below.')
+            messages.error(
+                request, 'Error updating vacancy. Please correct the errors below.')
     else:
         form = VacancyForm(instance=job)
 
@@ -109,6 +149,7 @@ def delete_job(request, job_id):
     messages.success(request, 'Vacancy Deleted successfully')
     return redirect('hr:jobs')
 
+
 @system_admin_hr_post_required
 def create_job(request):
     if request.method == 'POST':
@@ -118,7 +159,8 @@ def create_job(request):
             user = request.user
             vacancy.created_by = f'{user.first_name} {user.last_name}' if user.first_name and user.last_name else user.username
             vacancy.save()
-            messages.success(request, f'Vacancy "{vacancy.title}" created successfully.')
+            messages.success(
+                request, f'Vacancy "{vacancy.title}" created successfully.')
             return redirect('hr:jobs')
         else:
             for field, errors in form.errors.items():
@@ -129,6 +171,7 @@ def create_job(request):
 
     context = {'form': form}
     return render(request, 'hr/create_job.html', context)
+
 
 @admins
 def job_detail(request, vacancy_id):
@@ -145,6 +188,7 @@ def publish(request, job_id):
     job.published = not job.published
     job.save()
     return redirect('hr:jobs')
+
 
 @admins
 def applications(request):
@@ -233,8 +277,6 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             Q(applicant__last_name__icontains=name_search)
         )
 
-  
-
     export_excel = request.GET.get('export_excel')
     if export_excel:
         # Create a list of dictionaries representing the data you want to export
@@ -245,7 +287,8 @@ def application_detail(request, vacancy_id, filter_criteria=None):
                 resume = user.resume
             except Resume.DoesNotExist:
                 # Create a new Resume if it doesn't exist
-                full_name = f"{user.first_name} {user.last_name}"  # Combine first and last name
+                # Combine first and last name
+                full_name = f"{user.first_name} {user.last_name}"
                 resume = Resume.objects.create(
                     user=user,
                     full_name=full_name,
@@ -260,7 +303,6 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             referees = user.referees.all()[:3]
 
             print(referees)
-            
 
             full_name = resume.full_name
             username = user.username  # Add this line to get the username
@@ -278,7 +320,7 @@ def application_detail(request, vacancy_id, filter_criteria=None):
                 'Professional Certifications': '',
                 'Professional Membership': '',
                 'Work Experience': '',
-                'Referees':'',
+                'Referees': '',
                 'Date Applied': application.application_date.strftime("%Y-%m-%d %H:%M:%S"),
                 'Reference Number': application.reference_number,
                 'Status': 'Qualified' if application.qualify else 'Not Qualified',
@@ -300,11 +342,11 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             if further_studies:
                 # Handle Further Studies data
                 further_studies_data = f"Institution Name: {further_studies.institution_name}\n" \
-                                    f"Certification: {further_studies.certifications.certification_name if further_studies.certifications else ''}\n" \
-                                    f"Course Undertaken: {further_studies.course_undertaken}\n" \
-                                    f"Start Date: {further_studies.date_started.strftime('%Y-%m-%d') if further_studies.date_started else ''}\n" \
-                                    f"End Date: {further_studies.date_ended.strftime('%Y-%m-%d') if further_studies.date_ended else ''}\n" \
-                                    f"Grade: {further_studies.grade}"
+                    f"Certification: {further_studies.certifications.certification_name if further_studies.certifications else ''}\n" \
+                    f"Course Undertaken: {further_studies.course_undertaken}\n" \
+                    f"Start Date: {further_studies.date_started.strftime('%Y-%m-%d') if further_studies.date_started else ''}\n" \
+                    f"End Date: {further_studies.date_ended.strftime('%Y-%m-%d') if further_studies.date_ended else ''}\n" \
+                    f"Grade: {further_studies.grade}"
 
                 application_data['College/University'] = further_studies_data
 
@@ -348,15 +390,17 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             if work_experience:
                 # Handle Work Experience data
                 work_experience_data = ''
-                
+
                 total_years = 0
                 total_months = 0
 
                 for experience in work_experience:
                     company_name = f"Company Name: {experience.company_name}"
                     position = f"Position: {experience.position}"
-                    start_date = experience.date_started.strftime('%Y-%m-%d') if experience.date_started else ''
-                    end_date = experience.date_ended.strftime('%Y-%m-%d') if experience.date_ended else 'In Progress' if experience.currently_working else ''
+                    start_date = experience.date_started.strftime(
+                        '%Y-%m-%d') if experience.date_started else ''
+                    end_date = experience.date_ended.strftime(
+                        '%Y-%m-%d') if experience.date_ended else 'In Progress' if experience.currently_working else ''
                     company_address = f"Company Address: {experience.company_address}"
                     company_phone = f"Company Phone: {experience.company_phone}"
                     responsibilities = f"Responsibilities: {experience.responsibilities}"
@@ -422,7 +466,6 @@ def application_detail(request, vacancy_id, filter_criteria=None):
         title_row.alignment = Alignment(horizontal='center')
         title_row.font = openpyxl.styles.Font(size=14, bold=True)
 
-
         # Write headers
         for col_num, header in enumerate(headers, 1):
             ws.cell(row=2, column=col_num, value=header)
@@ -442,19 +485,18 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             if header == 'Professional Certifications':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
-                
+
             if header == 'Professional Membership':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
-                
+
             if header == 'Work Experience':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
-                
+
             if header == 'Referees':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
-
 
         # Write data
         for row_num, application_data in enumerate(data, 3):
@@ -466,7 +508,7 @@ def application_detail(request, vacancy_id, filter_criteria=None):
 
                 if headers[col_num - 1] == 'College/University':
                     cell.alignment = Alignment(wrap_text=True)
-                
+
                 if headers[col_num - 1] == 'Professional Certifications':
                     cell.alignment = Alignment(wrap_text=True)
 
@@ -479,18 +521,15 @@ def application_detail(request, vacancy_id, filter_criteria=None):
                 if headers[col_num - 1] == 'Referees':
                     cell.alignment = Alignment(wrap_text=True)
 
-
         # Create response
         response = HttpResponse(
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = f'attachment; filename="applications for {application.vacancy.title}-{application.vacancy.ref}.xlsx"'
 
-
         # Save the workbook to the response
         wb.save(response)
 
         return response
-
 
     context = {
         'vacancy': vacancy,
@@ -976,6 +1015,7 @@ def adms(request):
 
     return render(request, 'hr/adms.html', context)
 
+
 @system_admin_required
 def admin_role(request, admin_id):
     user_to_update = get_object_or_404(CustomUser, id=admin_id)
@@ -996,6 +1036,7 @@ def admin_role(request, admin_id):
 
     return render(request, 'hr/admin_role.html', context)
 
+
 @system_admin_required
 def hr_admin(request):
     # Filter users with access level 5 and function values 1, 2, 3, 4, or 5
@@ -1009,6 +1050,7 @@ def hr_admin(request):
     }
 
     return render(request, 'hr/hr.html', context)
+
 
 @system_admin_required
 def admin_register(request):
@@ -1047,6 +1089,7 @@ def admin_register(request):
         form = AdminForm()
 
     return render(request, 'hr/admin_register.html', {'form': form})
+
 
 @admins
 def create_terms(request):
@@ -1118,6 +1161,7 @@ def import_excel(request):
 
     return render(request, 'hr/import_staffs.html', {'form': form})
 
+
 @system_admin_hr_post_required
 def staffs(request):
     # Retrieve all staff members with access level 5
@@ -1145,6 +1189,7 @@ def staffs(request):
 
     return render(request, 'hr/staffs.html', context)
 
+
 @system_admin_required
 def edit_user(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)
@@ -1168,6 +1213,7 @@ def edit_user(request, user_id):
 
     return render(request, 'hr/edit_staff.html', context)
 
+
 @system_admin_required
 def delete_staff(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)
@@ -1179,6 +1225,7 @@ def delete_staff(request, user_id):
     user.delete()
     # Redirect to the user list page after deleting
     return redirect('hr:kgn_staffs')
+
 
 @system_admin_required
 def reset_trials(request, user_id):
@@ -1197,6 +1244,7 @@ def reset_trials(request, user_id):
 
     # Redirect back to the admin panel or another appropriate page
     return redirect('hr:system_users')
+
 
 @system_admin_required
 def delete_users_with_access_level_5(request):

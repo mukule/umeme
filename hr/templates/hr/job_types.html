@@ -1,0 +1,79 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0 font-size-18">Kengen</h4>
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Job Types</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        {% if job_types %}
+                            <div class="table-responsive mt-3">
+                                <!-- Job Types Table -->
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Icon</th>
+                                            <th>Title</th>
+                                            <th>Description</th>
+                                            <th>Vacancies</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Loop through job types -->
+                                        {% for job_type in job_types %}
+                                            <tr>
+                                                <td><img src="{{ job_type.icon.url }}" alt="{{ job_type.name }} Icon" width="30" height="30"></td>
+                                                <td>{{ job_type.name }}</td>
+                                                <td>{{ job_type.description }}</td>
+                                                <td>{{ job_type.vacancy_count }}</td>
+                                                
+                                                <td>
+                                                   
+                                                    <a href="{% url 'hr:edit_job_type' job_type.id %}" class="btn btn-warning mr-2">
+                                                        <i class="fas fa-pencil-alt"></i> Edit
+                                                    </a>
+                                                    
+                                                    
+                                                    <a href="{% url 'hr:delete_job_type' job_type.id %}" class="btn btn-danger">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-center">No Job Types available</p>
+                        {% endif %}
+                        <div class="text-center mt-4">
+                            <a href="{% url 'hr:create_job_type' %}" class="btn btn-primary active">Add New</a>
+                        </div>
+                    </div>
+                    <!-- end card-body-->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+    </div>
+</div>
+{% endblock content %}
