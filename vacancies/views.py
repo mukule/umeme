@@ -17,37 +17,6 @@ def user_has_access_level_5(user):
     return user.is_authenticated and user.access_level == 5
 
 
-def jobs(request):
-    search_query = request.GET.get('search')
-    vacancy_type_filter = request.GET.get('vacancy_type')
-    current_date = date.today()  # Get the current date
-
-    jobs = Vacancy.objects.filter(
-        vacancy_type='Careers',
-        published=True,
-        date_open__lte=current_date,
-        date_close__gte=current_date,
-    )
-
-    if search_query:
-        jobs = jobs.filter(
-            Q(title__icontains=search_query) |
-            Q(description__icontains=search_query)
-        )
-
-    if vacancy_type_filter:
-        jobs = jobs.filter(vacancy_type=vacancy_type_filter)
-
-    job_disciplines = JobDiscipline.objects.all()
-
-    context = {
-        'jobs': jobs,
-        'selected_vacancy_type': vacancy_type_filter,
-        'search_query': search_query,
-        'job_disciplines': job_disciplines,
-    }
-    return render(request, 'vacancies/jobs.html', context)
-
 
 @login_required
 def job(request, vacancy_id):

@@ -9,7 +9,7 @@ from vacancies.models import *
 
 class VacancyForm(forms.ModelForm):
 
-    vacancy_type = forms.ModelChoiceField(
+    job_type = forms.ModelChoiceField(
         queryset=JobType.objects.all(),
         empty_label='--Select Job Type--',
         widget=forms.Select(attrs={'class': 'form-control'}),

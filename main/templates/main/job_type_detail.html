@@ -3,27 +3,28 @@
 {% load static %}
 
 {% block content %}
-<div class="carousel-container">
-    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div style="position: relative;">
-                    <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
-                </div>
-                <div class="carousel-caption mt-md-4 d-none d-md-block">
-                    <h3 class="text-white">{{ job_type.name }}</h3>
+    <div class="carousel-container">
+        <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div style="position: relative;">
+                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    </div>
+                    <div class="carousel-caption mt-md-4 d-none d-md-block">
+                        <h3 class="text-white">{{ job_type.name }}</h3>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <div class="page-content">
         <div class="container-fluid">
             <div class="card p-3">
                 <h2 class="card-title text-center" style="color: #FD7E14;">Advertised {{ job_type.name }} Opportunities</h2>
-                <section class="col-md-10 mx-auto shadow-sm " style="background-color: #fd7e14; text-align: center; border-radius: 10px; padding: 20px;">
+
+                <section class="col-md-10 mx-auto shadow-sm" style="background-color: #fd7e14; text-align: center; border-radius: 10px; padding: 20px;">
                     <form method="get">
                         <div class="form-row align-items-center">
                             <div class="col-md-5 input-group mb-2 text-center">
@@ -33,7 +34,7 @@
                                 <select name="vacancy_type" class="form-control">
                                     <option value="" class="text-center">Select Job Function</option>
                                     {% for discipline in job_disciplines %}
-                                        <option value="{{ discipline.name }}" {% if selected_vacancy_type == discipline.name %}selected{% endif %}>
+                                        <option value="{{ discipline.name }}" {% if selected_job_type == discipline.name %}selected{% endif %}>
                                             {{ discipline.name }}
                                         </option>
                                     {% endfor %}
@@ -45,35 +46,46 @@
                         </div>
                     </form>
                 </section>
-                    
-                
-                <div class="row mt-3">
-                    {% for job in jobs %}
-                        <div class="col-md-4">
-                            <a href="{% url 'vacancies:job' job.id %}" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <div class="card-header">
-                                        {{ job.title }}
-                                    </div>
+
+                {% if jobs %}
+                        <div class="col-xl-12 mt-4">
+                            <div class="card border-0">
+                               
                                     <div class="card-body">
-                                        <blockquote class="card-bodyquote">
-                                            <p><b>Job Description:</b> {{ job.description }}</p>
-                                        </blockquote>
+                                       
+                                        {% for job in jobs %}
+                                       <a href="{% url 'main:job_detail' job.id %}">
+                                        <ol class="breadcrumb">
+                                            <div class="col-md-6" style="display: block !important;">
+                                              <h4> <li class="breadcrumb-item active">{{ job.title }}</li></h4>
+                                              <li class="text-muted">Min Education Level: {{ job.min_educational_level }}</li>
+                                              <li class="text-muted">Date Open: {{ job.date_open }}</li>
+                                              <li class="text-muted">Date Close: {{ job.date_close }}</li>
+                                            </div>
+                                            <div class="col-md-6 d-flex justify-content-md-end justify-content-center mt-2">
+                                              <div style="display: block !important;">
+                                                  <div class="badge badge-soft-primary p-2">{{ job.job_discipline.name }}</div>
+                                                  <div class="text-center">
+                                                      <button class="btn btn-primary btn-sm mt-2">Apply Now</button>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          
+                                          </ol>
+                                       </a>
+                                       
+                                        {% endfor %}
+                                      
                                     </div>
-                                </div>
-                            </a>
+                               
+                            </div>
                         </div>
-                        {% if forloop.counter|divisibleby:3 %}
-                            </div><div class="row">
-                        {% endif %}
-                    {% empty %}
+                   
+                {% else %}
                     <section class="col-md-6 mx-auto my-2 shadow-sm text-center bg-primary rounded d-flex align-items-center">
                         <p class="text-white mx-auto mt-2">There are no Advertised {{ job_type.name }} Opportunities</p>
                     </section>
-                    
-                    
-                    {% endfor %}
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>

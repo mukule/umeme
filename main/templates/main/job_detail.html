@@ -1,0 +1,128 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+    <div class="carousel-container">
+        <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div style="position: relative;">
+                        <img class="d-block img-fluid" src="{{ job.job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    </div>
+                    <div class="carousel-caption mt-md-4 d-none d-md-block">
+                        <h3 class="text-white">{{ job.title }} - {{ job.ref }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="card p-3">
+                <h2 class="card-title text-center" style="color: #FD7E14;">Vacancy Details - {{ job.title }} - {{ job.ref }}</h2>
+
+                <div class="row mt-3">
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4 class="card-title">Job Summary</h4>
+                                <p class="card-subtitle mb-4">{{ job.description }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4 class="card-title">Responsibilities</h4>
+                                <p class="card-subtitle mb-4">{{ job.position_responsibilities|safe }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        {% with job_type=job.job_type job_discipline=job.job_discipline %}
+                                        <div class="row">
+                                            <div class="col-md-6"><h4 class="card-title">Nature of Job:</h4></div>
+                                            <div class="col-md-6">{{ job_type }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6"><h4 class="card-title">Job Discipline:</h4></div>
+                                            <div class="col-md-6">{{ job_discipline }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6"><h4 class="card-title">Reports to:</h4></div>
+                                            <div class="col-md-6">{{ job.reports_to }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6"><h4 class="card-title">Min Education Level:</h4></div>
+                                            <div class="col-md-6">{{ job.min_educational_level }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6"><h4 class="card-title">Experience:</h4></div>
+                                            <div class="col-md-6">{{ job.min_work_experience }} years</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6"><h4 class="card-title">Application End:</h4></div>
+                                            <div class="col-md-6">{{ job.date_close }}</div>
+                                        </div>
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        {% if job.certifications_required or job.college_required or job.membership_required %}
+                            <div class="row mt-3">
+                               <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h4 class="card-title">Additional Requirements</h4>
+                                                {% if job.certifications_required %}
+                                                    <p>Relevant certifications Required</p>
+                                                {% endif %}
+                                                {% if job.college_required %}
+                                                    <p>College/Degree Certificates Required</p>
+                                                {% endif %}
+                                                {% if job.membership_required %}
+                                                    <p>Relevant Membership Certificates Required</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                               </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            <div class="text-center">
+                {% if terms.accepted %}
+                <a href="{% url 'users:terms_acceptance' vacancy_id=job.id %}">  <i class="fas btn-primary active fa-check-square"> </i></a><a href="{% url 'main:terms' %}">Terms and Conditions Accepted</a>
+                {%else%}
+                <a href="{% url 'users:terms_acceptance' vacancy_id=job.id %}" > <i class="btn btn-danger active far fa-square"></i> </a><a href="{% url 'main:terms' %}"> Accept Terms and Conditions</a>
+                {%endif%}
+               
+            </div>
+                <div class="text-center mt-2 mb-2">
+                    {% if terms.accepted %}
+                    <a href="{% url 'vacancies:apply' vacancy_id=job.id %}" class="btn btn-lg btn-primary active">Apply this Job Now <i class="fas fa-arrow-circle-right text-white"></i></a>
+                    {% else %}
+                    <button class="btn btn-lg btn-primary" disabled>
+                        Apply this Job Now <i class="fas fa-arrow-circle-right text-white"></i>
+                    </button>
+                    <small class="form-text text-danger">Accept terms and conditions to apply</small>
+                    
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

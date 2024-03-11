@@ -6,6 +6,7 @@ app_name = 'main'
 urlpatterns = [
     path("", views.index, name="index"),
     path('index/<int:pk>/', views.job_type_detail, name='vacs'),
+    path('job/<int:job_id>/', views.job_detail, name='job_detail'),
     path("user_profile/", views.user_profile, name="user_profile"),
     path('basic_info/<int:user_id>/', views.basic_info, name='basic_info'),
     path('basic_academic/', views.basic_academic, name='basic_academic'),

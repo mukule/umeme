@@ -10,6 +10,7 @@ from django.utils.dateparse import parse_date
 from django.db.utils import IntegrityError
 from django.utils import timezone
 from users.decorators import *
+from django.db.models import Q
 
 
 @access_level_check(user_access_level=5, redirect_view_name='vacancies:internal')
@@ -21,8 +22,47 @@ def index(request):
 
 
 def job_type_detail(request, pk):
+    search_query = request.GET.get('search')
+    job_type_filter = request.GET.get('vacancy_type')
+    current_date = date.today()
+
     job_type = get_object_or_404(JobType, pk=pk)
-    return render(request, 'main/job_type_detail.html', {'job_type': job_type})
+    jobs = Vacancy.objects.filter(job_type=job_type)
+    job_disciplines = JobDiscipline.objects.all()
+
+    if search_query:
+        jobs = jobs.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    if job_type_filter:
+        jobs = jobs.filter(job_discipline__name=job_type_filter)
+
+    context = {
+        'job_type': job_type,
+        'jobs': jobs,
+        'job_disciplines': job_disciplines,
+        'search_query': search_query,
+        'selected_job_type': job_type_filter,
+    }
+
+    return render(request, 'main/job_type_detail.html', context)
+
+@login_required
+def job_detail(request, job_id):
+    job = get_object_or_404(Vacancy, pk=job_id)
+
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=request.user
+    )
+
+    context = {
+        'job': job,
+        'terms':user_accepted_terms
+    }
+
+    return render(request, 'main/job_detail.html', context)
 
 
 @login_required
@@ -652,6 +692,7 @@ def delete_professional_summary(request):
 
 @login_required
 def terms(request):
+    job_types = JobType.objects.exclude(name="Internal")
 
     user = request.user
     print(user)
@@ -668,7 +709,7 @@ def terms(request):
     # Assuming you want to display the first (and only) set of terms
     terms = Terms.objects.first()
 
-    return render(request, 'main/terms.html', {'terms': terms})
+    return render(request, 'main/terms.html', {'terms': terms, 'job_types':job_types})
 
 
 @login_required
