@@ -3,68 +3,68 @@
 {% load static %}
 
 {% block content %}
+<div class="carousel-container">
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+        <div class="carousel-inner">
+
+            {% for job_type in vacancy_types %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div style="position: relative;">
+                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    </div>
+                    <div class="carousel-caption mt-md-4 d-none d-md-block">
+                        <h3 class="text-white">{{ job_type.name }} ( {{ job_type.vacancy_count }} posts)</h3>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
 <div class="page-content">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Kengen</h4>
-
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Vacancy</a></li>
-                            <li class="breadcrumb-item active">Jobs</li>
-                        </ol>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>     
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Jobs</h4>
-                        <p class="card-subtitle mb-4">All job vacancies</p>
-
                         <!-- Search Form -->
-                       <div class="row-2">
-                        <section class="col-md-10 mx-auto shadow-sm " style="background-color: #7266bb; text-align: center; border-radius: 10px; padding: 20px;">
-                            <form method="get">
-                                <div class="form-row">
-                                    <div class="col-md-3">
-                                        <input type="text" name="search" class="form-control" placeholder="Search By Keyword or Job Title">
+                        <div class="row-2">
+                            <section class="col-md-10 mx-auto shadow-sm bg-primary text-center border-radius-10 p-4">
+                                <form method="get">
+                                    <div class="form-row">
+                                        <div class="col-md-3">
+                                            <input type="text" name="search" class="form-control" placeholder="Search By Keyword or Job Title">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select name="job_discipline" class="form-control">
+                                                <option value="">Select Job Function</option>
+                                                {% for discipline in job_disciplines %}
+                                                    <option value="{{ discipline.id }}" {% if selected_job_discipline == discipline.id %}selected{% endif %}>
+                                                        {{ discipline.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select name="vacancy_type" class="form-control">
+                                                <option value="">Select Job Type</option>
+                                                {% for vacancy_type in vacancy_types %}
+                                                    <option value="{{ vacancy_type.id }}" {% if selected_vacancy_type == vacancy_type.id %}selected{% endif %}>
+                                                        {{ vacancy_type.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button type="submit" class="btn btn-primary">Search</button>
+                                        </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <select name="job_discipline" class="form-control">
-                                            <option value="">Select Job Function</option>
-                                            {% for discipline in job_disciplines %}
-                                                <option value="{{ discipline.id }}" {% if selected_job_discipline == discipline.id %}selected{% endif %}>
-                                                    {{ discipline.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select name="vacancy_type" class="form-control">
-                                            <option value="">Select Job Type</option>
-                                            {% for vacancy_type, vacancy_type_display in vacancy_types %}
-                                                <option value="{{ vacancy_type }}" {% if selected_vacancy_type == vacancy_type %}selected{% endif %}>
-                                                    {{ vacancy_type_display }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                        
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary">Search</button>
-                                    </div>
-                                </div>
-                            </form>
+                                </form>
                             </section>
-                       </div>
-                        
-                        
+                        </div>
+
                         {% if jobs %}
                             <div class="table-responsive mt-3">
                                 <!-- Job Vacancies Table -->
@@ -82,7 +82,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
                                         {% for job in jobs %}
                                             <tr>
                                                 <td>{{ forloop.counter }}</td>
@@ -93,15 +92,14 @@
                                                 <td>{{ job.vacancy_type }}</td>
                                                 <td>{{ job.application_count }}</td>
                                                 <td>
-                                                    
                                                     {% if job.published %}
-                                                    <a href="{% url 'hr:publish' job.id %}">
-                                                        <i class="fas fa-eye-slash text-danger" title="Unpublish"></i>
-                                                    </a>
+                                                        <a href="{% url 'hr:publish' job.id %}">
+                                                            <i class="fas fa-eye-slash text-danger" title="Unpublish"></i>
+                                                        </a>
                                                     {% else %}
-                                                    <a href="{% url 'hr:publish' job.id %}">
-                                                        <i class="fas fa-eye text-success" title="Publish"></i>
-                                                    </a>
+                                                        <a href="{% url 'hr:publish' job.id %}">
+                                                            <i class="fas fa-eye text-success" title="Publish"></i>
+                                                        </a>
                                                     {% endif %}
                                                     <a href="{% url 'hr:edit_job' job.id %}">
                                                         <i class="fas fa-edit text-primary mx-2" title="Edit"></i>
@@ -116,22 +114,21 @@
                                 </table>
                             </div>
                         {% else %}
-                            <p class="text-center">No jobs available at the moment.</p>
+                            <p class="text-center mt-3">No Posts Advertised So far</p>
                         {% endif %}
-                       
                     </div>
                     <div class="card-footer">
                         <div class="text-center">
                             <a href="{% url 'hr:create_job' %}" class="btn btn-primary active">Add New</a>
                         </div>
                     </div>
-                  
                 </div>
                 <!-- end card -->
             </div>
             <!-- end col -->
         </div>
-       <!--end row-->
+        <!-- end row -->
     </div>
 </div>
+
 {% endblock content %}

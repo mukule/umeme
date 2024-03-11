@@ -20,6 +20,11 @@ def index(request):
     return render(request, 'main/index.html', {'job_types': job_types})
 
 
+def job_type_detail(request, pk):
+    job_type = get_object_or_404(JobType, pk=pk)
+    return render(request, 'main/job_type_detail.html', {'job_type': job_type})
+
+
 @login_required
 def user_profile(request):
     user = request.user

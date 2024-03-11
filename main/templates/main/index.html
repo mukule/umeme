@@ -15,7 +15,7 @@
                     <div class="carousel-caption mt-md-4 d-none d-md-block">
                         <h3 class="text-white">{{ job_type.name }}</h3>
                         <p>{{ job_type.description }}</p>
-                        <a href="{% url 'vacancies:jobs' %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm mb-0">
+                        <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm mb-0">
                             Explore Opportunities
                         </a>
                     </div>
@@ -38,20 +38,15 @@
                         <div class="card-deck-wrapper">
                             <div class="card-deck">
                                 {% for job_type in job_types %}
-                                    <a href="">
-                                        <div class="card mb-4 shadow-sm border-0">
-                                            <img class="card-img-top img-fluid" src="{{ job_type.icon.url }}" alt="{{ job_type.name }} Icon">
-                                            <div class="card-body">
-                                                <h5 class="card-title text-center">{{ job_type.name }}</h5>
-                                                <p class="card-text text-center mb-3">{{ job_type.description }}</p>
-                                                <p class="card-text text-center">
-                                                    <a href="" class="btn btn-primary btn-rounded active btn-lg shadow-sm">
-                                                        Explore Opportunities
-                                                    </a>
-                                                </p>
-                                            </div>
+                                    <div class="card mb-4 shadow-sm border-0">
+                                       <a href="{% url 'main:vacs' pk=job_type.pk %}">
+                                        <img class="card-img-top img-fluid" src="{{ job_type.icon.url }}" alt="{{ job_type.name }} Icon">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-center">{{ job_type.name }}</h5>
+                                            <p class="card-text text-center mb-3">{{ job_type.description }}</p>
                                         </div>
-                                    </a>
+                                       </a>
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -62,6 +57,5 @@
         </div>
     </div>
 </div>
-
 
 {% endblock content %}

@@ -86,7 +86,6 @@ def delete_job_type(request, job_type_id):
 @admins
 def jobs(request):
     search_query = request.GET.get('search')
-
     job_discipline_filter = request.GET.get('job_discipline')
     vacancy_type_filter = request.GET.get('vacancy_type')
 
@@ -103,10 +102,13 @@ def jobs(request):
         jobs = jobs.filter(job_discipline_id=job_discipline_filter)
 
     if vacancy_type_filter:
-        # Ensure you filter by the correct field name ('vacancy_type')
-        jobs = jobs.filter(vacancy_type=vacancy_type_filter)
+        # Ensure you filter by the correct field name ('job_type_id')
+        jobs = jobs.filter(job_type_id=vacancy_type_filter)
 
     job_disciplines = JobDiscipline.objects.all()
+
+    # Include JobTypes for 'vacancies' context variable
+    vacancy_types = JobType.objects.all()
 
     context = {
         'jobs': jobs,
@@ -114,7 +116,7 @@ def jobs(request):
         'selected_job_discipline': job_discipline_filter,
         'selected_vacancy_type': vacancy_type_filter,
         'job_disciplines': job_disciplines,
-        'vacancy_types': Vacancy.VACANCY_TYPES,
+        'vacancy_types': vacancy_types,
     }
 
     return render(request, 'hr/jobs.html', context)

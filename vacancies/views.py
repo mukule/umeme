@@ -484,18 +484,16 @@ def internal(request):
     if user.access_level == 5:
         try:
             profile_update = ProfileUpdate.objects.get(user=user)
-            print(profile_update)
             if not profile_update.password_changed:
                 return render(request, 'main/pass_change.html')
         except ProfileUpdate.DoesNotExist:
-            # If no ProfileUpdate record exists, consider it as not changed.
             return render(request, 'main/pass_change.html')
     search_query = request.GET.get('search')
 
     today = date.today()
 
     staff_vacancies = Vacancy.objects.filter(
-        vacancy_type='Internal',
+        job_type__name='Internal',
         published=True,
         date_open__lte=today,
         date_close__gt=today
