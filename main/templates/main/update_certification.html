@@ -3,7 +3,22 @@
 {% load static %}
 
 {% block content %}
-{% include '../main/includes/hero.html' %}
+<div class="carousel-container">
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+        <div class="carousel-inner">
+
+            {% for job_type in job_types %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div style="position: relative;">
+                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
 <div class="page-content">
     <div class="container-fluid">
         <h2 class="mt-4 mb-4 text-center">Update Professional Certification</h2>

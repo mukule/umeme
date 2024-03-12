@@ -1,23 +1,67 @@
-/* Default styles for larger screens */
-.carousel-caption {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-}
 
-/* Hide elements in carousel caption for smaller screens */
-@media (max-width: 768px) {
-    .carousel-caption h3,
-    .carousel-caption p {
-        display: none;
+
+
+    /* Style the resume cards */
+    .resume-cards {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap; /* Allow the cards to wrap to the next row */
+        margin: 5px; /* Reduced spacing */
     }
 
-    .carousel-caption a {
-        position: absolute;
-        bottom: 0;
+    .resume-card {
+        text-align: center;
+        padding: 20px;
+        flex: 0 0 calc(100% / 12 - 10px); /* Each card takes 1/12 of the width, considering reduced spacing */
+        margin: 5px; /* Adjusted spacing between cards */
+        background-color: #F4F4F4; /* Bootstrap secondary color */
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease; /* Added transform transition */
+        color: #6c757d;
     }
-}
+
+    .resume-card:hover {
+        background-color: #4F16A7;
+        transform: scale(1.05); /* Added scale on hover for a subtle zoom effect */
+    }
+
+    /* Style the numbers within the cards */
+    .number-circle {
+        width: 30px;
+        height: 30px;
+        line-height: 30px; /* Center the number vertically */
+        background-color: #FD7E14;
+        color: #fff; /* Bootstrap secondary color */
+        border-radius: 50%;
+        font-weight: bold;
+        margin-bottom: 10px;
+        margin-right: 5px; /* Add some space between the number and the text */
+        display: inline-block;
+    }
+
+    /* Style the text within the cards */
+    .resume-card span {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* Optional: Add styles for the active card */
+    .resume-card.active {
+        background-color: #4F16A7; /* Updated active color */
+        transform: scale(1.05);
+        border: 2px solid #fff;
+        color: #fff;
+    }
+
+    /* Media query for smaller screens */
+    @media (max-width: 767px) {
+        .resume-card {
+            flex: 0 0 calc(100% / 12 - 10px); /* Each card takes 1/12 of the width on smaller screens */
+        }
+
+        .resume-card span {
+            display: none; /* Hide names on smaller screens */
+        }
+    }

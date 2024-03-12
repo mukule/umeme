@@ -67,6 +67,7 @@ def job_detail(request, job_id):
 
 @login_required
 def user_profile(request):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     print(user)
 
@@ -112,6 +113,7 @@ def user_profile(request):
         'work_experience_instances': work_experience_instances,
         'referee_instances': referee_instances,
         'professional_summary': professional_summary,
+        'job_types':job_types
     })
 
 
@@ -159,6 +161,7 @@ def staff(request):
 
 @login_required
 def basic_info(request, user_id):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
 
     try:
@@ -200,6 +203,7 @@ def basic_info(request, user_id):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
 
     return render(request, 'main/basic_info.html', context)
@@ -207,6 +211,7 @@ def basic_info(request, user_id):
 
 @login_required
 def basic_academic(request):
+    job_types = JobType.objects.exclude(name="Internal")
     if request.method == 'POST':
         form = EducationalInformationForm(request.POST, request.FILES,)
         if form.is_valid():
@@ -220,12 +225,14 @@ def basic_academic(request):
     context = {
         'form': form,
         'basic_education_instances': BasicEducation.objects.filter(user=request.user),
+        'job_types':job_types
     }
     return render(request, 'main/basic_academic.html', context)
 
 
 @login_required
 def update_basic_academic(request, instance_id):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     try:
         basic_education = BasicEducation.objects.get(user=user, pk=instance_id)
@@ -244,6 +251,7 @@ def update_basic_academic(request, instance_id):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
     return render(request, 'main/update_basic_academic.html', context)
 
@@ -257,6 +265,7 @@ def delete_basic_academic(request, instance_id):
 
 @login_required
 def further_studies(request):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
 
     if request.method == 'POST':
@@ -278,12 +287,14 @@ def further_studies(request):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
     return render(request, 'main/further_studies.html', context)
 
 
 @login_required
 def update_further_studies(request, instance_id):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     try:
         further_studies = FurtherStudies.objects.get(user=user, pk=instance_id)
@@ -305,6 +316,7 @@ def update_further_studies(request, instance_id):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
     return render(request, 'main/update_further_studies.html', context)
 
@@ -322,6 +334,7 @@ def delete_further_studies(request, instance_id):
 
 @login_required
 def certification(request):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     if request.method == 'POST':
         form = CertificationForm(request.POST, request.FILES)
@@ -347,12 +360,15 @@ def certification(request):
 
     context = {
         'form': form,
+        'job_types': job_types
     }
+    print(job_types)
     return render(request, 'main/certification.html', context)
 
 
 @login_required
 def update_certification(request, instance_id):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     try:
         certification = Certification.objects.get(user=user, pk=instance_id)
@@ -377,7 +393,9 @@ def update_certification(request, instance_id):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
+    print(job_types)
     return render(request, 'main/update_certification.html', context)
 
 
@@ -394,6 +412,7 @@ def delete_certification(request, instance_id):
 
 @login_required
 def membership(request):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
 
     if request.method == 'POST':
@@ -425,12 +444,15 @@ def membership(request):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
     return render(request, 'main/membership.html', context)
 
 
 @login_required
 def update_membership(request, instance_id):
+   
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     try:
         membership = Membership.objects.get(user=user, pk=instance_id)
@@ -451,6 +473,7 @@ def update_membership(request, instance_id):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
     return render(request, 'main/update_membership.html', context)
 
@@ -468,6 +491,7 @@ def delete_membership(request, instance_id):
 
 @login_required
 def work_experience(request):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     if request.method == 'POST':
         form = WorkExperienceForm(request.POST)
@@ -505,12 +529,14 @@ def work_experience(request):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
     return render(request, 'main/work_experience.html', context)
 
 
 @login_required
 def update_work_experience(request, instance_id):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     try:
         work_experience = WorkExperience.objects.get(user=user, pk=instance_id)
@@ -548,6 +574,7 @@ def update_work_experience(request, instance_id):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
     return render(request, 'main/update_work_experience.html', context)
 
@@ -563,6 +590,7 @@ def delete_work_experience(request, instance_id):
 
 @login_required
 def referees(request):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     referees_list = Referee.objects.filter(user=user)
 
@@ -588,12 +616,14 @@ def referees(request):
     context = {
         'form': form,
         'referees_list': referees_list,
+        'job_types':job_types
     }
     return render(request, 'main/referees.html', context)
 
 
 @login_required
 def update_referee(request, instance_id):
+    job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     try:
         referee = Referee.objects.get(user=user, pk=instance_id)
@@ -610,6 +640,7 @@ def update_referee(request, instance_id):
 
     context = {
         'form': form,
+        'job_types':job_types
     }
     return render(request, 'main/update_referee.html', context)
 
