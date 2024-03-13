@@ -21,54 +21,94 @@
 </div>
 <div class="page-content">
     <div class="container-fluid">
-        <h2 class="mt-4 mb-4 text-center">Update College/University</h2>
-        <hr>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <strong>Oops! There are errors in the form:</strong>
-                <ul>
-                    {% for field_errors in form.errors.values %}
-                        {% for error in field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
+        <div class="row">
+            <div style="width: 100%;">
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
+                    <h4 style="margin-top: 3px;">Update your Resume to apply</h4>
+                    <p style="margin-bottom: 4px;">Update your Details on the Resume from 1-7 to for you to be able to apply for opportunities</p>
+                </div>
+            </div>    
+           
+        </div>
+       <div class="card mt-4">
+        <div class="card-body">
+            <h2 class="mt-4 mb-4 text-center" style="color: #FD7E14;">Update College/University</h2>
+            <div>
+                {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success alert-dismissible" role="alert">
+                           
+                            {{ message|safe|escape }}
+                        </div>
+                    {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                           
+                            {{ message|safe }}
+                        </div>
+                    {% elif message.tags == 'info' %}
+                        <div class="alert alert-info alert-dismissible" role="alert">
+                           
+                            {{ message|safe|escape }}
+                        </div>
+                 
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {{ message|safe|escape }}
             </div>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
-            <div class="row">
-                <div class="col-md-6">
-                    {{ form.institution_name|as_crispy_field }}
-                </div>
-                <div class="col-md-6">
-                    {{ form.course_undertaken|as_crispy_field }}
-                </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    {{ form.date_started|as_crispy_field }}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.institution_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.course_undertaken|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    {{ form.date_ended|as_crispy_field }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.date_started|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.date_ended|as_crispy_field }}
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    {{ form.certifications|as_crispy_field }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.certifications|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.grade|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.certificate|as_crispy_field }}
+                    </div>
+                    
                 </div>
-                <div class="col-md-3">
-                    {{ form.grade|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.certificate|as_crispy_field }}
-                </div>
-                
-            </div>
-           <div class="text-center">
-            <button type="submit" class="btn btn-primary active">Submit</button>
-           </div>
-        </form>
+                <div class="text-center mt-4">
+              
+                    {% if be %}
+                    <a href="{% url 'main:update_basic_education' instance_id=be.pk %}" class="btn btn-primary active ml-2">Back</a>
+                {% else %}
+                    <a href="{% url 'main:basic_academic' %}" class="btn btn-primary active ml-2">Back</a>
+                {% endif %}
+                    
+                     <button type="submit" class="btn btn-primary active ml-2">Submit</button>
+                     {% if cert %}
+                         <a href="{% url 'main:update_certification' instance_id=cert.pk %}" class="btn btn-primary active ml-2">Next</a>
+                     {% else %}
+                         <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Next</a>
+                     {% endif %}
+                    </div>
+            </form>
+        </div>
+       </div>
     </div>
 </div>
 {% endblock content %}

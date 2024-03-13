@@ -169,6 +169,7 @@ def basic_info(request, user_id):
     except Resume.DoesNotExist:
         user_info = None
 
+    basic_education_instance = BasicEducation.objects.filter(user=user).first()
     # Set initial_data for email and full_name based on the existence of user_info
     initial_data = {}
 
@@ -194,7 +195,12 @@ def basic_info(request, user_id):
             resume.save()
             messages.success(
                 request, 'Your information has been updated successfully.')
-            return redirect('main:user_profile')
+            if BasicEducation.objects.filter(user=user).exists():
+                # Redirect to update_basic_academic view
+                return redirect('main:update_basic_education', instance_id=basic_education_instance.pk)
+            else:
+                # Redirect to basic_academic view
+                return redirect('main:basic_academic')
         else:
             messages.error(
                 request, 'There was an error in the form submission. Please check your inputs.')
@@ -203,7 +209,8 @@ def basic_info(request, user_id):
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'be':basic_education_instance
     }
 
     return render(request, 'main/basic_info.html', context)
@@ -234,24 +241,37 @@ def basic_academic(request):
 def update_basic_academic(request, instance_id):
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
+
     try:
         basic_education = BasicEducation.objects.get(user=user, pk=instance_id)
     except BasicEducation.DoesNotExist:
-        return redirect('main:user_profile')
+        return redirect('main:basic_academic')
+    
+    further_studies_instance = FurtherStudies.objects.filter(user=user).first()
+
+    # Save the current certificate file and remove it from the form instance
+    current_certificate = basic_education.certificate
+    # basic_education.certificate = None
 
     if request.method == 'POST':
-        form = EducationalInformationForm(
-            request.POST, request.FILES, instance=basic_education)
+        form = EducationalInformationForm(request.POST, request.FILES, instance=basic_education)
         if form.is_valid():
             form.save()
-            return redirect('main:user_profile')
-
+            messages.success(
+                request, 'Your information has been updated successfully.')
+            if FurtherStudies.objects.filter(user=user).exists():
+                return redirect('main:update_further_studies', instance_id=further_studies_instance.pk)
+            else:
+                return redirect('main:further_studies')
     else:
+        # Include the 'certificate' field in the form instance
         form = EducationalInformationForm(instance=basic_education)
 
     context = {
         'form': form,
-        'job_types':job_types
+        'certificate': current_certificate,
+        'job_types': job_types,
+        'fs':further_studies_instance
     }
     return render(request, 'main/update_basic_academic.html', context)
 
@@ -299,24 +319,31 @@ def update_further_studies(request, instance_id):
     try:
         further_studies = FurtherStudies.objects.get(user=user, pk=instance_id)
     except FurtherStudies.DoesNotExist:
-        return redirect('main:user_profile')
+        return redirect('main:basic_academic')
+    basic_education_instance = BasicEducation.objects.filter(user=user).first()
+    certification_instance = Certification.objects.filter(user=user).first()
 
     if request.method == 'POST':
         form = FurtherStudiesForm(
             request.POST, request.FILES, instance=further_studies)
         if form.is_valid():
             form.save()
-            if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
-            return redirect('main:user_profile')
-
+            messages.success(
+                request, 'Your information has been updated successfully.')
+            if Certification.objects.filter(user=user).exists():
+                return redirect('main:update_certification', instance_id=certification_instance.pk)
+            else:
+                return redirect('main:certification')
+            
+            
     else:
         form = FurtherStudiesForm(instance=further_studies)
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'be':basic_education_instance,
+        'cert':certification_instance
     }
     return render(request, 'main/update_further_studies.html', context)
 
@@ -375,25 +402,32 @@ def update_certification(request, instance_id):
     except Certification.DoesNotExist:
         if user.access_level == 5:
             # Redirect to a different view if access_level is 5
-            return redirect('main:staff_profile')
-        return redirect('main:user_profile')
+            return redirect('main:certification')
+        return redirect('main:certification')
+    
+    further_studies_instance = FurtherStudies.objects.filter(user=user).first()
+    membership_instance = Membership.objects.filter(user=user).first()
 
     if request.method == 'POST':
         form = CertificationForm(
             request.POST, request.FILES, instance=certification)
         if form.is_valid():
             form.save()
-            if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
-            return redirect('main:user_profile')
+            messages.success(
+                request, 'Your information has been updated successfully.')
+            if Membership.objects.filter(user=user).exists():
+                return redirect('main:update_membership', instance_id=membership_instance.pk)
+            else:
+                return redirect('main:membership')
 
     else:
         form = CertificationForm(instance=certification)
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'fs':further_studies_instance,
+        'ms':membership_instance
     }
     print(job_types)
     return render(request, 'main/update_certification.html', context)
@@ -457,23 +491,30 @@ def update_membership(request, instance_id):
     try:
         membership = Membership.objects.get(user=user, pk=instance_id)
     except Membership.DoesNotExist:
-        return redirect('main:user_profile')
+        return redirect('main:membership')
+    
+    certification_instance = Certification.objects.filter(user=user).first()
+    work_experience_instance = WorkExperience.objects.filter(user=user).first()
 
     if request.method == 'POST':
         form = MembershipForm(request.POST, request.FILES, instance=membership)
         if form.is_valid():
             form.save()
-            if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
-            return redirect('main:user_profile')
+            messages.success(
+                request, 'Your information has been updated successfully.')
+            if Membership.objects.filter(user=user).exists():
+                return redirect('main:update_work_experience', instance_id=work_experience_instance.pk)
+            else:
+                return redirect('main:work_experience')
 
     else:
         form = MembershipForm(instance=membership)
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'cert':certification_instance,
+        'wx':work_experience_instance
     }
     return render(request, 'main/update_membership.html', context)
 
@@ -493,6 +534,10 @@ def delete_membership(request, instance_id):
 def work_experience(request):
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
+
+    membership_instance = Membership.objects.filter(user=user).first()
+    referee_instance = Referee.objects.filter(user=user).first()
+    print(referee_instance)
     if request.method == 'POST':
         form = WorkExperienceForm(request.POST)
         if form.is_valid():
@@ -529,7 +574,9 @@ def work_experience(request):
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'ms':membership_instance,
+        'refs':referee_instance
     }
     return render(request, 'main/work_experience.html', context)
 
@@ -541,7 +588,10 @@ def update_work_experience(request, instance_id):
     try:
         work_experience = WorkExperience.objects.get(user=user, pk=instance_id)
     except WorkExperience.DoesNotExist:
-        return redirect('main:user_profile')
+        return redirect('main:work_experience')
+    
+    membership_instance = Membership.objects.filter(user=user).first()
+    referee_instance = Referee.objects.filter(user=user).first()
 
     if request.method == 'POST':
         form = WorkExperienceForm(request.POST, instance=work_experience)
@@ -574,7 +624,9 @@ def update_work_experience(request, instance_id):
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'ms':membership_instance,
+        'refs':referee_instance
     }
     return render(request, 'main/update_work_experience.html', context)
 
@@ -593,6 +645,7 @@ def referees(request):
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     referees_list = Referee.objects.filter(user=user)
+    work_experience_instance = WorkExperience.objects.filter(user=user).first()
 
     # Check if the user already has 3 referees
     if referees_list.count() >= 3:
@@ -616,7 +669,8 @@ def referees(request):
     context = {
         'form': form,
         'referees_list': referees_list,
-        'job_types':job_types
+        'job_types':job_types,
+        'wx':work_experience_instance
     }
     return render(request, 'main/referees.html', context)
 
@@ -628,7 +682,9 @@ def update_referee(request, instance_id):
     try:
         referee = Referee.objects.get(user=user, pk=instance_id)
     except Referee.DoesNotExist:
-        return redirect('main:user_profile')
+        return redirect('main:referees')
+    
+    work_experience_instance = WorkExperience.objects.filter(user=user).first()
 
     if request.method == 'POST':
         form = RefereeForm(request.POST, instance=referee)
@@ -640,7 +696,8 @@ def update_referee(request, instance_id):
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'wx':work_experience_instance
     }
     return render(request, 'main/update_referee.html', context)
 
