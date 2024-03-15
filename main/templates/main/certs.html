@@ -1,0 +1,97 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="carousel-container">
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for job_type in job_types %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div style="position: relative;">
+                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row mt-4">
+            <div style="width: 100%;">
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
+                    <h4 style="margin-top: 3px;">Update your Resume to apply</h4>
+                    <p style="margin-bottom: 4px;">Complete Your Resume to Apply</p>
+                </div>
+            </div>    
+        </div>
+      
+        <div class="card mt-4">
+            <div class="card-body">
+                <h2 class="mb-4 text-center" style="color: #FD7E14;">Professional Certifications Information</h2>
+                {% if fs %}
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Institution Name</th>
+                                <th>Certifications</th>
+                                <th>Course Undertaken</th>
+                                <th>Date Started</th>
+                                <th>Date Ended</th>
+                                <th>Grade</th>
+                                <th>Certificate</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-0">
+                            {% for further_study in fs %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ further_study.institution_name }}</td>
+                                <td>{{ further_study.certifications }}</td>
+                                <td>{{ further_study.course_undertaken }}</td>
+                                <td>{{ further_study.date_started }}</td>
+                                <td>{{ further_study.date_ended }}</td>
+                                <td>{{ further_study.grade }}</td>
+                                <td>
+                                    {% if further_study.certificate %}
+                                        <a href="{{ further_study.certificate.url }}" target="_blank">View File</a>
+                                    {% else %}
+                                        No certificate uploaded
+                                    {% endif %}
+                                </td>
+                                <td> <a href="{% url 'main:update_further_studies' instance_id=further_study.pk %}">
+                                    <i class="fas fa-edit"></i> Update
+                                </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center">Update your further studies details</p>
+            {% endif %}
+            
+            
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'main:college' %}" class="btn btn-primary active">Back</a>
+                    <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Add New</a>
+                    {% if certs %}
+                        <a href="{% url 'main:memberships' %}" class="btn btn-primary active ml-2">Next</a>
+                    {% else %}
+                        <a href="{% url 'main:membership' %}" class="btn btn-primary active ml-2">Next</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

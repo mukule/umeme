@@ -1,0 +1,75 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="carousel-container">
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for job_type in job_types %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div style="position: relative;">
+                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="row mt-4">
+            <div style="width: 100%;">
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
+                    <h4 style="margin-top: 3px;">Update your Resume to apply</h4>
+                    <p style="margin-bottom: 4px;">Complete Your Resume to Apply</p>
+                </div>
+            </div>    
+        </div>
+      
+        <div class="card mt-4">
+            <div class="card-body">
+                <h2 class="mb-4 text-center" style="color: #FD7E14;">Bio Information</h2>
+                {% if resume %}
+                    <div class="row col-xl-12">
+                        <div class="col-md-6">
+                            <p class="card-title"><strong>Name:</strong> {{ resume.full_name }}</p>
+                            <p class="card-title"><strong>Email:</strong> {{ resume.email_address }}</p>
+                            <p class="card-title"><strong>Phone:</strong> {{ resume.phone }}</p>
+                            <p class="card-title"><strong>ID Number:</strong> {{ resume.id_number }}</p>
+                            <p class="card-title"><strong>Date of Birth:</strong> {{ resume.dob }}</p>
+                            <p class="card-title"><strong>Country of Birth:</strong> {{ resume.get_country_of_birth_display }}</p>
+                            <p class="card-title"><strong>Country of Residence:</strong> {{ resume.get_country_of_residence_display }}</p>
+                            <p class="card-title"><strong>County:</strong> {{ resume.county }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="card-title"><strong>Ethnicity:</strong> {{ resume.ethnicity }}</p>
+                            <p class="card-title"><strong>Religion:</strong> {{ resume.religion }}</p>
+                            <p class="card-title"><strong>Gender:</strong> {{ resume.gender }}</p>
+                            <p class="card-title"><strong>Disability:</strong> {% if resume.disability %} Yes {% else %} No {% endif %}</p>
+                            <p class="card-title"><strong>Disability Number:</strong> {{ resume.disability_number }}</p>
+                            <p class="card-title"><strong>Marital Status:</strong> {{ resume.marital_status }}</p>
+                            <p class="card-title"><strong>Highest Education Level:</strong> {{ resume.educational_level }}</p>
+                            <p class="card-title"><strong>Field of Study:</strong> {{ resume.field_of_study }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-center">Update your Bio information</p>
+                {% endif %}
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'main:basic_info' user_id=user.id %}" class="btn btn-primary active">Update</a>
+                    {% if be %}
+                        <a href="{% url 'main:high_school' %}" class="btn btn-primary active ml-2">Next</a>
+                    {% else %}
+                        <a href="{% url 'main:basic_academic' %}" class="btn btn-primary active ml-2">Next</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -21,45 +21,56 @@
 </div>
 <div class="page-content">
     <div class="container-fluid">
-        <h2 class="mt-4 mb-4 text-center">Add Professional Memberships</h2>
-        <hr>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <strong>Oops! There are errors in the form:</strong>
-                <ul>
-                    {% for field_errors in form.errors.values %}
-                        {% for error in field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-            <div class="row">
-                <div class="col-md-4">
-                    {{ form.membership_title|as_crispy_field }}
+        <div class="row">
+            <div style="width: 100%;">
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
+                    <h4 style="margin-top: 3px;">Update your Resume to apply</h4>
+                    <p style="margin-bottom: 4px;">Complete You Resume to apply</p>
                 </div>
-                <div class="col-md-4">
-                    {{ form.membership_number|as_crispy_field }}
+            </div>    
+           
+        </div>
+
+       <div class="card mt-4">
+        <div class="card-body">
+            <h2 class="mb-4 text-center" style="color: #FD7E14;">Add Professional Memberships</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.membership_title|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.membership_number|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    {{ form.membership_body|as_crispy_field }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.membership_body|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.date_joined|as_crispy_field }}
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    {{ form.date_joined|as_crispy_field }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.certificate|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    {{ form.certificate|as_crispy_field }}
-                </div>
-            </div>
-           <div class="text-center">
-            <button type="submit" class="btn btn-primary active">Submit</button>
-           </div>
-        </form>
+                <div class="text-center mt-4">
+              
+                    <a href="{% url 'main:bio_info' %}" class="btn btn-primary active">Back</a>
+                    
+                     <button type="submit" class="btn btn-primary active ml-2">Submit</button>
+                     {% if fs %}
+                         <a href="{% url 'main:update_further_studies' instance_id=fs.pk %}" class="btn btn-primary active ml-2">Next</a>
+                     {% else %}
+                         <a href="{% url 'main:further_studies' %}" class="btn btn-primary active ml-2">Next</a>
+                     {% endif %}
+                    </div>
+            </form>
+       </div>
+    </div>
     </div>
 </div>
 {% endblock content %}

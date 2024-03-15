@@ -66,7 +66,7 @@ def job_detail(request, job_id):
 
 
 @login_required
-def user_profile(request):
+def bio_info(request):
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
     print(user)
@@ -74,7 +74,6 @@ def user_profile(request):
     if user.access_level == 5:
         try:
             profile_update = ProfileUpdate.objects.get(user=user)
-            print(profile_update)
             if not profile_update.password_changed:
                 return render(request, 'main/password_change_required.html')
         except ProfileUpdate.DoesNotExist:
@@ -86,34 +85,70 @@ def user_profile(request):
     except Resume.DoesNotExist:
         resume = None
 
-    basic_education_instances = BasicEducation.objects.filter(user=user)
+    basic_education_instance = BasicEducation.objects.filter(user=user).first()
 
-    further_studies_instances = FurtherStudies.objects.filter(user=user)
 
-    certification_instances = Certification.objects.filter(user=user)
-
-    membership_instances = Membership.objects.filter(user=user)
-
-    work_experience_instances = WorkExperience.objects.filter(user=user)
-
-    referee_instances = Referee.objects.filter(user=user)
-
-    try:
-        professional_summary = ProfessionalSummary.objects.get(user=user)
-    except ProfessionalSummary.DoesNotExist:
-        professional_summary = None
-
-    return render(request, 'main/user_profile.html', {
+    return render(request, 'main/bio_info.html', {
         'user': user,
         'resume': resume,
-        'basic_education_instances': basic_education_instances,
-        'further_studies_instances': further_studies_instances,
-        'certification_instances': certification_instances,
-        'membership_instances': membership_instances,
-        'work_experience_instances': work_experience_instances,
-        'referee_instances': referee_instances,
-        'professional_summary': professional_summary,
-        'job_types':job_types
+        'be':basic_education_instance
+    })
+
+def high_school(request):
+    user = request.user
+
+    basic_education_instance = BasicEducation.objects.filter(user=user).first()
+    further_studies_instance = FurtherStudies.objects.filter(user=user).first()
+
+
+
+    return render(request, 'main/high_school.html', {
+        'user': user,
+        'be':basic_education_instance,
+        'fs':further_studies_instance
+    })
+
+
+@login_required
+def college(request):
+    user = request.user
+
+    further_studies_instance = FurtherStudies.objects.filter(user=user).all()
+    certs_instance = Certification.objects.filter(user=user).all()
+    
+
+    return render(request, 'main/college.html', {
+        'user': user,
+        'fs':further_studies_instance,
+        'certs':certs_instance
+        
+    })
+
+@login_required
+def certs(request):
+    user = request.user
+
+    membership_instance = Membership.objects.filter(user=user).all()
+    
+
+    return render(request, 'main/certs.html', {
+        'user': user,
+        'ms':membership_instance,
+        
+    })
+
+
+@login_required
+def memberships(request):
+    user = request.user
+
+    membership_instance = Membership.objects.filter(user=user).all()
+    
+
+    return render(request, 'main/memberships.html', {
+        'user': user,
+        'ms':membership_instance,
+        
     })
 
 
@@ -288,6 +323,10 @@ def further_studies(request):
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
 
+    certification_instance = Certification.objects.filter(user=user).first()
+    basic_academic_instance = BasicEducation.objects.filter(user=user).first()
+
+
     if request.method == 'POST':
         form = FurtherStudiesForm(request.POST, request.FILES)
         if form.is_valid():
@@ -295,19 +334,21 @@ def further_studies(request):
             further_studies.user = user
             further_studies.save()
 
-            if user.access_level == 5:
-                # Redirect to a different view if access_level is 5
-                return redirect('main:staff_profile')
-
-            # Redirect to a success page or URL
-            return redirect('main:user_profile')
+            messages.success(
+                request, 'Higher education Details updated succesfully.')
+            if FurtherStudies.objects.filter(user=user).exists():
+                return redirect('main:college')
+            else:
+                return redirect('main:further_studies')
 
     else:
         form = FurtherStudiesForm()
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'cert':certification_instance,
+        'be':basic_academic_instance,
     }
     return render(request, 'main/further_studies.html', context)
 
@@ -449,6 +490,8 @@ def membership(request):
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
 
+    certification_instance = Certification.objects.filter(user=user).all()
+
     if request.method == 'POST':
         form = MembershipForm(request.POST, request.FILES)
         if form.is_valid():
@@ -478,7 +521,8 @@ def membership(request):
 
     context = {
         'form': form,
-        'job_types':job_types
+        'job_types':job_types,
+        'cert':certification_instance
     }
     return render(request, 'main/membership.html', context)
 

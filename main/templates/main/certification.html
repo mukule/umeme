@@ -25,18 +25,6 @@
         <hr>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <strong>Oops! There are errors in the form:</strong>
-                <ul>
-                    {% for field_errors in form.errors.values %}
-                        {% for error in field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
             <div class="row">
                 <div class="col-md-6">
                     {{ form.name|as_crispy_field }}
@@ -53,9 +41,17 @@
                     {{ form.certificate|as_crispy_field }}
                 </div>
             </div>
-           <div class="text-center">
-            <button type="submit" class="btn btn-primary active">Submit</button>
-           </div>
+            <div class="text-center mt-4">
+              
+                <a href="{% url 'main:bio_info' %}" class="btn btn-primary active">Back</a>
+                
+                 <button type="submit" class="btn btn-primary active ml-2">Submit</button>
+                 {% if fs %}
+                     <a href="{% url 'main:update_further_studies' instance_id=fs.pk %}" class="btn btn-primary active ml-2">Next</a>
+                 {% else %}
+                     <a href="{% url 'main:further_studies' %}" class="btn btn-primary active ml-2">Next</a>
+                 {% endif %}
+                </div>
         </form>
     </div>
 </div>

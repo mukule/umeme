@@ -88,7 +88,7 @@
                     {% if user.is_authenticated %}
                     {% if user.access_level != 5 %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'main:basic_info' user_id=user.id %}">
+                            <a class="nav-link" href="{% url 'main:bio_info' %}">
                                 Resume
                             </a>
                             
