@@ -21,45 +21,54 @@
 </div>
 <div class="page-content">
     <div class="container-fluid">
-        <h2 class="mt-4 mb-4 text-center">Add New Referee</h2>
-        <hr>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <strong>Oops! There are errors in the form:</strong>
-                <ul>
-                    {% for field_errors in form.errors.values %}
-                        {% for error in field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
+        <div style="width: 100%;">
+            <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
+                <h4 style="margin-top: 3px;">Update your Resume to apply</h4>
+                <p style="margin-bottom: 4px;">Complete You Resume to apply</p>
             </div>
-            {% endif %}
-            <div class="row">
-                <div class="col-md-6">
-                    {{ form.full_name|as_crispy_field }}
+        </div>    
+       <div class="card mt-4">
+        <div class="card-body">
+            <h2 class="mt-4 mb-4 text-center" style="color: #FD7E14;">Add New Referee</h2>
+            <hr>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.full_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.organization|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    {{ form.organization|as_crispy_field }}
+                <div class="row">
+                    <div class="col-md-4">
+                        {{ form.designation|as_crispy_field }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.phone|as_crispy_field }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.email|as_crispy_field }}
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    {{ form.designation|as_crispy_field }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.phone|as_crispy_field }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.email|as_crispy_field }}
-                </div>
-            </div>
-           <div class="text-center">
-            <button type="submit" class="btn btn-primary active">Submit</button>
-           </div>
-        </form>
+             
+                <div class="text-center mt-4">
+                          
+                    {% if wx %}
+                    <a href="{% url 'main:experience' %}" class="btn btn-primary active ml-2">Back</a>
+                {% else %}
+                    <a href="{% url 'main:work_experience' %}" class="btn btn-primary active ml-2">Back</a>
+                {% endif %}
+                    
+                     <button type="submit" class="btn btn-primary active ml-2">Submit</button>
+                    
+                         <a href="" class="btn btn-primary active ml-2">Review Details</a>
+                   
+                    </div>
+            </form>
+        </div>
+       </div>
     </div>
 </div>
 {% endblock content %}

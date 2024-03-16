@@ -84,14 +84,14 @@
                 <div class="text-center mt-4">
                           
                     {% if wx %}
-                    <a href="{% url 'main:update_work_experience' instance_id=wx.pk %}" class="btn btn-primary active ml-2">Back</a>
+                    <a href="{% url 'main:experience' %}" class="btn btn-primary active ml-2">Back</a>
                 {% else %}
                     <a href="{% url 'main:work_experience' %}" class="btn btn-primary active ml-2">Back</a>
                 {% endif %}
                     
                      <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                     
-                         <a href="{% url 'main:user_profile' %}" class="btn btn-primary active ml-2">Review Details</a>
+                         <a href="" class="btn btn-primary active ml-2">Review Details</a>
                    
                     </div>
             </form>

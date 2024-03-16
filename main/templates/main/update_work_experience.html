@@ -98,14 +98,14 @@
                 <div class="text-center mt-4">
               
                     {% if ms %}
-                    <a href="{% url 'main:update_membership' instance_id=ms.pk %}" class="btn btn-primary active ml-2">Back</a>
+                    <a href="{% url 'main:memberships' %}" class="btn btn-primary active ml-2">Back</a>
                 {% else %}
                     <a href="{% url 'main:membership' %}" class="btn btn-primary active ml-2">Back</a>
                 {% endif %}
                     
                      <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                      {% if refs %}
-                         <a href="{% url 'main:update_referee' instance_id=refs.pk %}" class="btn btn-primary active ml-2">Next</a>
+                         <a href="{% url 'main:refs' %}" class="btn btn-primary active ml-2">Next</a>
                      {% else %}
                          <a href="{% url 'main:referees' %}" class="btn btn-primary active ml-2">Next</a>
                      {% endif %}

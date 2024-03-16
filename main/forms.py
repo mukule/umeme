@@ -268,7 +268,7 @@ class CertificationForm(forms.ModelForm):
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdfs only, Not more than 1Mb)', required=False,
+        label='Certificate File(pdfs only, Not more than 1Mb)'
 
     )
 

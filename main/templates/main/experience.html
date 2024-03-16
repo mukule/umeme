@@ -31,7 +31,7 @@
       
         <div class="card mt-4">
             <div class="card-body">
-                <h2 class="mb-4 text-center" style="color: #FD7E14;">Professional Certifications Information</h2>
+                <h2 class="mb-4 text-center" style="color: #FD7E14;">Work Experience Details</h2>
                 <div>
                     {% if messages %}
                     {% for message in messages %}
@@ -59,36 +59,33 @@
                 {% endfor %}
             {% endif %}
                 </div>
-                {% if certs %}
+                {% if wx %}
                 <div class="table-responsive">
                     <table class="table mb-0">
                         <thead class="thead-light">
                             <tr>
                                 <th>#</th>
-                                <th>Certification Name</th>
-                                <th>Certifying Body</th>
-                                <th>Date Attained</th>
-                                <th>Certificate</th>
+                                <th>Company Name</th>
+                                <th>Position</th>
+                                <th>Date Started</th>
+                                <th>Date Ended</th>
+                                <th>Responsibilities</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody class="border-0">
-                            {% for certification in certs %}
+                            {% for experience in wx %}
                             <tr>
                                 <th scope="row">{{ forloop.counter }}</th>
-                                <td>{{ certification.name }}</td>
-                                <td>{{ certification.certifying_body }}</td>
-                                <td>{{ certification.date_attained }}</td>
+                                <td>{{ experience.company_name }}</td>
+                                <td>{{ experience.position }}</td>
+                                <td>{{ experience.date_started }}</td>
+                                <td>{{ experience.date_ended }}</td>
+                                <td>{{ experience.responsibilities }}</td>
                                 <td>
-                                    {% if certification.certificate %}
-                                        <a href="{{ certification.certificate.url }}" target="_blank">View File</a>
-                                    {% else %}
-                                        No certificate uploaded
-                                    {% endif %}
-                                </td>
-                                <td> <a href="{% url 'main:update_certification' instance_id=certification.pk %}">
-                                    <i class="fas fa-edit"></i> Update
-                                </a>
+                                    <a href="{% url 'main:update_work_experience' instance_id=experience.pk %}">
+                                        <i class="fas fa-edit"></i> Update
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -96,24 +93,24 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-center">No certifications found. Please update your certifications.</p>
+                <p class="text-center">No Work Experience Found</p>
             {% endif %}
             
+            
+            
 
-            <div class="text-center mt-4">
-                  
-                {% if fs %}
-                <a href="{% url 'main:college' %}" class="btn btn-primary active ml-2">Back</a>
-            {% else %}
-                <a href="{% url 'main:further_studies' %}" class="btn btn-primary active ml-2">Back</a>
-            {% endif %}
-                
-            <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Add New</a>
-                 {% if ms %}
-                     <a href="{% url 'main:memberships' %}" class="btn btn-primary active ml-2">Next</a>
-                 {% else %}
-                     <a href="{% url 'main:membership' %}" class="btn btn-primary active ml-2">Next</a>
-                 {% endif %}
+                <div class="text-center mt-4">
+                    {% if certs %}
+                    <a href="{% url 'main:certs' %}" class="btn btn-primary active ml-2">Back</a>
+                    {% else %}
+                        <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Back</a>
+                    {% endif %}
+                    <a href="{% url 'main:membership' %}" class="btn btn-primary active ml-2">Add New</a>
+                    {% if refs %}
+                        <a href="{% url 'main:refs' %}" class="btn btn-primary active ml-2">Next</a>
+                    {% else %}
+                        <a href="{% url 'main:referees' %}" class="btn btn-primary active ml-2">Next</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -34,6 +34,33 @@
        <div class="card mt-4">
         <div class="card-body">
             <h2 class="mb-4 text-center" style="color: #FD7E14;">Add Professional Memberships</h2>
+            <div>
+                {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success alert-dismissible" role="alert">
+                           
+                            {{ message|safe|escape }}
+                        </div>
+                    {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                           
+                            {{ message|safe }}
+                        </div>
+                    {% elif message.tags == 'info' %}
+                        <div class="alert alert-info alert-dismissible" role="alert">
+                           
+                            {{ message|safe|escape }}
+                        </div>
+                 
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {{ message|safe|escape }}
+            </div>
+        {% endif %}
+            {% endfor %}
+        {% endif %}
+            </div>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
@@ -58,16 +85,18 @@
                     </div>
                 </div>
                 <div class="text-center mt-4">
-              
-                    <a href="{% url 'main:bio_info' %}" class="btn btn-primary active">Back</a>
-                    
-                     <button type="submit" class="btn btn-primary active ml-2">Submit</button>
-                     {% if fs %}
-                         <a href="{% url 'main:update_further_studies' instance_id=fs.pk %}" class="btn btn-primary active ml-2">Next</a>
-                     {% else %}
-                         <a href="{% url 'main:further_studies' %}" class="btn btn-primary active ml-2">Next</a>
-                     {% endif %}
-                    </div>
+                    {% if certs %}
+                    <a href="{% url 'main:certs' %}" class="btn btn-primary active ml-2">Back</a>
+                    {% else %}
+                        <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Back</a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary active ml-2">Submit</button>
+                    {% if refs %}
+                        <a href="{% url 'main:refs' %}" class="btn btn-primary active ml-2">Next</a>
+                    {% else %}
+                        <a href="{% url 'main:referees' %}" class="btn btn-primary active ml-2">Next</a>
+                    {% endif %}
+                </div>
             </form>
        </div>
     </div>
