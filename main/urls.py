@@ -48,6 +48,7 @@ urlpatterns = [
     path('career_objective/', views.career_objective, name='career_objective'),
     path('update_career_objective/', views.update_career_objective,
          name='update_career_objective'),
+      path('resume/', views.resume, name='resume'),
     path('terms/', views.terms, name='terms'),
     path('staff/', views.staff, name='staff_profile'),
     path('update_educational_level/',

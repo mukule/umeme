@@ -99,17 +99,15 @@
             
 
             <div class="text-center mt-4">
-                {% if ms %}
-                <a href="{% url 'main:wx' %}" class="btn btn-primary active ml-2">Back</a>
+                {% if wx %}
+                <a href="{% url 'main:experience' %}" class="btn btn-primary active ml-2">Back</a>
                 {% else %}
                     <a href="{% url 'main:work_experience' %}" class="btn btn-primary active ml-2">Back</a>
                 {% endif %}
                 <a href="{% url 'main:referees' %}" class="btn btn-primary active ml-2">Add New</a>
-                {% if refs %}
-                    <a href="{% url 'main:refs' %}" class="btn btn-primary active ml-2">Next</a>
-                {% else %}
-                    <a href="{% url 'main:referees' %}" class="btn btn-primary active ml-2">Next</a>
-                {% endif %}
+              
+                    <a href="{% url 'main:resume' %}" class="btn btn-primary active ml-2">Review Details</a>
+               
             </div>
             </div>
         </div>

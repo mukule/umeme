@@ -186,7 +186,36 @@ def experience(request):
         'user': user,
         'wx': wx_instance,
         'certs': certification_instance,
-        'ref': referee_instance
+        'refs': referee_instance
+
+    })
+
+@login_required
+def resume(request):
+    user = request.user
+
+
+    try:
+        resume = Resume.objects.get(user=user)
+    except Resume.DoesNotExist:
+        resume = None
+    
+    basic_academic = BasicEducation.objects.filter(user=user).all()
+    higher_education = FurtherStudies.objects.filter(user=user).order_by('-date_ended').all()
+    wx_instance = WorkExperience.objects.filter(user=user).order_by('-date_ended').all()
+    certification_instance = Certification.objects.filter(user=user).order_by('-date_attained').all()
+    membership_instance = Membership.objects.filter(user=user).order_by('-date_joined').all()
+    referee_instance = Referee.objects.filter(user=user).all()
+
+    return render(request, 'main/resume.html', {
+        'be':basic_academic,
+        'he':higher_education,
+        'resume':resume,
+        'user': user,
+        'wx': wx_instance,
+        'certs': certification_instance,
+        'ms':membership_instance,
+        'refs': referee_instance
 
     })
 
@@ -263,18 +292,16 @@ def basic_info(request, user_id):
                 resume.disability_number = None
 
             # Set county to 'N/A' if country of birth is not Kenya
-            if resume.country_of_birth != 'Kenya':
+           
+            if resume.country_of_residence != 'KE':
                 resume.county = 'N/A'
 
             resume.save()
             messages.success(
                 request, 'Your information has been updated successfully.')
-            if BasicEducation.objects.filter(user=user).exists():
-                # Redirect to update_basic_academic view
-                return redirect('main:update_basic_education', instance_id=basic_education_instance.pk)
-            else:
-                # Redirect to basic_academic view
-                return redirect('main:basic_academic')
+
+            return redirect('main:bio_info')
+           
         else:
             messages.error(
                 request, 'There was an error in the form submission. Please check your inputs.')
@@ -299,7 +326,9 @@ def basic_academic(request):
             basic_education = form.save(commit=False)
             basic_education.user = request.user
             basic_education.save()
-            return redirect('main:user_profile')
+            messages.success(
+                request, 'High School information updated successfully.')
+            return redirect('main:high_school')
     else:
         form = EducationalInformationForm()
 
@@ -334,10 +363,7 @@ def update_basic_academic(request, instance_id):
             form.save()
             messages.success(
                 request, 'Your information has been updated successfully.')
-            if FurtherStudies.objects.filter(user=user).exists():
-                return redirect('main:update_further_studies', instance_id=further_studies_instance.pk)
-            else:
-                return redirect('main:further_studies')
+            return redirect('main:high_school')
     else:
         # Include the 'certificate' field in the form instance
         form = EducationalInformationForm(instance=basic_education)
@@ -375,11 +401,8 @@ def further_studies(request):
             further_studies.save()
 
             messages.success(
-                request, 'Higher education Details updated succesfully.')
-            if FurtherStudies.objects.filter(user=user).exists():
-                return redirect('main:college')
-            else:
-                return redirect('main:further_studies')
+                request, 'Higher Education Details Added succesfully.')
+            return redirect('main:college')
 
     else:
         form = FurtherStudiesForm()
@@ -412,10 +435,8 @@ def update_further_studies(request, instance_id):
             form.save()
             messages.success(
                 request, 'Your information has been updated successfully.')
-            if Certification.objects.filter(user=user).exists():
-                return redirect('main:update_certification', instance_id=certification_instance.pk)
-            else:
-                return redirect('main:certification')
+            
+            return redirect('main:college')
 
     else:
         form = FurtherStudiesForm(instance=further_studies)
@@ -459,10 +480,9 @@ def certification(request):
 
                 messages.success(
                     request, 'Your Certification Added succesfully')
-                if Certification.objects.filter(user=user).exists():
-                    return redirect('main:certs')
-                else:
-                    return redirect('main:certification')
+                
+                return redirect('main:certs')
+               
             else:
                 # Display an error message if the name is blank
                 messages.error(
@@ -502,10 +522,8 @@ def update_certification(request, instance_id):
             form.save()
             messages.success(
                 request, 'Your information has been updated successfully.')
-            if Membership.objects.filter(user=user).exists():
-                return redirect('main:update_membership', instance_id=membership_instance.pk)
-            else:
-                return redirect('main:membership')
+           
+            return redirect('main:certs')
 
     else:
         form = CertificationForm(instance=certification)
@@ -549,10 +567,9 @@ def membership(request):
                 membership.save()
                 messages.success(
                     request, 'Membership Cetifications added succesfully')
-                if Membership.objects.filter(user=user).exists():
-                    return redirect('main:memberships')
-                else:
-                    return redirect('main:membership')
+                
+                return redirect('main:memberships')
+                
             else:
                 # Display an error message if the name is blank
                 messages.error(request, 'Membership Title cannot be blank.')
@@ -593,11 +610,9 @@ def update_membership(request, instance_id):
             form.save()
             messages.success(
                 request, 'Your information has been updated successfully.')
-            if Membership.objects.filter(user=user).exists():
-                return redirect('main:update_work_experience', instance_id=work_experience_instance.pk)
-            else:
-                return redirect('main:work_experience')
-
+            
+            return redirect('main:memberships')
+            
     else:
         form = MembershipForm(instance=membership)
 

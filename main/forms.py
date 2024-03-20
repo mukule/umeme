@@ -65,7 +65,7 @@ class ResumeForm(forms.ModelForm):
     county = forms.ChoiceField(
         choices=[('', 'Select County')] + list(COUNTY_CHOICES),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label='County',
+        label='County',required=False
 
 
     )
@@ -76,7 +76,7 @@ class ResumeForm(forms.ModelForm):
         empty_label='Select Ethnicity'
 
     )
-    religion = forms.CharField(
+    religeon = forms.CharField(
         max_length=255,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Religion'}),
@@ -127,7 +127,7 @@ class ResumeForm(forms.ModelForm):
         fields = [
             'full_name', 'email_address', 'phone', 'id_number', 'dob',
             'country_of_birth', 'country_of_residence', 'county', 'ethnicity',
-            'religion', 'gender', 'disability', 'disability_number', 'marital_status',
+            'religeon', 'gender', 'disability', 'disability_number', 'marital_status',
             'educational_level', 'field_of_study'
         ]
 
@@ -285,7 +285,7 @@ class CertificationForm(forms.ModelForm):
 class MembershipForm(forms.ModelForm):
     class Meta:
         model = Membership
-        fields = ['membership_title', 'membership_number',
+        fields = ['membership_title', 'membership_number','membership_body',
                   'date_joined', 'certificate']
 
     membership_title = forms.CharField(

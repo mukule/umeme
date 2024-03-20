@@ -31,7 +31,7 @@
       
         <div class="card mt-4">
             <div class="card-body">
-                <h2 class="mb-4 text-center" style="color: #FD7E14;">membership Certifications</h2>
+                <h2 class="mb-4 text-center" style="color: #FD7E14;">Membership Certifications</h2>
                 <div>
                     {% if messages %}
                     {% for message in messages %}
@@ -110,7 +110,7 @@
                     {% else %}
                         <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Back</a>
                     {% endif %}
-                    <a href="{% url 'main:work_experience' %}" class="btn btn-primary active ml-2">Add New</a>
+                    <a href="{% url 'main:membership' %}" class="btn btn-primary active ml-2">Add New</a>
                     {% if wx %}
                         <a href="{% url 'main:experience' %}" class="btn btn-primary active ml-2">Next</a>
                     {% else %}

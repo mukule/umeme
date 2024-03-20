@@ -73,8 +73,13 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
+                        {{ form.membership_body|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
                         {{ form.date_joined|as_crispy_field }}
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-md-6">
                         {{ form.certificate|as_crispy_field }}
                     </div>
