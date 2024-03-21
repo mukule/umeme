@@ -25,15 +25,14 @@
         <div class="row">
             <div style="width: 100%;">
                 <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
-                    <h4 style="margin-top: 3px;">Update your Resume to apply</h4>
-                    <p style="margin-bottom: 4px;">Update your Details on the Resume from 1-7 to for you to be able to apply for opportunities</p>
+                    <h4 style="margin-top: 3px;">Update Professional Membership</h4>
                 </div>
             </div>    
            
         </div>
        <div class="card mt-4">
         <div class="card-body">
-            <h2 class="mt-4 mb-4 text-center" style="color: #FD7E14;">Update Professional Memberships</h2>
+            <h2 class="mt-4 mb-4 text-center" style="color: #FD7E14;">Professional Memberships</h2>
             <div>
                 {% if messages %}
                 {% for message in messages %}
@@ -94,7 +93,7 @@
                     
                      <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                      {% if wx %}
-                         <a href="{% url 'main:update_work_experience' instance_id=wx.pk %}" class="btn btn-primary active ml-2">Next</a>
+                         <a href="{% url 'main:experience' %}" class="btn btn-primary active ml-2">Next</a>
                      {% else %}
                          <a href="{% url 'main:work-experience' %}" class="btn btn-primary active ml-2">Next</a>
                      {% endif %}

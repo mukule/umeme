@@ -11,6 +11,7 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 from users.decorators import *
 from django.db.models import Q
+from users.checks import *
 
 
 @access_level_check(user_access_level=5, redirect_view_name='vacancies:internal')
@@ -88,10 +89,14 @@ def bio_info(request):
 
     basic_education_instance = BasicEducation.objects.filter(user=user).first()
 
+    fields_provided = resume_fields_provided(request)
+    print(fields_provided)
+
     return render(request, 'main/bio_info.html', {
         'user': user,
         'resume': resume,
-        'be': basic_education_instance
+        'be': basic_education_instance,
+        'all_fields': fields_provided
     })
 
 
@@ -101,11 +106,16 @@ def high_school(request):
 
     basic_education_instance = BasicEducation.objects.filter(user=user).first()
     further_studies_instance = FurtherStudies.objects.filter(user=user).first()
+    all_fields_provided = basic_academic_fields_provided(request)
+    print(all_fields_provided)
+   
 
     return render(request, 'main/high_school.html', {
         'user': user,
         'be': basic_education_instance,
-        'fs': further_studies_instance
+        'fs': further_studies_instance,
+        'all_fields':all_fields_provided
+        
     })
 
 
@@ -115,11 +125,14 @@ def college(request):
 
     further_studies_instance = FurtherStudies.objects.filter(user=user).all()
     certs_instance = Certification.objects.filter(user=user).all()
+    all_fields_provided = higher_education_fields_provided(request)
+    print(all_fields_provided)
 
     return render(request, 'main/college.html', {
         'user': user,
         'fs': further_studies_instance,
-        'certs': certs_instance
+        'certs': certs_instance,
+        'all_fields':all_fields_provided
 
     })
 
@@ -131,12 +144,16 @@ def certs(request):
     certification_instance = Certification.objects.filter(user=user).all()
     further_studies_instance = FurtherStudies.objects.filter(user=user).all()
     membership_instance = Membership.objects.filter(user=user).all()
+    certs_fields_provided = certification_fields_provided(request)
+    print(certs_fields_provided)
 
+    
     return render(request, 'main/certs.html', {
         'user': user,
         'fs': further_studies_instance,
         'ms': membership_instance,
-        'certs': certification_instance
+        'certs': certification_instance,
+        'all_fields':certs_fields_provided
 
     })
 
@@ -148,12 +165,16 @@ def memberships(request):
     membership_instance = Membership.objects.filter(user=user).all()
     certification_instance = Certification.objects.filter(user=user).all()
     wx_instance = WorkExperience.objects.filter(user=user).all()
+    memberships_fields_provided = membership_fields_provided(request)
+    print(memberships_fields_provided)
 
     return render(request, 'main/memberships.html', {
         'user': user,
         'ms': membership_instance,
         'certs': certification_instance,
-        'wx': wx_instance
+        'wx': wx_instance,
+        'all_fields':memberships_fields_provided
+
 
     })
 
@@ -165,11 +186,13 @@ def refs(request):
     work_experience_instance = WorkExperience.objects.filter(user=user).all()
     certification_instance = Certification.objects.filter(user=user).all()
     referee_instance = Referee.objects.filter(user=user).all()
+    refs_fields_provided = referee_fields_provided(request)
 
     return render(request, 'main/refs.html', {
         'user': user,
         'wx': work_experience_instance,
-        'refs': referee_instance
+        'refs': referee_instance,
+        'all_fields':refs_fields_provided
 
     })
 
@@ -181,12 +204,14 @@ def experience(request):
     wx_instance = WorkExperience.objects.filter(user=user).all()
     certification_instance = Certification.objects.filter(user=user).all()
     referee_instance = Referee.objects.filter(user=user).all()
+    experiences_fields_provided = experience_fields_provided(request)
 
     return render(request, 'main/experience.html', {
         'user': user,
         'wx': wx_instance,
         'certs': certification_instance,
-        'refs': referee_instance
+        'refs': referee_instance,
+        'all_fields':experiences_fields_provided
 
     })
 
@@ -206,6 +231,7 @@ def resume(request):
     certification_instance = Certification.objects.filter(user=user).order_by('-date_attained').all()
     membership_instance = Membership.objects.filter(user=user).order_by('-date_joined').all()
     referee_instance = Referee.objects.filter(user=user).all()
+    all_instances_provided = all_fields_provided(request)
 
     return render(request, 'main/resume.html', {
         'be':basic_academic,
@@ -215,7 +241,8 @@ def resume(request):
         'wx': wx_instance,
         'certs': certification_instance,
         'ms':membership_instance,
-        'refs': referee_instance
+        'refs': referee_instance,
+        'all_fields':all_instances_provided,
 
     })
 
@@ -381,7 +408,7 @@ def update_basic_academic(request, instance_id):
 def delete_basic_academic(request, instance_id):
     instance = get_object_or_404(BasicEducation, pk=instance_id)
     instance.delete()
-    return redirect('main:user_profile')
+    return redirect('main:high_school')
 
 
 @login_required
@@ -455,10 +482,7 @@ def delete_further_studies(request, instance_id):
     user = request.user
     instance = get_object_or_404(FurtherStudies, pk=instance_id)
     instance.delete()
-    if user.access_level == 5:
-        # Redirect to a different view if access_level is 5
-        return redirect('main:staff_profile')
-    return redirect('main:user_profile')
+    return redirect('main:college')
 
 
 @login_required
@@ -543,10 +567,7 @@ def delete_certification(request, instance_id):
     user = request.user
     instance = get_object_or_404(Certification, pk=instance_id)
     instance.delete()
-    if user.access_level == 5:
-        # Redirect to a different view if access_level is 5
-        return redirect('main:staff_profile')
-    return redirect('main:user_profile')
+    return redirect('main:certs')
 
 
 @login_required
@@ -630,10 +651,7 @@ def delete_membership(request, instance_id):
     user = request.user
     instance = get_object_or_404(Membership, pk=instance_id)
     instance.delete()
-    if user.access_level == 5:
-        # Redirect to a different view if access_level is 5
-        return redirect('main:staff_profile')
-    return redirect('main:user_profile')
+    return redirect('main:memberships')
 
 
 @login_required
@@ -741,7 +759,7 @@ def delete_work_experience(request, instance_id):
     instance = get_object_or_404(WorkExperience, pk=instance_id)
     instance.delete()
 
-    return redirect('main:user_profile')
+    return redirect('main:experience')
 
 
 @login_required
@@ -810,7 +828,7 @@ def update_referee(request, instance_id):
 def delete_referee(request, instance_id):
     instance = get_object_or_404(Referee, pk=instance_id)
     instance.delete()
-    return redirect('main:user_profile')
+    return redirect('main:refs')
 
 
 @login_required

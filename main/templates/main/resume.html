@@ -9,7 +9,11 @@
             <div style="width: 100%;">
                 <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
                     <h4 style="margin-top: 3px;">Your Resume</h4>
-                    <p style="margin-bottom: 4px;">Complete Your Resume to Apply</p>
+                    {% if all_fields %}
+                    <p style="margin-bottom: 4px;" class="text-success"> Your Resume is Complete</p>
+                    {% else %}
+                    <p style="margin-bottom: 4px;" class="text-warning">You are Missing some parts, Its Incomplete</p>
+                    {% endif %}
                 </div>
             </div>    
         </div>
@@ -67,6 +71,7 @@
                                 <th>Date Started</th>
                                 <th>Date Ended</th>
                                 <th>Grade Attained</th>
+                                <th>Certificate</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -79,9 +84,13 @@
                                 <td>{{ education.date_started }}</td>
                                 <td>{{ education.date_ended }}</td>
                                 <td>{{ education.grade_attained }}</td>
+                                <td><a href="{{ education.certificate.url }}" target="_blank">View</a></td>
                                 <td>
                                     <a href="{% url 'main:update_basic_education' instance_id=education.pk %}">
-                                        <i class="fas fa-edit"></i> Update
+                                        <i class="fas fa-edit ml-2"></i>
+                                    </a>
+                                    <a href="{% url 'main:delete_basic_education' instance_id=education.pk %}">
+                                        <i class="fas fa-trash text-danger"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -107,6 +116,7 @@
                     <th>Date Started</th>
                     <th>Date Ended</th>
                     <th>Grade</th>
+                    <th>Certificate</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -120,9 +130,13 @@
                     <td>{{ education.date_started }}</td>
                     <td>{{ education.date_ended }}</td>
                     <td>{{ education.grade }}</td>
+                    <td><a href="{{ education.certificate.url }}" target="_blank">View</a></td>
                     <td>
                         <a href="{% url 'main:update_further_studies' instance_id=education.pk %}">
-                            <i class="fas fa-edit"></i> Update
+                            <i class="fas fa-edit ml-2"></i>
+                        </a>
+                        <a href="{% url 'main:delete_further_studies' instance_id=education.pk %}">
+                            <i class="fas fa-trash text-danger"></i>
                         </a>
                     </td>
                 </tr>
@@ -146,7 +160,7 @@
                     <th scope="col">Certification</th>
                     <th scope="col">Certifying Body</th>
                     <th scope="col">Date Attained</th>
-                    <th scope="col">View Certificate</th>
+                    <th scope="col">Certificate</th>
                     <th scope="col">Action</th>
 
                 </tr>
@@ -160,7 +174,10 @@
                     <td><a href="{{ certification.certificate.url }}" target="_blank">View</a></td>
                     <td>
                         <a href="{% url 'main:update_certification' instance_id=certification.pk %}">
-                            <i class="fas fa-edit"></i> Update
+                            <i class="fas fa-edit ml-2"></i>
+                        </a>
+                        <a href="{% url 'main:delete_certification' instance_id=certification.pk %}">
+                            <i class="fas fa-trash text-danger"></i>
                         </a>
                     </td>
                 </tr>
@@ -186,7 +203,7 @@
                         <th scope="col">Membership Title</th>
                         <th scope="col">Membership Body</th>
                         <th scope="col">Date Joined</th>
-                        <th scope="col">View Certificate</th>
+                        <th scope="col">Certificate</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -199,7 +216,10 @@
                         <td><a href="{{ membership.certificate.url }}" target="_blank">View</a></td>
                         <td>
                             <a href="{% url 'main:update_membership' instance_id=membership.pk %}">
-                                <i class="fas fa-edit"></i> Update
+                                <i class="fas fa-edit ml-2"></i>
+                            </a>
+                            <a href="{% url 'main:delete_membership' instance_id=membership.pk %}">
+                                <i class="fas fa-trash text-danger"></i>
                             </a>
                         </td>
                     </tr>
@@ -273,8 +293,12 @@
                         <td>{{ referee.email }}</td>
                         <td>
                             <a href="{% url 'main:update_referee' instance_id=referee.pk %}">
-                                <i class="fas fa-edit"></i> Update
+                                <i class="fas fa-edit ml-2"></i>
                             </a>
+                            <a href="{% url 'main:delete_referee' instance_id=referee.pk %}">
+                                <i class="fas fa-trash text-danger"></i>
+                            </a>
+                            
                         </td>
                     </tr>
                     {% endfor %}
