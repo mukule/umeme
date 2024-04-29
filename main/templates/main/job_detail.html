@@ -23,6 +23,33 @@
         <div class="container-fluid">
             <div class="card p-3">
                 <h2 class="card-title text-center" style="color: #FD7E14;">Vacancy Details - {{ job.title }} - {{ job.ref }}</h2>
+                <div>
+                    {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'success' %}
+                            <div class="alert alert-success alert-dismissible" role="alert">
+                               
+                                {{ message|safe|escape }}
+                            </div>
+                        {% elif message.tags == 'error' %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                               
+                                {{ message|safe }}
+                            </div>
+                        {% elif message.tags == 'info' %}
+                            <div class="alert alert-info alert-dismissible" role="alert">
+                               
+                                {{ message|safe|escape }}
+                            </div>
+                     
+                <div class="alert alert-warning alert-dismissible" role="alert">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    {{ message|safe|escape }}
+                </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </div>
 
                 <div class="row mt-3">
                     <div class="col-md-8">
@@ -105,9 +132,9 @@
                 </div>
             <div class="text-center">
                 {% if terms.accepted %}
-                <a href="{% url 'users:terms_acceptance' vacancy_id=job.id %}">  <i class="fas btn-primary active fa-check-square"> </i></a><a href="{% url 'main:terms' %}">Terms and Conditions Accepted</a>
+                <a href="{% url 'users:terms_acceptance' %}">  <i class="fas btn-primary active fa-check-square"> </i></a><a href="{% url 'main:terms' %}">Terms and Conditions Accepted</a>
                 {%else%}
-                <a href="{% url 'users:terms_acceptance' vacancy_id=job.id %}" > <i class="btn btn-danger active far fa-square"></i> </a><a href="{% url 'main:terms' %}"> Accept Terms and Conditions</a>
+                <a href="{% url 'users:terms_acceptance' %}" > <i class="btn btn-danger active far fa-square"></i> </a><a href="{% url 'main:terms' %}"> Accept Terms and Conditions</a>
                 {%endif%}
                
             </div>

@@ -75,9 +75,9 @@
                     
                     </div>  <div class="text-center">
                         {% if user_accepted_terms.accepted %}
-                        <a href="{% url 'users:terms_acceptance' vacancy_id=vacancy.id %}">  <i class="fas btn-primary active fa-check-square"> </i></a><a href="{% url 'main:terms' %}">Terms and Conditions Accepted</a>
+                        <a href="{% url 'users:terms_acceptance' vacancy_id=vacancy.id %}" class="ml-2">  <i class="fas fa-check-square ml-2"> </i></a><a href="{% url 'main:terms' %}">   Terms and Conditions Accepted</a>
                         {%else%}
-                        <a href="{% url 'users:terms_acceptance' vacancy_id=vacancy.id %}" > <i class="btn btn-danger active far fa-square"></i> </a><a href="{% url 'main:terms' %}"> Accept Terms and Conditions</a>
+                        <a href="{% url 'users:terms_acceptance' vacancy_id=vacancy.id %}" class="ml-2" > <i class=" active fas fa-square ml-2"></i> </a><a href="{% url 'main:terms' %}">    Accept Terms and Conditions</a>
                         {%endif%}
                        
                     </div>

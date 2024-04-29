@@ -138,14 +138,7 @@ def apply(request, vacancy_id):
 
     if already_applied:
         messages.error(request, 'You have already applied for this job.')
-        if vacancy.vacancy_type == 'Internal':
-            return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Employment':
-            return redirect('vacancies:job', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Attachment':
-            return redirect('vacancies:attachment', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Internship':
-            return redirect('vacancies:internship', vacancy_id=vacancy_id)
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
     # Check if the user has added basic education and further studies to their profile
     has_basic_education = BasicEducation.objects.filter(user=user).exists()
@@ -153,69 +146,32 @@ def apply(request, vacancy_id):
 
     if not has_basic_education or not has_resume:
         if user.access_level != 5:
-            messages.error(
-                request, 'Update your Basic information / academic Details to apply !!')
-            if vacancy.vacancy_type == 'Internal':
-                return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
-            elif vacancy.vacancy_type == 'Employment':
-                return redirect('vacancies:job', vacancy_id=vacancy_id)
-            elif vacancy.vacancy_type == 'Attachment':
-                return redirect('vacancies:attachment', vacancy_id=vacancy_id)
-            elif vacancy.vacancy_type == 'Internship':
-                return redirect('vacancies:internship', vacancy_id=vacancy_id)
+            messages.error(request, 'Update your Basic information / academic Details to apply !!')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
 
     # Check if the vacancy requires certifications or college education
     if vacancy.certifications_required and not Certification.objects.filter(user=user).exists():
         messages.error(
             request, 'Certifications are required for this position')
-        if vacancy.vacancy_type == 'Internal':
-            return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Employment':
-            return redirect('vacancies:job', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Attachment':
-            return redirect('vacancies:attachment', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Internship':
-            return redirect('vacancies:internship', vacancy_id=vacancy_id)
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
     if vacancy.college_required and not FurtherStudies.objects.filter(user=user).exists():
         messages.error(
             request, 'College/Further studies are required for this position')
-        if vacancy.vacancy_type == 'Internal':
-            return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Employment':
-            return redirect('vacancies:job', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Attachment':
-            return redirect('vacancies:attachment', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Internship':
-            return redirect('vacancies:internship', vacancy_id=vacancy_id)
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
     if vacancy.membership_required and not Membership.objects.filter(user=user).exists():
         messages.error(
             request, 'Professional Membership required for this position')
-        if vacancy.vacancy_type == 'Internal':
-            return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Employment':
-            return redirect('vacancies:job', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Attachment':
-            return redirect('vacancies:attachment', vacancy_id=vacancy_id)
-        elif vacancy.vacancy_type == 'Internship':
-            return redirect('vacancies:internship', vacancy_id=vacancy_id)
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
     referee_count = Referee.objects.filter(user=request.user).count()
     if referee_count < 3:
         if user.access_level != 5:
             messages.error(
                 request, 'You don\'t have enough referees to apply. 3 referees are required.')
-            if vacancy.vacancy_type == 'Internal':
-                return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
-            elif vacancy.vacancy_type == 'Employment':
-                return redirect('vacancies:job', vacancy_id=vacancy_id)
-            elif vacancy.vacancy_type == 'Attachment':
-                return redirect('vacancies:attachment', vacancy_id=vacancy_id)
-            elif vacancy.vacancy_type == 'Internship':
-                return redirect('vacancies:internship', vacancy_id=vacancy_id)
+            return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    # Get the user's resume and calculate total work experience
     user_resume = get_object_or_404(Resume, user=user)
     user_work_experience = WorkExperience.objects.filter(user=user)
     total_work_experience_years = sum(

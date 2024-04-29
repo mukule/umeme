@@ -94,7 +94,7 @@
                 </div>
                 <div class="text-center mt-4">
               
-                    <a href="{% url 'main:bio_info' %}" class="btn btn-primary active">Back</a>
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
                     
                      <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                      {% if fs %}

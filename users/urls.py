@@ -21,7 +21,7 @@ urlpatterns = [
     path("permission_denied/", views.not_allowed, name="denials"),
     path("f_pass", views.f_pass, name="f_pass"),
     path('del_user/<int:user_id>', views.delete_user, name='del_user'),
-    path('job/<int:vacancy_id>/terms_acceptance/',
+    path('terms_acceptance/',
          views.terms_acceptance, name='terms_acceptance'),
       path('vacancy/<int:vacancy_id>/terms_acceptance/',
          views.internal_terms_acceptance, name='internal_terms_acceptance'),

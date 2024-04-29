@@ -71,7 +71,6 @@ def job_detail(request, job_id):
 def bio_info(request):
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
-    print(user)
 
     if user.access_level == 5:
         try:
@@ -79,18 +78,25 @@ def bio_info(request):
             if not profile_update.password_changed:
                 return render(request, 'main/password_change_required.html')
         except ProfileUpdate.DoesNotExist:
-
             return render(request, 'main/password_change_required.html')
 
     try:
         resume = Resume.objects.get(user=user)
     except Resume.DoesNotExist:
-        resume = None
+        # If the user doesn't have a resume, create one with default information
+        full_name = f"{user.first_name} {user.last_name}"
+        id_number = user.id_number
+        email_address = user.email
+        resume = Resume.objects.create(
+            user=user,
+            full_name=full_name,
+            id_number=id_number,
+            email_address=email_address
+        )
 
     basic_education_instance = BasicEducation.objects.filter(user=user).first()
 
     fields_provided = resume_fields_provided(request)
-    print(fields_provided)
 
     return render(request, 'main/bio_info.html', {
         'user': user,

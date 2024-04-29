@@ -156,6 +156,7 @@ logger = logging.getLogger(__name__)
 @user_not_authenticated
 def custom_login(request):
     error_messages = []
+    next_url = request.GET.get('next')
     
     if request.method == "POST":
         form = UserLoginForm(request=request, data=request.POST)
@@ -197,7 +198,10 @@ def custom_login(request):
 
                     messages.success(
                         request, f"Hello {user.username}! You have been logged in.")
-                    return redirect("/")
+                    if next_url:
+                        return redirect(next_url)
+                    else:
+                        return redirect("/")
                 else:
                     return redirect('users:staff_no')
             else:
@@ -212,7 +216,6 @@ def custom_login(request):
         template_name="users/login.html",
         context={"form": form, "errors": error_messages}
     )
-
 
 def sendActivationLink(request, user, to_email):
     mail_subject = 'Secure your user account.'
@@ -475,20 +478,17 @@ def delete_user(request, user_id):
     return redirect('hr:system_users')
 
 @login_required
-def terms_acceptance(request, vacancy_id):
+def terms_acceptance(request):
     user = request.user
-
-    # Get or create UserAcceptedTerms instance for the user
-    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
-        user=user
-    )
-
-    # Toggle the 'accepted' field
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(user=user)
+    
+    # Toggle the acceptance status
     user_accepted_terms.accepted = not user_accepted_terms.accepted
     user_accepted_terms.save()
 
-    # Redirect back to the 'job' view with the vacancy_id parameter
-    return redirect('vacancies:job', vacancy_id=vacancy_id)
+    # Redirect back to the previous page or a specific URL
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
 
 @login_required
 def internal_terms_acceptance(request, vacancy_id):

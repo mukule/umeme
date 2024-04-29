@@ -64,31 +64,32 @@
                 {% endif %}
                 </div>
                 {% if resume %}
-                    <div class="row col-xl-12">
-                        <div class="col-md-6">
-                            <p class="card-title"><strong>Name:</strong> {{ resume.full_name }}</p>
-                            <p class="card-title"><strong>Email:</strong> {{ resume.email_address }}</p>
-                            <p class="card-title"><strong>Phone:</strong> {{ resume.phone }}</p>
-                            <p class="card-title"><strong>ID Number:</strong> {{ resume.id_number }}</p>
-                            <p class="card-title"><strong>Date of Birth:</strong> {{ resume.dob }}</p>
-                            <p class="card-title"><strong>Country of Birth:</strong> {{ resume.get_country_of_birth_display }}</p>
-                            <p class="card-title"><strong>Country of Residence:</strong> {{ resume.get_country_of_residence_display }}</p>
-                            <p class="card-title"><strong>County:</strong> {{ resume.county }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="card-title"><strong>Ethnicity:</strong> {{ resume.ethnicity }}</p>
-                            <p class="card-title"><strong>Religion:</strong> {{ resume.religeon }}</p>
-                            <p class="card-title"><strong>Gender:</strong> {{ resume.gender }}</p>
-                            <p class="card-title"><strong>Disability:</strong> {% if resume.disability %} Yes {% else %} No {% endif %}</p>
-                            <p class="card-title"><strong>Disability Number:</strong> {{ resume.disability_number }}</p>
-                            <p class="card-title"><strong>Marital Status:</strong> {{ resume.marital_status }}</p>
-                            <p class="card-title"><strong>Highest Education Level:</strong> {{ resume.educational_level }}</p>
-                            <p class="card-title"><strong>Field of Study:</strong> {{ resume.field_of_study }}</p>
-                        </div>
+                <div class="row col-xl-12">
+                    <div class="col-md-6">
+                        <p class="card-title"><strong>Name:</strong> {% if resume.full_name %}{{ resume.full_name }} {% else %} :- {% endif %}</p>
+                        <p class="card-title"><strong>Email:</strong> {% if resume.email_address %}{{ resume.email_address }} {% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Phone:</strong> {% if resume.phone %}{{ resume.phone }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>ID Number:</strong> {% if resume.id_number %}{{ resume.id_number }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Date of Birth:</strong> {% if resume.dob %}{{ resume.dob }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Country of Birth:</strong> {% if resume.get_country_of_birth_display %}{{ resume.get_country_of_birth_display }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Country of Residence:</strong> {% if resume.get_country_of_residence_display %}{{ resume.get_country_of_residence_display }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>County:</strong> {% if resume.county %}{{ resume.county }}{% else %}:-{% endif %}</p>
                     </div>
-                {% else %}
-                    <p class="text-center">Update your Bio information</p>
-                {% endif %}
+                    <div class="col-md-6">
+                        <p class="card-title"><strong>Ethnicity:</strong> {% if resume.ethnicity %}{{ resume.ethnicity }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Religion:</strong> {% if resume.religeon %}{{ resume.religeon }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Gender:</strong> {% if resume.gender %}{{ resume.gender }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Disability:</strong> {% if resume.disability %}Yes{% else %}No{% endif %}</p>
+                        <p class="card-title"><strong>Disability Number:</strong> {% if resume.disability_number %}{{ resume.disability_number }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Marital Status:</strong> {% if resume.marital_status %}{{ resume.marital_status }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Highest Education Level:</strong> {% if resume.educational_level %}{{ resume.educational_level }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Field of Study:</strong> {% if resume.field_of_study %}{{ resume.field_of_study }}{% else %}:-{% endif %}</p>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center">Update your Bio information</p>
+            {% endif %}
+            
 
                 <div class="text-center mt-4">
                     <a href="{% url 'main:basic_info' user_id=user.id %}" class="btn btn-primary active">Update</a>
