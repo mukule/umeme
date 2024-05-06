@@ -337,18 +337,17 @@ def application_detail(request, vacancy_id, filter_criteria=None):
                 # Handle Academic Details data
                 academic_data = ''
                 institution_name = f"School: {basic_education.name_of_the_school}"
-                admission_number = f"Index_number: {basic_education.index_number}"
                 start_year = f"Start Year: {basic_education.date_started}"
                 end_year = f"End Year: {basic_education.date_ended}"
                 grade = f"Grade attained: {basic_education.grade_attained}"
-                academic_data += f"{institution_name}\n{admission_number}\n{start_year}\n{end_year}\n{grade}\n\n"
+                academic_data += f"{institution_name}\n{start_year}\n{end_year}\n{grade}\n\n"
 
                 application_data['High School'] = academic_data
 
             if further_studies:
                 # Handle Further Studies data
                 further_studies_data = f"Institution Name: {further_studies.institution_name}\n" \
-                    f"Certification: {further_studies.certifications.certification_name if further_studies.certifications else ''}\n" \
+                    f"Certification: {further_studies.certifications.name if further_studies.certifications else ''}\n" \
                     f"Course Undertaken: {further_studies.course_undertaken}\n" \
                     f"Start Date: {further_studies.date_started.strftime('%Y-%m-%d') if further_studies.date_started else ''}\n" \
                     f"End Date: {further_studies.date_ended.strftime('%Y-%m-%d') if further_studies.date_ended else ''}\n" \

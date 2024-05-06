@@ -70,7 +70,7 @@ class Application(models.Model):
         max_digits=5, decimal_places=2, null=True)
     highest_educational_level = models.CharField(max_length=255, null=True)
     reference_number = models.CharField(
-        max_length=20, unique=True, blank=True, null=True)
+        max_length=100, unique=True, blank=True, null=True)
     index = models.PositiveIntegerField(
         unique=True, editable=False, null=True, blank=True)
     years = models.PositiveIntegerField(default=0)

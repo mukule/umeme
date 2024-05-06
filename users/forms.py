@@ -77,6 +77,7 @@ class UserLoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput(
         attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
+
 class SetPasswordForm(SetPasswordForm):
     old_password = forms.CharField(
         label=("Current Password"),
@@ -87,6 +88,7 @@ class SetPasswordForm(SetPasswordForm):
     class Meta:
         model = get_user_model()
         fields = ['old_password', 'new_password1', 'new_password2']
+
 
 class ResetPasswordForm(SetPasswordForm):
     def __init__(self, user, *args, **kwargs):
@@ -100,12 +102,6 @@ class ResetPasswordForm(SetPasswordForm):
 
 
 class CustomPasswordResetForm(PasswordResetForm):
-    id_number = forms.CharField(
-        max_length=8,
-        required=True,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'ID Number'})
-    )
 
     email = forms.EmailField(
         max_length=254,

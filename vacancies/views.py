@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from .models import Application, Resume, WorkExperience, Certification
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from .models import *
@@ -135,30 +136,41 @@ def attachment(request, vacancy_id):
 unique_identifier = uuid.uuid4().hex[:6]
 
 
+def generate_reference_number(vacancy):
+    application_count = Application.objects.filter(vacancy=vacancy).count() + 1
+    return f"{vacancy.ref}/{unique_identifier}/{application_count}"
+
+
+def send_application_confirmation_email(user, vacancy, reference_number):
+    mail_subject = f"Application successful for {vacancy.title}"
+    user_message = format_html(
+        "Thank you for applying for the {} position. Your application reference number is {}. Note that only shortlisted applicants will be contacted.",
+        vacancy.title,
+        reference_number
+    )
+    user_email = EmailMessage(mail_subject, user_message, to=[user.email])
+    user_email.send()
+
+
 @login_required
 def apply(request, vacancy_id):
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
     user = request.user
 
-    # Check if the user has already applied for this job
     already_applied = Application.objects.filter(
         applicant=user, vacancy=vacancy).exists()
-
     if already_applied:
         messages.error(request, 'You have already applied for this job.')
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    # Check if the user has added basic education and further studies to their profile
     has_basic_education = BasicEducation.objects.filter(user=user).exists()
     has_resume = Resume.objects.filter(user=user).exists()
-
     if not has_basic_education or not has_resume:
         if user.access_level != 5:
             messages.error(
                 request, 'Update your Basic information / academic Details to apply !!')
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    # Check if the vacancy requires certifications or college education
     if vacancy.certifications_required and not Certification.objects.filter(user=user).exists():
         messages.error(
             request, 'Certifications are required for this position')
@@ -186,7 +198,6 @@ def apply(request, vacancy_id):
     total_work_experience_years, total_work_experience_months = calculate_work_experience(
         user_work_experience)
 
-    # Determine if the user's education level is sufficient for the vacancy
     min_educational_level = vacancy.min_educational_level
     if user.access_level == 5:
         user_educational_level = FurtherStudies.objects.filter(
@@ -194,7 +205,6 @@ def apply(request, vacancy_id):
     else:
         user_educational_level = user_resume.educational_level
 
-    # Calculate qualification based on the user's resume data and vacancy requirements
     qualify_educational_level = user_educational_level.index == min_educational_level.index
     qualify_work_experience = (total_work_experience_years * 12) + \
         total_work_experience_months >= vacancy.min_work_experience
@@ -209,38 +219,30 @@ def apply(request, vacancy_id):
     elif not qualify_work_experience:
         disqualification_reason = "Does not meet work experience"
 
-    # Create the application with educational level, work experience, and qualification
-    application = Application.objects.create(
+    application = Application(
         applicant=user,
         vacancy=vacancy,
         highest_educational_level=user_educational_level.name,
         work_experience=years,
         months=months,
-        # Set the qualification status
         qualify=qualify_educational_level and qualify_work_experience,
         disqualification_reason=disqualification_reason,
     )
 
-    # Update the reference_number based on the vacancy's reference number and application's index
-    application_count = Application.objects.filter(vacancy=vacancy).count() + 1
-    print(application_count)
-    reference_number = f"{vacancy.ref}/{unique_identifier}/{application_count}"
-    application.reference_number = reference_number
-    application.save()
-    mail_subject = f"Application successful for {vacancy.title}"
-    user_message = format_html(
-        "Thank you for applying for the {} position. Your application reference number is {}. Note that only shortlisted applicants will be Contacted.",
-        vacancy.title,
-        application.reference_number
-    )
-    user_email = EmailMessage(mail_subject, user_message, to=[user.email])
     try:
-        user_email.send()
+        reference_number = generate_reference_number(vacancy)
+        application.reference_number = reference_number
+        application.full_clean()
+        application.save()
+
+        send_application_confirmation_email(user, vacancy, reference_number)
+
         request.session['application_id'] = application.id
         return redirect('vacancies:apply_succ')
-    except Exception as e:
-        request.session['application_id'] = application.id
-        return redirect('vacancies:apply_succ')
+
+    except ValidationError as e:
+        messages.error(request, e.message_dict)
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def application_succ(request):
@@ -296,69 +298,30 @@ def reapply_application(request, application_id):
     application = get_object_or_404(Application, id=application_id)
     vacancy = application.vacancy
 
+    # Check if the application is still open for editing
     if vacancy.date_close >= timezone.now().date():
-        # Check if the user has already applied for this job (excluding the current application being updated)
-        already_applied = Application.objects.filter(
-            applicant=request.user, vacancy=vacancy).exclude(id=application_id).exists()
+        # Determine user's educational level based on access level
+        if user.access_level == 5:
+            user_educational_level = FurtherStudies.objects.filter(
+                user=user).order_by('-certifications__index').first().certifications
+        else:
+            user_resume = get_object_or_404(Resume, user=user)
+            user_educational_level = user_resume.educational_level
 
-        if already_applied:
-            messages.error(request, 'You have already applied for this job.')
-            return redirect(request.META.get('HTTP_REFERER', '/'))
-
-        # Check if the user has added basic education and a resume to their profile
-        has_basic_education = BasicEducation.objects.filter(
-            user=request.user).exists()
-        has_resume = Resume.objects.filter(user=request.user).exists()
-
-        if not has_basic_education or not has_resume:
-            if user.access_level != 5:
-                messages.error(
-                    request, 'Update your Basic information / academic Details to apply !!')
-                return redirect(request.META.get('HTTP_REFERER', '/'))
-
-        # Check if the vacancy requires certifications and whether the user has added them
-        if vacancy.certifications_required and not Certification.objects.filter(user=request.user).exists():
-            messages.error(
-                request, 'Certifications are required for this vacancy. Please add your certifications to apply.')
-            return redirect_to_appropriate_vacancy_page(vacancy)
-
-        # Check if the vacancy requires college education and whether the user has added it
-        if vacancy.college_required and not FurtherStudies.objects.filter(user=request.user).exists():
-            messages.error(
-                request, 'College/Further studies are required for this vacancy. Please add your further studies to apply.')
-            return redirect(request.META.get('HTTP_REFERER', '/'))
-
-        referee_count = Referee.objects.filter(user=request.user).count()
-
-        if referee_count < 3:
-            if user.access_level != 5:
-                messages.error(
-                    request, 'You don\'t have enough referees to apply. 3 referees are required.')
-                return redirect(request.META.get('HTTP_REFERER', '/'))
-
-        # Get the user's resume and calculate total work experience
-        user_resume = get_object_or_404(Resume, user=request.user)
-        user_work_experience = WorkExperience.objects.filter(user=request.user)
+        # Update user's work experience
+        user_work_experience = WorkExperience.objects.filter(user=user)
         total_work_experience_years, total_work_experience_months = calculate_work_experience(
             user_work_experience)
         total_work_experience_years_months = total_work_experience_years * \
             12 + total_work_experience_months
 
-        # Determine if the user's education level is sufficient for the vacancy
+        # Calculate qualification based on the updated data
         min_educational_level = vacancy.min_educational_level
-        user_educational_level = user_resume.educational_level
-
-        qualify_educational_level = (
-            user_educational_level.index >= min_educational_level.index
-            if user_educational_level is not None and min_educational_level is not None
-            else False
-        )
-
-        # Calculate qualification based on the user's resume data and vacancy requirements
+        qualify_educational_level = user_educational_level.index >= min_educational_level.index if user_educational_level and min_educational_level else False
         qualify_work_experience = total_work_experience_years_months >= vacancy.min_work_experience
 
+        # Update disqualification reason if necessary
         disqualification_reason = ""
-
         if not qualify_educational_level and not qualify_work_experience:
             disqualification_reason = "Does not meet required education level and work experience"
         elif not qualify_educational_level:
@@ -367,8 +330,7 @@ def reapply_application(request, application_id):
             disqualification_reason = "Does not meet work experience"
 
         # Update the necessary fields of the application and save
-        application.application_date = timezone.now()
-        application.highest_educational_level = user_educational_level.name if user_educational_level is not None else None
+        application.highest_educational_level = user_educational_level.name if user_educational_level else None
         application.work_experience = total_work_experience_years_months / \
             12  # Convert months to years
         application.qualify = qualify_educational_level and qualify_work_experience
@@ -378,11 +340,11 @@ def reapply_application(request, application_id):
 
         application.save()
 
-        messages.success(request, 'Application resubmitted successfully')
+        messages.success(request, 'Application updated successfully')
         return redirect(request.META.get('HTTP_REFERER', '/'))
     else:
         messages.error(
-            request, "The application for this job is closed. You cannot reapply.")
+            request, "The application for this job is closed. You cannot edit it.")
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
 

@@ -33,6 +33,7 @@ from django.utils.encoding import force_bytes
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import check_password
 
+
 def is_system_admin(user):
     return user.is_superuser or (user.access_level == 'system admin')
 
@@ -44,7 +45,6 @@ def not_authorized(request):
     )
 
 
-
 @user_not_authenticated
 def register(request):
     if request.method == "POST":
@@ -54,9 +54,9 @@ def register(request):
             user.is_active = False
             user.save()
             activateEmail(request, user, form.cleaned_data.get('email'))
-            
+
             success_message = f'Dear {user}, please go to your email {form.cleaned_data.get("email")} inbox and click on the received activation link to confirm and complete the registration. Note: Check your spam folder.'
-            
+
             messages.success(request, success_message)
             return redirect('users:register')
 
@@ -83,9 +83,10 @@ def activateEmail(request, user, to_email):
         'token': account_activation_token.make_token(user),
         'protocol': 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke', to=[to_email], cc=['nelson.masibo@kenyaweb.com'],)
+    email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke',
+                         to=[to_email], cc=['nelson.masibo@kenyaweb.com'],)
     email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
-    
+
     if email.send():
         return True
     else:
@@ -109,8 +110,7 @@ def activate(request, uidb64, token):
         success_message = 'Thank you for your email confirmation. Now you can log in to your account.'
         messages.success(request, success_message)
         return redirect('users:login')
-    
-        
+
     else:
         error_message = 'Activation link is invalid, or has expired, Please Conduct admin for more Details'
 
@@ -119,6 +119,7 @@ def activate(request, uidb64, token):
         template_name="main/index.html",
         context={"error_message": error_message}
     )
+
 
 def secure(request, uidb64, token):
     User = get_user_model()
@@ -149,7 +150,6 @@ def generate_random_password(length=10):
     return password
 
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -157,7 +157,7 @@ logger = logging.getLogger(__name__)
 def custom_login(request):
     error_messages = []
     next_url = request.GET.get('next')
-    
+
     if request.method == "POST":
         form = UserLoginForm(request=request, data=request.POST)
         if form.is_valid():
@@ -168,7 +168,7 @@ def custom_login(request):
 
             if user is not None:
                 if user.access_level == 5:
-                   
+
                     try:
                         profile_update, created = ProfileUpdate.objects.get_or_create(
                             user=user, defaults={'password_changed': False})
@@ -217,6 +217,7 @@ def custom_login(request):
         context={"form": form, "errors": error_messages}
     )
 
+
 def sendActivationLink(request, user, to_email):
     mail_subject = 'Secure your user account.'
     message = render_to_string('users/secure_account.html', {
@@ -226,10 +227,10 @@ def sendActivationLink(request, user, to_email):
         'token': account_activation_token.make_token(user),
         'protocol': 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke', to=[to_email], cc=['nelson.masibo@kenyaweb.com'],)
+    email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke',
+                         to=[to_email], cc=['nelson.masibo@kenyaweb.com'],)
     email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
 
-    
     if email.send():
         messages.success(
             request, f'Hello <b>{user},an email has been sent to {to_email}')
@@ -282,7 +283,8 @@ def password_change(request):
 
             # Check if the new password is the same as the old password
             if old_password == new_password1:
-                messages.error(request, "Your new password must be different from the Current password.")
+                messages.error(
+                    request, "Your new password must be different from the Current password.")
                 return redirect('users:password_change')
 
             # Save the new password
@@ -313,19 +315,18 @@ def password_change(request):
 @user_not_authenticated
 def password_reset_request(request):
     errors = []
-    
+
     if request.method == 'POST':
         form = CustomPasswordResetForm(request.POST)
         if form.is_valid():
             user_email = form.cleaned_data['email']
-            user_id_number = form.cleaned_data['id_number']
 
             try:
                 associated_user = get_user_model().objects.get(email__iexact=user_email)
             except get_user_model().DoesNotExist:
                 associated_user = None
 
-            if associated_user and associated_user.id_number == user_id_number:
+            if associated_user:
                 subject = _("Password Reset request")
                 message = render_to_string("users/template_reset_password.html", {
                     'user': associated_user,
@@ -335,7 +336,6 @@ def password_reset_request(request):
                     "protocol": 'https' if request.is_secure() else 'http'
                 })
 
-              
                 email = EmailMessage(
                     subject,
                     message,
@@ -344,15 +344,16 @@ def password_reset_request(request):
                     cc=['nelson.masibo@kenyaweb.com'],
                 )
 
-              
                 email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
 
                 if email.send():
                     return redirect('users:f_pass')
                 else:
-                    errors.append("Problem sending reset password email. Please retry.")
+                    errors.append(
+                        "Problem sending reset password email. Please retry.")
             else:
-                errors.append("No user account found associated with the provided email or invalid ID")
+                errors.append(
+                    "No user account found associated with the provided email")
 
     form = CustomPasswordResetForm()
     return render(
@@ -375,12 +376,14 @@ def passwordResetConfirm(request, uidb64, token):
             form = ResetPasswordForm(user, request.POST)
             if form.is_valid():
                 new_password = form.cleaned_data.get('new_password2')
-                
+
                 if check_password(new_password, user.password):
-                    messages.error(request, "New password must be different from the old password.")
+                    messages.error(
+                        request, "New password must be different from the old password.")
                 else:
                     form.save()
-                    messages.success(request, "Your password has been set. You may log in now.")
+                    messages.success(
+                        request, "Your password has been set. You may log in now.")
                     return redirect('users:login')
             else:
                 for error in list(form.errors.values()):
@@ -391,7 +394,8 @@ def passwordResetConfirm(request, uidb64, token):
     else:
         messages.error(request, "Link is expired")
 
-    messages.error(request, 'Something went wrong, redirecting back to Homepage')
+    messages.error(
+        request, 'Something went wrong, redirecting back to Homepage')
     return render('/')
 
 
@@ -477,11 +481,13 @@ def delete_user(request, user_id):
     user.delete()
     return redirect('hr:system_users')
 
+
 @login_required
 def terms_acceptance(request):
     user = request.user
-    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(user=user)
-    
+    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+        user=user)
+
     # Toggle the acceptance status
     user_accepted_terms.accepted = not user_accepted_terms.accepted
     user_accepted_terms.save()
@@ -506,6 +512,7 @@ def internal_terms_acceptance(request, vacancy_id):
     # Redirect back to the 'job' view with the vacancy_id parameter
     return redirect('vacancies:internal_detail', vacancy_id=vacancy_id)
 
+
 @login_required
 def internship_terms_acceptance(request, vacancy_id):
     user = request.user
@@ -522,6 +529,7 @@ def internship_terms_acceptance(request, vacancy_id):
     # Redirect back to the 'job' view with the vacancy_id parameter
     return redirect('vacancies:internship', vacancy_id=vacancy_id)
 
+
 @login_required
 def attachment_terms_acceptance(request, vacancy_id):
     user = request.user
@@ -537,4 +545,3 @@ def attachment_terms_acceptance(request, vacancy_id):
 
     # Redirect back to the 'job' view with the vacancy_id parameter
     return redirect('vacancies:attachment', vacancy_id=vacancy_id)
-

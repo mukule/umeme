@@ -12,6 +12,7 @@ from django.utils import timezone
 from users.decorators import *
 from django.db.models import Q
 from users.checks import *
+from datetime import datetime
 
 
 @access_level_check(user_access_level=5, redirect_view_name='vacancies:internal')
@@ -702,7 +703,7 @@ def work_experience(request):
                     work_experience.years = years
                     work_experience.months = months
                 elif work_experience.date_started and work_experience.currently_working:
-                    delta = timezone.now().date() - work_experience.date_started
+                    delta = datetime.now().date() - work_experience.date_started
                     years = delta.days // 365
                     # Calculate remaining months
                     months = (delta.days % 365) // 30
@@ -753,7 +754,7 @@ def update_work_experience(request, instance_id):
                     new_work_experience.years = years
                     new_work_experience.months = months
                 elif new_work_experience.date_started and new_work_experience.currently_working:
-                    delta = timezone.now().date() - new_work_experience.date_started
+                    delta = datetime.now().date() - new_work_experience.date_started
                     years = delta.days // 365
                     months = (delta.days % 365) // 30
                     new_work_experience.years = years
