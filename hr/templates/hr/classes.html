@@ -8,12 +8,12 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Educational Levels</h4>
+                    <h4 class="mb-0 font-size-18">Classes Attained</h4>
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">Careers</a></li>
-                            <li class="breadcrumb-item active">Educational Levels</li>
+                            <li class="breadcrumb-item active">Classes Attained</li>
                         </ol>
                     </div>
                     
@@ -24,24 +24,26 @@
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
-                        {% if edu_levels %}
+                        {% if classes %}
                             <div class="list-group">
                                 <!-- Loop through educational levels -->
-                                {% for edu_level in edu_levels %}
-                                    <ul class="list-group mb-1">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                           {{edu_level.index}}<span>{{ edu_level.name }}</span>
-                                            <a href="{% url 'hr:delete_edu_level' edu_level.id %}" class="btn btn-sm btn-danger">
-                                                <i class="fas fa-trash-alt"></i> <!-- Assuming you're using Font Awesome -->
-                                            </a>
-                                        </li>
-                                    </ul>
+                                {% for class in classes %}
+                                   
+                                       
+                                        <ul class="list-group">
+                                            <li class="list-group-item"> {{ class.name }}</li>
+                                           
+                                          </ul>
+                                   
                                 {% endfor %}
                             </div>
                         {% else %}
-                            <p class="text-center">No Educational Levels Available</p>
+                            <p class="text-center">No Classes Available</p>
                         {% endif %}
-                       
+                        <div class="text-center mt-3">
+                            <a href="{% url 'hr:create_class' %}" class="btn btn-primary">Add New Class</a>
+                            
+                        </div>
                     </div>
                     <!-- end card-body-->
                 </div>

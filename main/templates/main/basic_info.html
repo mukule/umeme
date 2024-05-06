@@ -214,15 +214,9 @@
                     </div>
                    
                 </div>
-                <div class="row mt-3">
-                    <div class="col-md-12">
-                        {{ form.religeon.label_tag }}
-                        {{ form.religeon}}
-                    </div>
-                </div>
                 <div class="text-center mt-4">
-                    
-                    <button type="submit" class="btn btn-primary active">Submit</button>
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
+                    <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                     {% if be %}
                     <a href="{% url 'main:update_basic_education' instance_id=be.pk %}" class="btn btn-primary active ml-2">Next</a>
                 {% else %}

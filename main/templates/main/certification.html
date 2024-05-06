@@ -85,17 +85,13 @@
             </div>
             <div class="text-center mt-4">
               
-               {% if fs %}
-               <a href="{% url 'main:high_school' %}" class="btn btn-primary active">Back</a>
-               {% else %}
-               <a href="{% url 'main:further_studies' %}" class="btn btn-primary active">Back</a>
-               {% endif %}
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
                 
                  <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                  {% if ms %}
                      <a href="{% url 'main:memberships' %}" class="btn btn-primary active ml-2">Next</a>
                  {% else %}
-                     <a href="{% url 'membership' %}" class="btn btn-primary active ml-2">Next</a>
+                     <a href="{% url 'main:membership' %}" class="btn btn-primary active ml-2">Next</a>
                  {% endif %}
                 </div>
         </form>

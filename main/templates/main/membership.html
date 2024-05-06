@@ -85,11 +85,7 @@
                     </div>
                 </div>
                 <div class="text-center mt-4">
-                    {% if certs %}
-                    <a href="{% url 'main:certs' %}" class="btn btn-primary active ml-2">Back</a>
-                    {% else %}
-                        <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Back</a>
-                    {% endif %}
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
                     <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                     {% if refs %}
                         <a href="{% url 'main:refs' %}" class="btn btn-primary active ml-2">Next</a>

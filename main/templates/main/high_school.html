@@ -20,14 +20,80 @@
 
 <div class="page-content">
     <div class="container-fluid">
+        {% if user.is_authenticated %}
+        {% if user.access_level != 5 %}
+            <div class="row">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:bio_info' %}">Bio Information</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'main:high_school' %}">Basic Education</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:college' %}">Further Studies/College</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:certs' %}">Certifications</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:memberships' %}">Memberships</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:referees' %}">Referees</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
+                      </li>
+                    </ul>
+                  </div>
+            </div>
+        {% else %}
+        <div class="row">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:career_objective' %}">Executive Summery</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active"  href="{% url 'main:college' %}">Basic Education</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:certs' %}">Professional Certificates</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:memberships' %}">Professional Memberships</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
+                  </li>
+                </ul>
+              </div>
+        </div>
+        {% endif %}
+    {% endif %}
+       
         <div class="row mt-4">
             <div style="width: 100%;">
                 <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
                     <h4 style="margin-top: 3px;">Basic Education</h4>
                     {% if all_fields %}
-                    <p style="margin-bottom: 4px;" class="text-success"> Your High School Information is Complete</p>
+                    <p style="margin-bottom: 4px;" class="text-success"> Your Secondary School Information is Complete</p>
                     {% else %}
-                    <p style="margin-bottom: 4px;" class="text-warning"> Your High School Information is Incomplete</p>
+                    <p style="margin-bottom: 4px;" class="text-warning"> Your Secondary School Information is Incomplete</p>
                     {% endif %}
                 </div>
             </div>    
@@ -35,7 +101,7 @@
       
         <div class="card mt-4">
             <div class="card-body">
-                <h2 class="mb-4 text-center" style="color: #FD7E14;">High school Information</h2>
+                <h2 class="mb-4 text-center" style="color: #FD7E14;">Basic Education Information</h2>
                 <div>
                     {% if messages %}
                     {% for message in messages %}
@@ -76,13 +142,17 @@
                   
                 </div>
             {% else %}
-                <p class="text-center">Update your High school Details</p>
+                <p class="text-center">Your Basic Education Details are Missing</p>
             {% endif %}
             
 
                 <div class="text-center mt-4">
-                    <a href="{% url 'main:bio_info' %}" class="btn btn-primary active ml-2">Back</a>
-                    <a href="{% url 'main:update_basic_education' instance_id=be.pk %}" class="btn btn-primary active">Update</a>
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
+                    {% if be %}
+                    <a href="{% url 'main:update_basic_education' instance_id=be.pk %}" class="btn btn-primary active ml-2">Update</a>
+                    {% else %}
+                    <a href="{% url 'main:basic_academic' %}" class="btn btn-primary active ml-2">Add Basic Education</a>
+                    {% endif %}
                     {% if fs %}
                         <a href="{% url 'main:college' %}" class="btn btn-primary active ml-2">Next</a>
                     {% else %}

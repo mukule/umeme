@@ -20,6 +20,71 @@
 
 <div class="page-content">
     <div class="container-fluid">
+        {% if user.is_authenticated %}
+        {% if user.access_level != 5 %}
+            <div class="row">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:bio_info' %}">Bio Information</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main:high_school' %}">Basic Education</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:college' %}">Further Studies/College</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:certs' %}">Certifications</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:memberships' %}">Memberships</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link active"  href="{% url 'main:refs' %}">Referees</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
+                      </li>
+                    </ul>
+                  </div>
+            </div>
+        {% else %}
+        <div class="row">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:career_objective' %}">Executive Summery</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:high_school' %}">Basic Education</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:certs' %}">Professional Certificates</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:memberships' %}">Professional Memberships</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active"  href="{% url 'main:refs' %}">Referees</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
+                  </li>
+                </ul>
+              </div>
+        </div>
+        {% endif %}
+    {% endif %}
         <div class="row mt-4">
             <div style="width: 100%;">
                 <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
@@ -103,11 +168,7 @@
             
 
             <div class="text-center mt-4">
-                {% if wx %}
-                <a href="{% url 'main:experience' %}" class="btn btn-primary active ml-2">Back</a>
-                {% else %}
-                    <a href="{% url 'main:work_experience' %}" class="btn btn-primary active ml-2">Back</a>
-                {% endif %}
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
                 <a href="{% url 'main:referees' %}" class="btn btn-primary active ml-2">Add New</a>
               
                     <a href="{% url 'main:resume' %}" class="btn btn-primary active ml-2">Review Details</a>

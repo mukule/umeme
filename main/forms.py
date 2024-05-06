@@ -5,11 +5,25 @@ from users.models import CustomUser
 from users.models import *
 from django.core.exceptions import ValidationError
 import pycountry
+from tinymce.widgets import TinyMCE
 
 MARITAL_STATUS_CHOICES = MaritalStatus.objects.all().values_list('name', 'name')
 GENDER_CHOICES = Gender.objects.all().values_list('name', 'name')
 COUNTY_CHOICES = County.objects.all().values_list('name', 'name')
-
+GRADE_CHOICES = [
+    ('', 'Select Grade Attained'),
+    ('A', 'A'),
+    ('B+', 'B+'),
+    ('B', 'B'),
+    ('B-', 'B-'),
+    ('C+', 'C+'),
+    ('C', 'C'),
+    ('C-', 'C-'),
+    ('D+', 'D+'),
+    ('D', 'D'),
+    ('D-', 'D-'),
+    ('E', 'E'),
+]
 
 # Generate country choices using pycountry
 COUNTRY_CHOICES = [(country.alpha_2, country.name)
@@ -65,7 +79,7 @@ class ResumeForm(forms.ModelForm):
     county = forms.ChoiceField(
         choices=[('', 'Select County')] + list(COUNTY_CHOICES),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label='County',required=False
+        label='County', required=False
 
 
     )
@@ -74,13 +88,6 @@ class ResumeForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Ethnicity',
         empty_label='Select Ethnicity'
-
-    )
-    religeon = forms.CharField(
-        max_length=255,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Religion'}),
-        label='Religion',
 
     )
     gender = forms.ChoiceField(
@@ -127,7 +134,7 @@ class ResumeForm(forms.ModelForm):
         fields = [
             'full_name', 'email_address', 'phone', 'id_number', 'dob',
             'country_of_birth', 'country_of_residence', 'county', 'ethnicity',
-            'religeon', 'gender', 'disability', 'disability_number', 'marital_status',
+            'gender', 'disability', 'disability_number', 'marital_status',
             'educational_level', 'field_of_study'
         ]
 
@@ -154,10 +161,9 @@ class EducationalInformationForm(forms.ModelForm):
             attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
         label='Date Ended', required=False
     )
-    grade_attained = forms.CharField(
-        max_length=10,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Grade Attained'}),
+    grade_attained = forms.ChoiceField(
+        choices=GRADE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
         label='Grade Attained', required=True
     )
     certificate = forms.FileField(
@@ -195,34 +201,34 @@ class FurtherStudiesForm(forms.ModelForm):
     certifications = forms.ModelChoiceField(
         queryset=EducationalLevel.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Levels of study', empty_label="--Select Levels of Study--"
+        label='Levels of study', empty_label="--Select Levels of Study--", required=True
     )
     course_undertaken = forms.CharField(
         max_length=100,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Course Undertaken'}),
-        label='Course Undertaken', required=False
+        label='Course Undertaken', required=True
     )
     date_started = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
-        label='Date Started', required=False
+        label='Date Started', required=True
     )
     date_ended = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
-        label='Date Ended', required=False
+        label='Date Ended', required=True
     )
     grade = forms.ModelChoiceField(
         queryset=Class.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Class Attained',
-        required=False,
-        empty_label="--Select Class--"  # This sets the placeholder text
+        required=True,
+        empty_label="--Select Class--",
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdfs only Not more than 1mb)',
+        label='Certificate File(pdfs only Not more than 1mb)', required=True
     )
 
     def clean_certificate(self):
@@ -285,7 +291,7 @@ class CertificationForm(forms.ModelForm):
 class MembershipForm(forms.ModelForm):
     class Meta:
         model = Membership
-        fields = ['membership_title', 'membership_number','membership_body',
+        fields = ['membership_title', 'membership_number', 'membership_body',
                   'date_joined', 'certificate']
 
     membership_title = forms.CharField(
@@ -420,9 +426,9 @@ class ProfessionalSummaryForm(forms.ModelForm):
         fields = ['career_objective']
 
     career_objective = forms.CharField(
-        widget=forms.Textarea(
-            attrs={'class': 'form-control', 'placeholder': 'Career Objective', 'rows': 5}),
-        label='Career Objective', required=True
+        widget=TinyMCE(
+            attrs={'id': 'mce1', 'class': 'form-control', 'placeholder': 'Executive Summery', 'rows': 5}),
+        label=''
     )
 
 

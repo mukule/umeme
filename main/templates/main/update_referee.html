@@ -82,11 +82,7 @@
                 </div>
                 <div class="text-center mt-4">
                           
-                    {% if wx %}
-                    <a href="{% url 'main:experience' %}" class="btn btn-primary active ml-2">Back</a>
-                {% else %}
-                    <a href="{% url 'main:work_experience' %}" class="btn btn-primary active ml-2">Back</a>
-                {% endif %}
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
                     
                      <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                     

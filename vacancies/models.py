@@ -77,13 +77,6 @@ class Application(models.Model):
     months = models.PositiveIntegerField(default=0)
     disqualification_reason = models.CharField(max_length=255, null=True)
 
-    def save(self, *args, **kwargs):
-        if not self.pk:  # Only on creation, not on updates
-            max_index = Application.objects.aggregate(
-                models.Max('index'))['index__max']
-            self.index = (max_index or 0) + 1
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self.applicant.username} - {self.vacancy.title}"
 

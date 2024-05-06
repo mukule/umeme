@@ -179,3 +179,12 @@ class JobTypeForm(forms.ModelForm):
             'banner': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
             'icon': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         }
+
+
+class ClassForm(forms.ModelForm):
+    class Meta:
+        model = Class
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+        }

@@ -21,6 +21,71 @@
 
     <div class="page-content">
         <div class="container-fluid">
+            {% if user.is_authenticated %}
+            {% if user.access_level != 5 %}
+                <div class="row">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                          <li class="nav-item">
+                            <a class="nav-link"  href="{% url 'main:bio_info' %}">Bio Information</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="{% url 'main:high_school' %}">Basic Education</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link"  href="{% url 'main:college' %}">Further Studies/College</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link"  href="{% url 'main:certs' %}">Certifications</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link"  href="{% url 'main:memberships' %}">Memberships</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link"  href="{% url 'main:referees' %}">Referees</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link active"  href="{% url 'main:resume' %}">Review</a>
+                          </li>
+                        </ul>
+                      </div>
+                </div>
+            {% else %}
+            <div class="row">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:career_objective' %}">Executive Summery</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:college' %}">Basic Education</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:certs' %}">Professional Certificates</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:memberships' %}">Professional Memberships</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link active"  href="{% url 'main:resume' %}">Review</a>
+                      </li>
+                    </ul>
+                  </div>
+            </div>
+            {% endif %}
+        {% endif %}
             <div class="card p-3">
                 <h2 class="card-title text-center" style="color: #FD7E14;">Vacancy Details - {{ job.title }} - {{ job.ref }}</h2>
                 <div>
@@ -56,7 +121,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <h4 class="card-title">Job Summary</h4>
-                                <p class="card-subtitle mb-4">{{ job.description }}</p>
+                                <p class="card-subtitle mb-4">{{ job.description|safe }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -132,9 +197,9 @@
                 </div>
             <div class="text-center">
                 {% if terms.accepted %}
-                <a href="{% url 'users:terms_acceptance' %}">  <i class="fas btn-primary active fa-check-square"> </i></a><a href="{% url 'main:terms' %}">Terms and Conditions Accepted</a>
+                <a href="{% url 'users:terms_acceptance' %}">  <i class="fas btn-primary active fa-check-square"> </i></a><a class="ml-2" href="{% url 'main:terms' %}">Terms and Conditions Accepted</a>
                 {%else%}
-                <a href="{% url 'users:terms_acceptance' %}" > <i class="btn btn-danger active far fa-square"></i> </a><a href="{% url 'main:terms' %}"> Accept Terms and Conditions</a>
+                <a href="{% url 'users:terms_acceptance' %}" > <i class="btn btn-danger active far fa-square"></i> </a><a class="ml-2" href="{% url 'main:terms' %}"> Accept Terms and Conditions</a>
                 {%endif%}
                
             </div>

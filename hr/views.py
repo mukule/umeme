@@ -30,6 +30,7 @@ from openpyxl.utils import get_column_letter
 from django.http import HttpResponseForbidden
 from users.decorators import *
 from openpyxl.styles import Alignment
+from django.http import JsonResponse
 
 
 @admins
@@ -196,7 +197,9 @@ def publish(request, job_id):
 def applications(request):
     search_query = request.GET.get('search')
     job_discipline_filter = request.GET.get('job_discipline')
-    vacancy_type_filter = request.GET.get('vacancy_type')
+    # Changed from 'vacancy_type' to 'job_type'
+    job_type_filter = request.GET.get('job_type')
+
     # Retrieve all vacancies
     jobs = Vacancy.objects.all()
 
@@ -210,9 +213,9 @@ def applications(request):
         # Ensure you filter by the correct field name ('job_discipline_id')
         jobs = jobs.filter(job_discipline_id=job_discipline_filter)
 
-    if vacancy_type_filter:
-        # Ensure you filter by the correct field name ('vacancy_type')
-        jobs = jobs.filter(vacancy_type=vacancy_type_filter)
+    if job_type_filter:
+        # Ensure you filter by the correct field name ('job_type_id')
+        jobs = jobs.filter(job_type_id=job_type_filter)
 
     # Retrieve all applications
     applications = Application.objects.all()
@@ -222,10 +225,11 @@ def applications(request):
     context = {
         'jobs': jobs,
         'applications': applications,
-        'selected_vacancy_type': vacancy_type_filter,
+        'selected_job_type': job_type_filter,  # Updated variable name
         'search_query': search_query,
         'job_disciplines': job_disciplines,
-        'vacancy_types': Vacancy.VACANCY_TYPES,
+        # Assuming JobType is the model for job types
+        'job_types': JobType.objects.all(),
     }
 
     return render(request, 'hr/applications.html', context)
@@ -805,6 +809,13 @@ def edu_levels(request):
     return render(request, 'hr/edu_levels.html', {'edu_levels': edu_levels})
 
 
+def delete_edu_level(request, edu_level_id):
+    edu_level = get_object_or_404(EducationalLevel, id=edu_level_id)
+
+    edu_level.delete()
+    return redirect('hr:edu_levels')
+
+
 @admins
 def create_ethnicity(request):
     if request.method == 'POST':
@@ -1216,7 +1227,6 @@ def edit_user(request, user_id):
     return render(request, 'hr/edit_staff.html', context)
 
 
-@system_admin_required
 def delete_staff(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)
 
@@ -1256,3 +1266,35 @@ def delete_users_with_access_level_5(request):
         return redirect('hr:kgn_staffs')  # Redirect to a success page
 
     return render(request, 'hr/staffs.html')
+
+
+def classes(request):
+    classes = Class.objects.all()
+
+    context = {
+        'classes': classes,
+    }
+
+    return render(request, 'hr/classes.html', context)
+
+
+def create_class(request):
+    if request.method == 'POST':
+        form = ClassForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # Redirect to a success page or another URL
+            return redirect('hr:classes')
+    else:
+        form = ClassForm()
+    return render(request, 'hr/create_class.html', {'form': form})
+
+
+def toggle_user_active_status(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    # Toggle the is_active status
+    user.is_active = not user.is_active
+    user.save()
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))

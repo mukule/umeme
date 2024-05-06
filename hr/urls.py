@@ -81,5 +81,12 @@ urlpatterns = [
     path('hr_admins/', views.hr_admin,
          name='hr_admins'),
     path('admins/<int:admin_id>/', views.admin_role, name='admin_role'),
+    path('classes/', views.classes,
+         name='classes'),
+    path('create/', views.create_class, name='create_class'),
+    path('edu-levels/delete/<int:edu_level_id>/',
+         views.delete_edu_level, name='delete_edu_level'),
+    path('toggle-user-active/<int:user_id>/',
+         views.toggle_user_active_status, name='status'),
 
 ]

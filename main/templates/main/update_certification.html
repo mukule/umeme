@@ -79,11 +79,7 @@
                 </div>
                 <div class="text-center mt-4">
                   
-                    {% if fs %}
-                    <a href="{% url 'main:update_further_studies' instance_id=fs.pk %}" class="btn btn-primary active ml-2">Next</a>
-                {% else %}
-                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active ml-2">Back</a>
-                {% endif %}
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
                     
                      <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                      {% if ms %}

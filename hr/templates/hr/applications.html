@@ -9,51 +9,52 @@
             <div class="col-12">
                 <div class="page-title-box d-flex align-items-center justify-content-between">
                     <h4 class="mb-0 font-size-18">Dashboard >> Applications</h4>
-                    
                 </div>
             </div>
         </div>     
+
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
                         <!-- Search Form -->
-                       <div class="row-2">
-                        <section class="col-md-10 mx-auto shadow-sm " style="background-color: #7266bb; text-align: center; border-radius: 10px; padding: 20px;">
-                            <form method="get">
-                                <div class="form-row">
-                                    <div class="col-md-3">
-                                        <input type="text" name="search" class="form-control" placeholder="Search By Keyword or Job Title">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select name="job_discipline" class="form-control">
-                                            <option value="">Select Job Function</option>
-                                            {% for discipline in job_disciplines %}
-                                                <option value="{{ discipline.id }}" {% if selected_job_discipline == discipline.id %}selected{% endif %}>
-                                                    {{ discipline.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select name="vacancy_type" class="form-control">
-                                            <option value="">Select Job Type</option>
-                                            {% for vacancy_type, vacancy_type_display in vacancy_types %}
-                                                <option value="{{ vacancy_type }}" {% if selected_vacancy_type == vacancy_type %}selected{% endif %}>
-                                                    {{ vacancy_type_display }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                        
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary">Search</button>
-                                    </div>
-                                </div>
-                            </form>
-                            </section>
-                       </div>
-                        
+                        <div class="row mb-3">
+                            <div class="col-md-10 mx-auto">
+                                <section class="shadow-sm bg-light rounded p-4">
+                                    <form method="get">
+                                        <div class="form-row">
+                                            <div class="col-md-3">
+                                                <input type="text" name="search" class="form-control" placeholder="Search By Keyword or Job Title">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select name="job_type" class="form-control">
+                                                    <option value="">Select Job Type</option>
+                                                    {% for job_type in job_types %} {# Updated variable name #}
+                                                        <option value="{{ job_type.id }}" {% if selected_job_type == job_type.id %}selected{% endif %}>
+                                                            {{ job_type.name }} {# Assuming 'name' is the field for displaying the job type #}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="col-md-3">
+                                                <select name="job_type" class="form-control">
+                                                    <option value="">Select Job Type</option>
+                                                    {% for vacancy_type, job_type_display in vacancy_types %}
+                                                        <option value="{{ vacancy_type }}" {% if selected_job_type == vacancy_type %}selected{% endif %}>
+                                                            {{ job_type_display }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="submit" class="btn btn-primary">Search</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </section>
+                            </div>
+                        </div>
                         
                         {% if jobs %}
                             <div class="table-responsive mt-3">
@@ -79,7 +80,7 @@
                                                 <td>{{ job.date_open }}</td>
                                                 <td>{{ job.date_close }}</td>
                                                 <td>{{ job.job_discipline }}</td>
-                                                <td>{{ job.vacancy_type }}</td>
+                                                <td>{{ job.job_type }}</td>
                                                 <td>{{ job.application_count }}</td>
                                             </tr>
                                         {% endfor %}
@@ -96,7 +97,7 @@
             </div>
             <!-- end col -->
         </div>
-       <!--end row-->
+        <!--end row-->
     </div>
 </div>
 {% endblock content %}
