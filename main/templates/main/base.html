@@ -293,25 +293,28 @@
     CKEDITOR.replace('terms_text');
 </script>
 
-
 <script>
     $(document).ready(function () {
-        
+        // Check the initial value of the country of residence field
         if ($("#id_country_of_residence").val() === "KE") {
-            $("#county-field").show();
+            $("#county_of_birth-field").show();
+            $("#county_of_residence-field").show();
         } else {
-            $("#county-field").hide();
+            $("#county_of_birth-field").hide();
+            $("#county_of_residence-field").hide();
         }
 
-        
+        // Add change event listener to the country of residence field
         $("#id_country_of_residence").change(function () {
             console.log("Selected country: " + $(this).val());
-            
-            
+
+            // Show or hide the county of birth field based on the selected country
             if ($(this).val() === "KE") {
-                $("#county-field").show();
+                $("#county_of_birth-field").show();
+                $("#county_of_residence-field").show();
             } else {
-                $("#county-field").hide();
+                $("#county_of_birth-field").hide();
+                $("#county_of_residence-field").hide();
             }
         });
     });
@@ -321,23 +324,22 @@
 
 <script>
     $(document).ready(function () {
-        
-        if (!$('#id_disability').is(':checked')) {
+        // Initial check to hide the disability number field if 'No' is selected
+        if ($('#id_disability').val() !== 'True') {
             $('#disability-number-field').hide();
         }
 
-       
+        // Change event to show/hide the disability number field based on the selection
         $('#id_disability').change(function () {
-            if ($(this).is(':checked')) {
-               
+            if ($(this).val() === 'True') {
                 $('#disability-number-field').show();
             } else {
-                
                 $('#disability-number-field').hide();
             }
         });
     });
 </script>
+
 
 
 

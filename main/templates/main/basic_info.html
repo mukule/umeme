@@ -127,7 +127,7 @@
                 </div>
                 <div class="row mt-3">
                   
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         {{ form.country_of_birth.label_tag }}
                         {{ form.country_of_birth }}
                         {% if form.country_of_birth.errors %}
@@ -136,7 +136,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         {{ form.country_of_residence.label_tag }}
                         {{ form.country_of_residence }}
                         {% if form.country_of_residence.errors %}
@@ -145,18 +145,30 @@
                             </div>
                         {% endif %}
                     </div>
-                    <div class="col-md-4" id="county-field">
-                        {{ form.county.label_tag }}
-                        {{ form.county }}
-                        {% if form.county.errors %}
+                   
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6" id="county-field">
+                        {{ form.county_of_birth.label_tag }}
+                        {{ form.county_of_birth }}
+                        {% if form.county_of_birth.errors %}
                             <div class="text-danger">
-                                {{ form.county.errors.0 }}
+                                {{ form.county_of_birth.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6" id="county-field">
+                        {{ form.county_of_residence.label_tag }}
+                        {{ form.county_of_residence }}
+                        {% if form.county_of_residence.errors %}
+                            <div class="text-danger">
+                                {{ form.county_of_residence.errors.0 }}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         {{ form.marital_status.label_tag }}
                         {{ form.marital_status }}
                         {% if form.marital_status.errors %}
@@ -165,7 +177,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         {{ form.ethnicity.label_tag }}
                         {{ form.ethnicity }}
                         {% if form.ethnicity.errors %}
@@ -174,24 +186,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    <div class="col-md-2">
-                        {{ form.disability.label_tag }}
-                        {{ form.disability }}
-                        {% if form.disability.errors %}
-                            <div class="text-danger">
-                                {{ form.disability.errors.0 }}
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-2" id="disability-number-field">
-                        {{ form.disability_number.label_tag }}
-                        {{ form.disability_number }}
-                        {% if form.disability_number.errors %}
-                            <div class="text-danger">
-                                {{ form.disability_number.errors.0 }}
-                            </div>
-                        {% endif %}
-                    </div>
+                   
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-6">
@@ -213,6 +208,26 @@
                         {% endif %}
                     </div>
                    
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        {{ form.disability.label_tag }}
+                        {{ form.disability }}
+                        {% if form.disability.errors %}
+                            <div class="text-danger">
+                                {{ form.disability.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6" id="disability-number-field">
+                        {{ form.disability_number.label_tag }}
+                        {{ form.disability_number }}
+                        {% if form.disability_number.errors %}
+                            <div class="text-danger">
+                                {{ form.disability_number.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="text-center mt-4">
                     <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>

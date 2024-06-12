@@ -32,7 +32,7 @@
                         <a class="nav-link" href="{% url 'main:high_school' %}">Basic Education</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:college' %}">Further Studies/College</a>
+                        <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link"  href="{% url 'main:certs' %}">Certifications</a>
@@ -136,11 +136,11 @@
                         <p class="card-title"><strong>Date of Birth:</strong> {% if resume.dob %}{{ resume.dob }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Country of Birth:</strong> {% if resume.get_country_of_birth_display %}{{ resume.get_country_of_birth_display }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Country of Residence:</strong> {% if resume.get_country_of_residence_display %}{{ resume.get_country_of_residence_display }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>County:</strong> {% if resume.county %}{{ resume.county }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>County of Birth:</strong> {% if resume.county_of_birth %}{{ resume.county_of_birth }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>County of Residence:</strong> {% if resume.county_of_residence %}{{ resume.county_of_residence }}{% else %}:-{% endif %}</p>
                     </div>
                     <div class="col-md-6">
                         <p class="card-title"><strong>Ethnicity:</strong> {% if resume.ethnicity %}{{ resume.ethnicity }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Religion:</strong> {% if resume.religeon %}{{ resume.religeon }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Gender:</strong> {% if resume.gender %}{{ resume.gender }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Disability:</strong> {% if resume.disability %}Yes{% else %}No{% endif %}</p>
                         <p class="card-title"><strong>Disability Number:</strong> {% if resume.disability_number %}{{ resume.disability_number }}{% else %}:-{% endif %}</p>

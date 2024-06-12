@@ -25,6 +25,7 @@ GRADE_CHOICES = [
     ('E', 'E'),
 ]
 
+
 # Generate country choices using pycountry
 COUNTRY_CHOICES = [(country.alpha_2, country.name)
                    for country in pycountry.countries]
@@ -76,10 +77,17 @@ class ResumeForm(forms.ModelForm):
         label='Country of Residence',
 
     )
-    county = forms.ChoiceField(
-        choices=[('', 'Select County')] + list(COUNTY_CHOICES),
+    county_of_birth = forms.ChoiceField(
+        choices=[('', 'Select County of Birth')] + list(COUNTY_CHOICES),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label='County', required=False
+        label='County of Birth', required=False
+
+
+    )
+    county_of_residence = forms.ChoiceField(
+        choices=[('', 'Select County of Residence')] + list(COUNTY_CHOICES),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='County of Residence', required=False
 
 
     )
@@ -96,11 +104,14 @@ class ResumeForm(forms.ModelForm):
         label='Gender',
 
     )
-    disability = forms.BooleanField(
-
-        widget=forms.CheckboxInput(attrs={'class': 'form-control'}),
-        label='PWD?'
+    disability = forms.ChoiceField(
+        choices=[('', 'Select Disability Status')] +
+        [(True, 'Yes'), (False, 'No')],
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Are you a person with Disability ?',
+        required=False
     )
+
     disability_number = forms.CharField(
         max_length=20,
         widget=forms.TextInput(
@@ -133,7 +144,7 @@ class ResumeForm(forms.ModelForm):
         model = Resume
         fields = [
             'full_name', 'email_address', 'phone', 'id_number', 'dob',
-            'country_of_birth', 'country_of_residence', 'county', 'ethnicity',
+            'country_of_birth', 'country_of_residence', 'county_of_birth', 'county_of_residence', 'ethnicity',
             'gender', 'disability', 'disability_number', 'marital_status',
             'educational_level', 'field_of_study'
         ]
@@ -298,29 +309,29 @@ class MembershipForm(forms.ModelForm):
         max_length=255,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Membership Title'}),
-        label='Membership Title', required=False
+        label='Membership Title', required=True
     )
     membership_number = forms.CharField(
         max_length=50,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Membership Number'}),
-        label='Membership Number', required=False
+        label='Membership Number', required=True
     )
     date_joined = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date Joined', 'type': 'date'}),
-        label='Date Awarded the certificate', required=False
+        label='Date Awarded the certificate', required=True
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Membership Certificate File(pdfs only, Not more than 1Mb)'
+        label='Membership Certificate File (PDFs only, not more than 1MB)',
+        required=True
     )
-    membership_body = forms.CharField(
-        max_length=50,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Membership Body'}),
-        label='Membership Body',
-        required=False
+    membership_body = forms.ModelChoiceField(
+        queryset=CertifyingBody.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Membership Body', required=True,
+        empty_label='Select Membership Body'
     )
 
     def clean_certificate(self):
@@ -328,7 +339,7 @@ class MembershipForm(forms.ModelForm):
         if certificate:
             if not certificate.name.endswith('.pdf'):
                 raise forms.ValidationError('Only PDF files are allowed.')
-            if certificate.size > 1 * 1024 * 1024:  # 5MB
+            if certificate.size > 1 * 1024 * 1024:  # 1MB
                 raise forms.ValidationError(
                     'File size must be no more than 1MB.')
         return certificate
@@ -355,32 +366,32 @@ class WorkExperienceForm(forms.ModelForm):
     date_started = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
-        label='Date Started', required=False
+        label='Date Started', required=True
     )
     date_ended = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
-        label='Date Ended', required=False
+        label='Date Ended', required=True
     )
     company_address = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Company Address'}),
-        label='Company Address', required=False
+        label='Company Address', required=True
     )
     company_phone = forms.CharField(
         max_length=20,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Company Phone'}),
-        label='Company Phone', required=False
+        label='Company Phone', required=True
     )
     responsibilities = forms.CharField(
         widget=forms.Textarea(
             attrs={'class': 'form-control', 'placeholder': 'Responsibilities'}),
-        label='Responsibilities', required=False
+        label='Responsibilities', required=True
     )
     currently_working = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        label='Current Position(Current Job)', required=False
+        label='Current Position(Current Job)', required=True
     )
 
 

@@ -19,8 +19,8 @@ def resume_fields_provided(request):
     missing_fields = [
         field for field in required_fields if not getattr(resume, field)]
 
-    if resume.country_of_residence == 'KE' and not resume.county:
-        missing_fields.append('county')
+    if resume.country_of_residence == 'KE' and not resume.county_of_birth:
+        missing_fields.append('county_of_birth')
 
     return not missing_fields
 

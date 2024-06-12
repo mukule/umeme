@@ -35,9 +35,11 @@ def job_type_detail(request, pk):
     if job_type.name == 'Internal':
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    # Exclude the job type with name 'Internal' from the queryset
+    # Exclude the job type with name 'Internal' and filter jobs based on date_close
     jobs = Vacancy.objects.filter(
-        job_type=job_type).exclude(job_type__name='Internal')
+        job_type=job_type,
+        date_close__gte=current_date
+    ).exclude(job_type__name='Internal')
 
     job_disciplines = JobDiscipline.objects.all()
 

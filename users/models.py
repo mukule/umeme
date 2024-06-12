@@ -171,14 +171,21 @@ class Resume(models.Model):
     dob = models.DateField(blank=True, null=True)
     country_of_birth = CountryField(blank=True, null=True)
     country_of_residence = CountryField(blank=True, null=True)
-    county = models.CharField(
-        max_length=255, blank=True, null=True)  # Add county field
+    county_of_birth = models.CharField(
+        max_length=255, blank=True, null=True)  # Changed field
+    county_of_residence = models.CharField(
+        max_length=255, blank=True, null=True)
     ethnicity = models.ForeignKey(
         Ethnicity, on_delete=models.SET_NULL, blank=True, null=True)
 
     religeon = models.CharField(max_length=255, blank=True, null=True)
     gender = models.CharField(max_length=50, blank=True, null=True)
-    disability = models.BooleanField(default=False, blank=True, null=True)
+    DISABILITY_CHOICES = (
+        (True, 'Yes'),
+        (False, 'No'),
+    )
+    disability = models.BooleanField(
+        choices=DISABILITY_CHOICES, default=False, blank=True, null=True)
     disability_number = models.CharField(max_length=20, blank=True, null=True)
 
     marital_status = models.CharField(max_length=50, blank=True, null=True)
