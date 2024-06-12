@@ -63,13 +63,14 @@ def job_type_detail(request, pk):
     return render(request, 'main/job_type_detail.html', context)
 
 
-@login_required
 def job_detail(request, job_id):
     job = get_object_or_404(Vacancy, pk=job_id)
 
-    user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
-        user=request.user
-    )
+    user_accepted_terms = None
+    if request.user.is_authenticated:
+        user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
+            user=request.user
+        )
 
     context = {
         'job': job,

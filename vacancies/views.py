@@ -217,7 +217,7 @@ def apply(request, vacancy_id):
     elif not qualify_educational_level:
         disqualification_reason = "Does not meet required education level"
     elif not qualify_work_experience:
-        disqualification_reason = "Does not meet work experience"
+        disqualification_reason = "Does not have enough work experience"
 
     application = Application(
         applicant=user,

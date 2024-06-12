@@ -23,7 +23,7 @@
         <div class="container-fluid">
             {% if user.is_authenticated %}
             {% if user.access_level != 5 %}
-                <div class="row">
+                <div class="row mb-3">
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs">
                           <li class="nav-item">
@@ -54,7 +54,7 @@
                       </div>
                 </div>
             {% else %}
-            <div class="row">
+            <div class="row mb-3">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
                       <li class="nav-item">
@@ -203,6 +203,7 @@
                 {%endif%}
                
             </div>
+                {% if user.is_authenticated %}
                 <div class="text-center mt-2 mb-2">
                     {% if terms.accepted %}
                     <a href="{% url 'vacancies:apply' vacancy_id=job.id %}" class="btn btn-lg btn-primary active">Apply this Job Now <i class="fas fa-arrow-circle-right text-white"></i></a>
@@ -214,6 +215,12 @@
                     
                     {% endif %}
                 </div>
+                {% else %}
+               <div class="text-center">
+                <a href="{% url 'users:login' %}" class="btn btn-primary mt-3">Login to Apply</a>
+               </div>
+                {% endif %}
+
             </div>
         </div>
     </div>
