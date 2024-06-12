@@ -88,5 +88,6 @@ urlpatterns = [
          views.delete_edu_level, name='delete_edu_level'),
     path('toggle-user-active/<int:user_id>/',
          views.toggle_user_active_status, name='status'),
+    path('edit_class/<int:class_id>/', views.edit_class, name='edit_class'),
 
 ]

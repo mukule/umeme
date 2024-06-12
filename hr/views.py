@@ -1289,6 +1289,22 @@ def create_class(request):
     return render(request, 'hr/create_class.html', {'form': form})
 
 
+def edit_class(request, class_id):
+    # Get the class instance from the database using the class_id
+    class_instance = get_object_or_404(Class, id=class_id)
+
+    if request.method == 'POST':
+        form = ClassForm(request.POST, instance=class_instance)
+        if form.is_valid():
+            form.save()
+            # Redirect to a success page or another URL
+            return redirect('hr:classes')
+    else:
+        form = ClassForm(instance=class_instance)
+
+    return render(request, 'hr/create_class.html', {'form': form})
+
+
 def toggle_user_active_status(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
 

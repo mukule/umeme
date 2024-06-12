@@ -28,13 +28,11 @@
                             <div class="list-group">
                                 <!-- Loop through educational levels -->
                                 {% for class in classes %}
-                                   
-                                       
-                                        <ul class="list-group">
-                                            <li class="list-group-item"> {{ class.name }}</li>
-                                           
-                                          </ul>
-                                   
+                                    <div class="list-group-item">
+                                        <span>{{ class.name }}</span>
+                                        <!-- Add Edit link -->
+                                        <a href="{% url 'hr:edit_class' class.id %}" class="btn btn-sm btn-primary float-right ml-2">Edit</a>
+                                    </div>
                                 {% endfor %}
                             </div>
                         {% else %}
@@ -42,7 +40,6 @@
                         {% endif %}
                         <div class="text-center mt-3">
                             <a href="{% url 'hr:create_class' %}" class="btn btn-primary">Add New Class</a>
-                            
                         </div>
                     </div>
                     <!-- end card-body-->
