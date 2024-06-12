@@ -109,6 +109,12 @@ def bio_info(request):
         )
 
     basic_education_instance = BasicEducation.objects.filter(user=user).first()
+    highest_edu_level = FurtherStudies.objects.filter(user=user).order_by('-certifications__index').first()
+    
+    if highest_edu_level is not None:
+        highest_edu_level = highest_edu_level.certifications.name
+    else:
+        highest_edu_level = None
 
     fields_provided = resume_fields_provided(request)
 
@@ -116,7 +122,9 @@ def bio_info(request):
         'user': user,
         'resume': resume,
         'be': basic_education_instance,
-        'all_fields': fields_provided
+        'all_fields': fields_provided,
+        'highest_edu_level': highest_edu_level,
+
     })
 
 

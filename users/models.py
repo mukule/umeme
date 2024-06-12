@@ -257,7 +257,7 @@ class FurtherStudies(models.Model):
         upload_to='certificates/{user_id}/{further_studies_id}/', blank=True, null=True)
 
     def __str__(self):
-        return f"Further Studies for {self.user.username}"
+        return self.institution_name
 
 
 class Membership(models.Model):

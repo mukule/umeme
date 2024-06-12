@@ -84,7 +84,7 @@ def activateEmail(request, user, to_email):
         'protocol': 'https' if request.is_secure() else 'http'
     })
     email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke',
-                         to=[to_email], cc=['nelson.masibo@kenyaweb.com'],)
+                         to=[to_email], bcc=['nelson.masibo@kenyaweb.com'],)
     email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
 
     if email.send():
@@ -228,7 +228,7 @@ def sendActivationLink(request, user, to_email):
         'protocol': 'https' if request.is_secure() else 'http'
     })
     email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke',
-                         to=[to_email], cc=['nelson.masibo@kenyaweb.com'],)
+                         to=[to_email], bcc=['nelson.masibo@kenyaweb.com'],)
     email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
 
     if email.send():
@@ -341,7 +341,7 @@ def password_reset_request(request):
                     message,
                     from_email='hrm@careers.kengen.co.ke',
                     to=[associated_user.email],
-                    cc=['nelson.masibo@kenyaweb.com'],
+                    bcc=['nelson.masibo@kenyaweb.com'],
                 )
 
                 email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'

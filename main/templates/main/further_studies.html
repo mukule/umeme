@@ -71,9 +71,9 @@
                     
                      <button type="submit" class="btn btn-primary active ml-2">Submit</button>
                      {% if cert %}
-                         <a href="{% url 'main:update_certification' instance_id=cert.pk %}" class="btn btn-primary active ml-2">Next</a>
+                         <a href="{% url 'main:certs'}" class="btn btn-primary active ml-2">Next</a>
                      {% else %}
-                         <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Next</a>
+                         <a href="{% url 'main:certs' %}" class="btn btn-primary active ml-2">Next</a>
                      {% endif %}
                     </div>
             </form>

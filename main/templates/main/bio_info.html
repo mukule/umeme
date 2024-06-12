@@ -57,7 +57,7 @@
             <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs">
                   <li class="nav-item">
-                    <a class="nav-link active"  href="{% url 'main:career_objective' %}">Executive Summery</a>
+                    <a class="nav-link active"  href="{% url 'main:high_school' %}">Executive Summary</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
@@ -145,7 +145,7 @@
                         <p class="card-title"><strong>Disability:</strong> {% if resume.disability %}Yes{% else %}No{% endif %}</p>
                         <p class="card-title"><strong>Disability Number:</strong> {% if resume.disability_number %}{{ resume.disability_number }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Marital Status:</strong> {% if resume.marital_status %}{{ resume.marital_status }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Highest Education Level:</strong> {% if resume.educational_level %}{{ resume.educational_level }}{% else %}:-{% endif %}</p>
+                        <p class="card-title"><strong>Highest Education Level:</strong> {% if highest_edu_level %}{{ highest_edu_level }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Field of Study:</strong> {% if resume.field_of_study %}{{ resume.field_of_study }}{% else %}:-{% endif %}</p>
                     </div>
                 </div>
@@ -159,7 +159,7 @@
                     {% if be %}
                         <a href="{% url 'main:high_school' %}" class="btn btn-primary active ml-2">Next</a>
                     {% else %}
-                        <a href="{% url 'main:basic_academic' %}" class="btn btn-primary active ml-2">Next</a>
+                        <a href="{% url 'main:high_school' %}" class="btn btn-primary active ml-2">Next</a>
                     {% endif %}
                 </div>
             </div>

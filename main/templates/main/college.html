@@ -57,7 +57,7 @@
             <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs">
                   <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:career_objective' %}">Executive Summery</a>
+                    <a class="nav-link"  href="{% url 'main:career_objective' %}">Executive Summary</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link"  href="{% url 'main:high_school' %}">Basic Education</a>
@@ -182,7 +182,7 @@
                     {% if certs %}
                         <a href="{% url 'main:certs' %}" class="btn btn-primary active ml-2">Next</a>
                     {% else %}
-                        <a href="{% url 'main:certification' %}" class="btn btn-primary active ml-2">Next</a>
+                        <a href="{% url 'main:certs' %}" class="btn btn-primary active ml-2">Next</a>
                     {% endif %}
                 </div>
             </div>

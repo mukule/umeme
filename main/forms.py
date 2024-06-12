@@ -447,7 +447,7 @@ class UpdateEducationalLevelForm(forms.ModelForm):
     educational_level = forms.ModelChoiceField(
         queryset=EducationalLevel.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        empty_label="Select the highest educational level"  # Placeholder
+        empty_label="Select the highest educational level"
     )
 
     class Meta:

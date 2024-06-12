@@ -25,6 +25,33 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title text-center">Applications</h4>
+                        <div>
+                            {% if messages %}
+                            {% for message in messages %}
+                                {% if message.tags == 'success' %}
+                                    <div class="alert alert-success alert-dismissible" role="alert">
+                                       
+                                        {{ message|safe|escape }}
+                                    </div>
+                                {% elif message.tags == 'error' %}
+                                    <div class="alert alert-danger alert-dismissible" role="alert">
+                                       
+                                        {{ message|safe }}
+                                    </div>
+                                {% elif message.tags == 'info' %}
+                                    <div class="alert alert-info alert-dismissible" role="alert">
+                                       
+                                        {{ message|safe|escape }}
+                                    </div>
+                             
+                        <div class="alert alert-warning alert-dismissible" role="alert">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            {{ message|safe|escape }}
+                        </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        </div>
                         {% if applications %}
                             <div class="table-responsive">
                                 <table class="table table-sm table-hover mb-0">

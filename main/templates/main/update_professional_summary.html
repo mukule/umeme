@@ -25,7 +25,9 @@
                                     {{ form.career_objective|as_crispy_field }}
                                 </div>
                               
+                                
                                 <div class="text-center">
+                                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
                                     <button type="submit" class="btn btn-primary active">Submit</button>
                                 </div>
                             </form>

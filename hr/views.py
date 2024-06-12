@@ -308,15 +308,17 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             memberships = user.memberships.all()[:3]
             referees = user.referees.all()[:3]
 
-            print(referees)
-
             full_name = resume.full_name
-            username = user.username  # Add this line to get the username
+            username = user.username
+            contacts = f"{resume.phone}\n{resume.email_address}"
+
+            
 
             application_data = {
                 # Include username in the "Name" field
                 'Username/Staff No.': username,
                 'Full Name': full_name,
+                'Contact Details': contacts,
                 'Gender': resume.gender if resume.gender else '',
                 'Disability': 'Yes' if resume.disability else 'No',
                 'Ethnicity': resume.ethnicity.name if resume.ethnicity else '',
@@ -450,7 +452,7 @@ def application_detail(request, vacancy_id, filter_criteria=None):
 
         # Define column headers for Excel export
         headers = [
-            'Username/Staff No.', 'Full Name', 'Gender', 'Disability', 'Ethnicity',
+            'Username/Staff No.', 'Full Name', 'Contact Details', 'Gender', 'Disability', 'Ethnicity',
             'Highest Educational Level',
             'High School',
             'College/University',
@@ -484,6 +486,11 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             if header == 'Full Name':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
+            
+            if header == 'Contact Details':
+                ws.column_dimensions[openpyxl.utils.get_column_letter(
+                    col_num)].width = 20
+                
             if header == 'College/University':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
