@@ -132,17 +132,16 @@ def bio_info(request):
 def high_school(request):
     user = request.user
 
-    basic_education_instance = BasicEducation.objects.filter(user=user).first()
+    basic_education_instances = BasicEducation.objects.filter(user=user)[:2]
     further_studies_instance = FurtherStudies.objects.filter(user=user).first()
     all_fields_provided = basic_academic_fields_provided(request)
     print(all_fields_provided)
 
     return render(request, 'main/high_school.html', {
         'user': user,
-        'be': basic_education_instance,
+        'be': basic_education_instances,
         'fs': further_studies_instance,
         'all_fields': all_fields_provided
-
     })
 
 

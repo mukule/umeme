@@ -170,7 +170,7 @@ class EducationalInformationForm(forms.ModelForm):
     date_ended = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
-        label='Date Ended', required=False
+        label='Date Ended', required=True
     )
     grade_attained = forms.ChoiceField(
         choices=GRADE_CHOICES,
@@ -269,23 +269,23 @@ class CertificationForm(forms.ModelForm):
         max_length=255,
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Certification Name'}),
-        label='Certification Name', required=False
+        label='Certification Name', required=True
     )
     certifying_body = forms.ModelChoiceField(
         queryset=CertifyingBody.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Certifying Body', required=False,
+        label='Certifying Body', required=True,
         empty_label='Select Certifying Body'
 
     )
     date_attained = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date Attained', 'type': 'date'}),
-        label='Date Awarded the Certificate', required=False
+        label='Date Awarded the Certificate', required=True
     )
     certificate = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdfs only, Not more than 1Mb)'
+        label='Certificate File(pdfs only, Not more than 1Mb)', required=True
 
     )
 
@@ -371,7 +371,7 @@ class WorkExperienceForm(forms.ModelForm):
     date_ended = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
-        label='Date Ended', required=True
+        label='Date Ended', required=False
     )
     company_address = forms.CharField(
         widget=forms.TextInput(
@@ -391,7 +391,7 @@ class WorkExperienceForm(forms.ModelForm):
     )
     currently_working = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        label='Current Position(Current Job)', required=True
+        label='Current Position(Current Job)', required=False
     )
 
 

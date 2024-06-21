@@ -86,7 +86,7 @@
         <div class="card mt-4">
             <div class="card-body">
                 <a href="{% url 'main:bio_info' %}">
-                    <h2 class="mb-4 text-center" style="color: #FD7E14;">Bio Data</h2>
+                    <h4 class="mb-4 text-center" style="color: #FD7E14;">Basic information</h4>
                 </a>
                 {% if resume %}
                 <div class="row col-xl-12">
@@ -94,10 +94,7 @@
                         <p class="card-title"><strong>Full Name:</strong> {{ resume.full_name }}</p>
                         <p class="card-title"><strong>Email:</strong> {{ resume.email_address }}</p>
                         <p class="card-title"><strong>Phone:</strong> {{ resume.phone }}</p>
-                       
-                        
                         <p class="card-title"><strong>Ethnicity:</strong> {{ resume.ethnicity }}</p>
-                        <p class="card-title"><strong>Religion:</strong> {{ resume.religion }}</p>
                         <p class="card-title"><strong>Marital Status:</strong> {{ resume.marital_status }}</p>
                         <p class="card-title"><strong>Disability:</strong> {{ resume.disability }}</p>
                         <p class="card-title"><strong>Disability Number:</strong> {{ resume.disability_number }}</p>
@@ -108,8 +105,11 @@
                                 <p class="card-title"><strong>Date of Birth:</strong> {{ resume.dob }}</p>
                                 <p class="card-title"><strong>Country of Birth:</strong> {{ resume.get_country_of_birth_display }}</p>
                                 <p class="card-title"><strong>Country of Residence:</strong> {{ resume.get_country_of_residence_display }}</p>
-                                {% if resume.county %}
-                                <p class="card-title"><strong>County:</strong> {{ resume.county }}</p>
+                                {% if resume.county_of_birth %}
+                                <p class="card-title"><strong>County of Birth:</strong> {{ resume.county_of_birth }}</p>
+                                {%endif%}
+                                {% if resume.county_of_residence %}
+                                <p class="card-title"><strong>County of Residence:</strong> {{ resume.county_of_residence }}</p>
                                 {%endif%}
                                 <p class="card-title"><strong>Age:</strong> {{ resume.age }} Years</p>
                                 <p class="card-title"><strong>Gender:</strong> {{ resume.gender }}</p>
@@ -120,11 +120,11 @@
                
                
                 {% else %}
-                <p class="text-center">Information Not Updated</p>
+                <p class="text-center">Basic Information Not Updated</p>
                 {% endif %}
                 {% if be %}
                 <a href="{% url 'main:high_school' %}">
-                    <h2 class="mb-4 text-center" style="color: #FD7E14;">High school</h2>
+                    <h4 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Basic Education information</h4>
                 </a>
                 <div class="table-responsive">
                     <table class="table mb-0">
@@ -137,7 +137,7 @@
                                 <th>Date Ended</th>
                                 <th>Grade Attained</th>
                                 <th>Certificate</th>
-                                <th>Action</th>
+                               
                             </tr>
                         </thead>
                         <tbody class="border-0">
@@ -150,25 +150,18 @@
                                 <td>{{ education.date_ended }}</td>
                                 <td>{{ education.grade_attained }}</td>
                                 <td><a href="{{ education.certificate.url }}" target="_blank">View</a></td>
-                                <td>
-                                    <a href="{% url 'main:update_basic_education' instance_id=education.pk %}">
-                                        <i class="fas fa-edit ml-2"></i>
-                                    </a>
-                                    <a href="{% url 'main:delete_basic_education' instance_id=education.pk %}">
-                                        <i class="fas fa-trash text-danger"></i>
-                                    </a>
-                                </td>
+                               
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             {% else %}
-                <h2 class="mb-4 text-center" style="color: #FD7E14;">You are missing Basic Education information</h2>
+                <h4 class="mb-3 mt-3 text-center" style="color: #FD7E14;">You are missing Basic Education information</h4>
             {% endif %}
             {% if he %}
     <a href="{% url 'main:college' %}">
-        <h2 class="mb-4 text-center" style="color: #FD7E14;">Higher Educations</h2>
+        <h4 class="mb-3 mt-3 text-center" style="color: #FD7E14;">College/University Information</h4>
     </a>
     <div class="table-responsive">
         <table class="table mb-0">
@@ -182,7 +175,7 @@
                     <th>Date Ended</th>
                     <th>Grade</th>
                     <th>Certificate</th>
-                    <th>Action</th>
+                  
                 </tr>
             </thead>
             <tbody class="border-0">
@@ -196,25 +189,18 @@
                     <td>{{ education.date_ended }}</td>
                     <td>{{ education.grade }}</td>
                     <td><a href="{{ education.certificate.url }}" target="_blank">View</a></td>
-                    <td>
-                        <a href="{% url 'main:update_further_studies' instance_id=education.pk %}">
-                            <i class="fas fa-edit ml-2"></i>
-                        </a>
-                        <a href="{% url 'main:delete_further_studies' instance_id=education.pk %}">
-                            <i class="fas fa-trash text-danger"></i>
-                        </a>
-                    </td>
+                   
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 {% else %}
-    <h2 class="mb-4 text-center" style="color: #FD7E14;">You are missing Higher Education information</h2>
+    <h4 class="mb-3 mt-3 text-center" style="color: #FD7E14;">You are missing College/University Information</h4>
 {% endif %}
 {% if certs %}
     <a href="{% url 'main:certs' %}" target="_blank">
-        <h2 class="mb-4 text-center" style="color: #FD7E14;">Certifications</h2>
+        <h3 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Professional Certifications</h3>
     </a>
 
    <div class="table-responsive">
@@ -237,14 +223,7 @@
                     <td>{{ certification.certifying_body }}</td>
                     <td>{{ certification.date_attained }}</td>
                     <td><a href="{{ certification.certificate.url }}" target="_blank">View</a></td>
-                    <td>
-                        <a href="{% url 'main:update_certification' instance_id=certification.pk %}">
-                            <i class="fas fa-edit ml-2"></i>
-                        </a>
-                        <a href="{% url 'main:delete_certification' instance_id=certification.pk %}">
-                            <i class="fas fa-trash text-danger"></i>
-                        </a>
-                    </td>
+                   
                 </tr>
                 {% endfor %}
             </tbody>
@@ -252,12 +231,12 @@
     </div>
    </div>
 {% else %}
-    <h2 class="mb-4 text-center" style="color: #FD7E14;">No Certifications Found</h2>
+    <h2 class="mb-3 mt-3 text-center" style="color: #FD7E14;">No Professional Certifications Found</h2>
 {% endif %}
 
 {% if ms %}
     <a href="{% url 'main:memberships' %}" target="_blank">
-        <h2 class="mb-4 text-center" style="color: #FD7E14;">Memberships</h2>
+        <h3 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Professional Memberships</h3>
     </a>
 
     <div class="container">
@@ -269,7 +248,8 @@
                         <th scope="col">Membership Body</th>
                         <th scope="col">Date Joined</th>
                         <th scope="col">Certificate</th>
-                        <th scope="col">Actions</th>
+                       
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -279,14 +259,8 @@
                         <td>{{ membership.membership_body }}</td>
                         <td>{{ membership.date_joined }}</td>
                         <td><a href="{{ membership.certificate.url }}" target="_blank">View</a></td>
-                        <td>
-                            <a href="{% url 'main:update_membership' instance_id=membership.pk %}">
-                                <i class="fas fa-edit ml-2"></i>
-                            </a>
-                            <a href="{% url 'main:delete_membership' instance_id=membership.pk %}">
-                                <i class="fas fa-trash text-danger"></i>
-                            </a>
-                        </td>
+                       
+                        
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -294,42 +268,43 @@
         </div>
     </div>
 {% else %}
-    <h2 class="mb-4 text-center" style="color: #FD7E14;">No Memberships Found</h2>
+    <h3 class="mb-3 mt-3 text-center" style="color: #FD7E14;">No Professional Memberships Found</h3>
 {% endif %}
-
 
 
 {% if wx %}
     <a href="{% url 'main:experience' %}">
-        <h2 class="mb-4 text-center" style="color: #FD7E14;">Work Experience</h2>
+        <h3 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Work Experience</h3>
     </a>
 
     <div class="container">
-        {% for experience in wx %}
-        <div class="row mt-4">
-            <div class="col-xl-12">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="card-title">Company: {{ experience.company_name }}</h5>
-                                <p class="card-text">Position: {{ experience.position }}</p>
-                                <p class="card-text">Period: {{ experience.date_started }} - {% if experience.date_ended %}{{ experience.date_ended }}{% else %}Current Job{% endif %}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <h5 class="card-title">Responsibilities</h5>
-                                <p class="card-title">{{ experience.responsibilities }}</p>
-                               
-                            </div>
-                        </div>
-            </div>
-        </div>
-        
-        {% endfor %}
-        
-       
+       <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Company</th>
+                    <th>Position</th>
+                    <th>Period</th>
+                    <th>Responsibilities</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for experience in wx %}
+                    <tr>
+                        <td>{{ experience.company_name }}</td>
+                        <td>{{ experience.position }}</td>
+                        <td>{{ experience.date_started }} - {% if experience.date_ended %}{{ experience.date_ended }}{% else %}Current Job{% endif %}</td>
+                        <td>{{ experience.responsibilities }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+       </div>
     </div>
 {% else %}
     <h2 class="mb-4 text-center" style="color: #FD7E14;">You are missing Work Experience Details</h2>
 {% endif %}
+
 {% if refs %}
     <a href="{% url 'main:refs' %}" target="_blank">
         <h2 class="mb-4 text-center" style="color: #FD7E14;">Referees</h2>
@@ -345,7 +320,7 @@
                         <th scope="col">Designation</th>
                         <th scope="col">Phone</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Action</th>
+                       
                     </tr>
                 </thead>
                 <tbody>
@@ -356,15 +331,7 @@
                         <td>{{ referee.designation }}</td>
                         <td>{{ referee.phone }}</td>
                         <td>{{ referee.email }}</td>
-                        <td>
-                            <a href="{% url 'main:update_referee' instance_id=referee.pk %}">
-                                <i class="fas fa-edit ml-2"></i>
-                            </a>
-                            <a href="{% url 'main:delete_referee' instance_id=referee.pk %}">
-                                <i class="fas fa-trash text-danger"></i>
-                            </a>
-                            
-                        </td>
+                       
                     </tr>
                     {% endfor %}
                 </tbody>

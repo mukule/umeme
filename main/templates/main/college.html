@@ -161,8 +161,9 @@
                                         No certificate uploaded
                                     {% endif %}
                                 </td>
-                                <td> <a href="{% url 'main:update_further_studies' instance_id=further_study.pk %}">
-                                    <i class="fas fa-edit"></i> Update
+                                <td> 
+                                    <a href="{% url 'main:update_further_studies' instance_id=further_study.pk %}">Edit</a> |
+                                    <a href="{% url 'main:delete_further_studies' instance_id=further_study.pk %}">Delete</a>
                                 </a>
                                 </td>
                             </tr>

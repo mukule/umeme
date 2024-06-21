@@ -129,28 +129,33 @@
             {% endif %}
                 </div>
                 {% if wx %}
-                {% for experience in wx %}
                 <div class="row mt-4">
                     <div class="col-xl-12">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <a href="{% url 'main:update_work_experience' instance_id=experience.pk %}" style="text-decoration: none;">
-                                            <h5 class="card-title">Company: {{ experience.company_name }}</h5>
-                                        </a>
-                                        <p class="card-text">Position: {{ experience.position }}</p>
-                                        <p class="card-text">Period: {{ experience.date_started }} - {% if experience.date_ended %}{{ experience.date_ended }}{% else %}Current Job{% endif %}</p>
-                                        
-                                        
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h5 class="card-title">Responsibilities</h5>
-                                        <p class="card-title">{{ experience.responsibilities }}</p>
-                                    </div>
-                                </div>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Title</th>
+                                    <th>Dates</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for experience in wx %}
+                                    <tr>
+                                        <td><a href="{% url 'main:update_work_experience' instance_id=experience.pk %}">{{ experience.company_name }}</a></td>
+                                        <td>{{ experience.position }}</td>
+                                        <td>{{ experience.date_started }} - {% if experience.date_ended %}{{ experience.date_ended }}{% else %}Current Job{% endif %}</td>
+                                        <td>
+                                            <a href="{% url 'main:update_work_experience' instance_id=experience.pk %}">Edit</a> |
+                                            <a href="{% url 'main:delete_work_experience' instance_id=experience.pk %}">Delete</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                
-                {% endfor %}
             {% else %}
                 <p class="text-center">No Work Experience Found</p>
             {% endif %}

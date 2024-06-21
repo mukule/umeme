@@ -215,7 +215,6 @@ class Resume(models.Model):
     def __str__(self):
         return f"Resume for {self.user.username}"
 
-
 class BasicEducation(models.Model):
     user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name='basic_education')
@@ -223,9 +222,10 @@ class BasicEducation(models.Model):
         max_length=255, blank=True, null=True)
     certification_choices = (
         ('KCSE', 'Kenya Certificate of Secondary Education (KCSE)'),
+        ('KCPE', 'Kenya Certificate of Primary Education (KCPE)'),  # Added KCPE here
     )
     certification = models.CharField(
-        max_length=10, choices=certification_choices, default='kcse', blank=True, null=True)
+        max_length=10, choices=certification_choices, default='KCSE', blank=True, null=True)
     date_started = models.DateField(blank=True, null=True)
     date_ended = models.DateField(blank=True, null=True)
     grade_attained = models.CharField(max_length=10, blank=True, null=True)
@@ -265,7 +265,7 @@ class Membership(models.Model):
                              related_name='memberships', blank=True, null=True)
     membership_title = models.CharField(max_length=255, blank=True, null=True)
     membership_number = models.CharField(max_length=50, blank=True, null=True)
-    membership_body = models.CharField(max_length=50, blank=True, null=True)
+    membership_body = models.CharField(max_length=255, blank=True, null=True)
     date_joined = models.DateField(blank=True, null=True)
     certificate = models.FileField(
         upload_to='certificates/{user_id}/memberships/', blank=True, null=True)

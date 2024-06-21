@@ -155,9 +155,10 @@
                                         No certificate uploaded
                                     {% endif %}
                                 </td>
-                                <td> <a href="{% url 'main:update_certification' instance_id=certification.pk %}">
-                                    <i class="fas fa-edit"></i> Update
-                                </a>
+                                <td> 
+
+                                <a href="{% url 'main:update_certification' instance_id=certification.pk %}">Edit</a> |
+                                <a href="{% url 'main:delete_certification' instance_id=certification.pk %}">Delete</a>
                                 </td>
                             </tr>
                             {% endfor %}

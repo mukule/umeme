@@ -143,7 +143,9 @@
                         <p class="card-title"><strong>Ethnicity:</strong> {% if resume.ethnicity %}{{ resume.ethnicity }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Gender:</strong> {% if resume.gender %}{{ resume.gender }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Disability:</strong> {% if resume.disability %}Yes{% else %}No{% endif %}</p>
-                        <p class="card-title"><strong>Disability Number:</strong> {% if resume.disability_number %}{{ resume.disability_number }}{% else %}:-{% endif %}</p>
+                       {% if resume.disability %}
+                       <p class="card-title"><strong>Disability Number:</strong> {% if resume.disability_number %}{{ resume.disability_number }}{% else %}:-{% endif %}</p>
+                       {% endif %}
                         <p class="card-title"><strong>Marital Status:</strong> {% if resume.marital_status %}{{ resume.marital_status }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Highest Education Level:</strong> {% if highest_edu_level %}{{ highest_edu_level }}{% else %}:-{% endif %}</p>
                         <p class="card-title"><strong>Field of Study:</strong> {% if resume.field_of_study %}{{ resume.field_of_study }}{% else %}:-{% endif %}</p>

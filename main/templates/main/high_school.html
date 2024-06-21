@@ -131,15 +131,45 @@
                 </div>
                 {% if be %}
                 <div class="row col-xl-12">
-                    <div class="col-md-6">
-                        <p class="card-title"><strong>Name of the School:</strong> {{ be.name_of_the_school }}</p>
-                        <p class="card-title"><strong>Certification:</strong> {{ be.get_certification_display }}</p>
-                        <p class="card-title"><strong>Date Started:</strong> {{ be.date_started }}</p>
-                        <p class="card-title"><strong>Date Ended:</strong> {{ be.date_ended }}</p>
-                        <p class="card-title"><strong>Grade Attained:</strong> {{ be.grade_attained }}</p>
-                       
+                    <div class="col-md-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name of the School</th>
+                                    <th>Certification</th>
+                                    <th>Date Started</th>
+                                    <th>Date Ended</th>
+                                    <th>Grade Attained</th>
+                                    <th>Certificate</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for education_instance in be %}
+                                    <tr>
+                                        <td>{{ education_instance.name_of_the_school }}</td>
+                                        <td>{{ education_instance.get_certification_display }}</td>
+                                        <td>{{ education_instance.date_started }}</td>
+                                        <td>{{ education_instance.date_ended }}</td>
+                                        <td>{{ education_instance.grade_attained }}</td>
+                                        <td>
+                                            {% if education_instance.certificate %}
+                                                <a href="{{ education_instance.certificate.url }}" target="_blank">View Certificate</a>
+                                            {% else %}
+                                                No certificate uploaded
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                         
+                                            <a href="{% url 'main:update_basic_education' education_instance.pk %}">Edit</a> |
+                                            <a href="{% url 'main:delete_basic_education' education_instance.pk %}">Delete</a>
+                                          
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                  
                 </div>
             {% else %}
                 <p class="text-center">Your Basic Education Details are Missing</p>
@@ -148,15 +178,12 @@
 
                 <div class="text-center mt-4">
                     <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
-                    {% if be %}
-                    <a href="{% url 'main:update_basic_education' instance_id=be.pk %}" class="btn btn-primary active ml-2">Update</a>
-                    {% else %}
-                    <a href="{% url 'main:basic_academic' %}" class="btn btn-primary active ml-2">Add Basic Education</a>
-                    {% endif %}
+                    <a href="{% url 'main:basic_academic' %}" class="btn btn-primary active ml-2">Add New</a>
+                   
                     {% if fs %}
                         <a href="{% url 'main:college' %}" class="btn btn-primary active ml-2">Next</a>
                     {% else %}
-                        <a href="{% url 'main:further_studies' %}" class="btn btn-primary active ml-2">Next</a>
+                        <a href="{% url 'main:further_studies' %}" class="btn btn-primary active">Next</a>
                     {% endif %}
                 </div>
             </div>
