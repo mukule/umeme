@@ -148,7 +148,7 @@
                                         <td>{{ experience.date_started }} - {% if experience.date_ended %}{{ experience.date_ended }}{% else %}Current Job{% endif %}</td>
                                         <td>
                                             <a href="{% url 'main:update_work_experience' instance_id=experience.pk %}">Edit</a> |
-                                            <a href="{% url 'main:delete_work_experience' instance_id=experience.pk %}">Delete</a>
+                                            <a href="{% url 'main:delete_work_experience' instance_id=experience.pk %}" onclick="return confirmDeletion(this);">Delete</a>
                                         </td>
                                     </tr>
                                 {% endfor %}

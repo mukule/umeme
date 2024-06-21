@@ -44,7 +44,7 @@
                         <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:referees' %}">Referees</a>
+                        <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
@@ -158,9 +158,10 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a href="{% url 'main:update_membership' instance_id=membership.pk %}">
-                                        <i class="fas fa-edit"></i> Update
-                                    </a>
+                                    
+
+                                    <a href="{% url 'main:update_membership' instance_id=membership.pk %}">Edit</a> |
+                                    <a href="{% url 'main:delete_membership' instance_id=membership.pk %}" onclick="return confirmDeletion(this);">Delete</a>
                                 </td>
                             </tr>
                             {% endfor %}

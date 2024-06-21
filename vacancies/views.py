@@ -138,7 +138,7 @@ unique_identifier = uuid.uuid4().hex[:6]
 
 def generate_reference_number(vacancy):
     application_count = Application.objects.filter(vacancy=vacancy).count() + 1
-    return f"{vacancy.ref}/{unique_identifier}/{application_count}"
+    return f"{vacancy.ref}/#{application_count}"
 
 
 def send_application_confirmation_email(user, vacancy, reference_number):

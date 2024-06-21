@@ -97,7 +97,7 @@ def bio_info(request):
     try:
         resume = Resume.objects.get(user=user)
     except Resume.DoesNotExist:
-        # If the user doesn't have a resume, create one with default information
+      
         full_name = f"{user.first_name} {user.last_name}"
         id_number = user.id_number
         email_address = user.email
@@ -249,7 +249,16 @@ def resume(request):
     try:
         resume = Resume.objects.get(user=user)
     except Resume.DoesNotExist:
-        resume = None
+      
+        full_name = f"{user.first_name} {user.last_name}"
+        id_number = user.id_number
+        email_address = user.email
+        resume = Resume.objects.create(
+            user=user,
+            full_name=full_name,
+            id_number=id_number,
+            email_address=email_address
+        )
 
     basic_academic = BasicEducation.objects.filter(user=user).all()
     higher_education = FurtherStudies.objects.filter(
@@ -871,13 +880,12 @@ def career_objective(request):
         professional_summary = None
 
     if request.method == 'POST':
-        form = ProfessionalSummaryForm(request.POST)
-        if form.is_valid():
-            if professional_summary:
-                messages.error(
-                    request, "You can only have one professional summary.")
-                return redirect('main:staff_profile')
+        if professional_summary:
+            form = ProfessionalSummaryForm(request.POST, instance=professional_summary)
+        else:
+            form = ProfessionalSummaryForm(request.POST)
 
+        if form.is_valid():
             summary = form.save(commit=False)
             summary.user = user
             summary.save()
@@ -889,6 +897,7 @@ def career_objective(request):
         'form': form,
     }
     return render(request, 'main/professional_summary.html', context)
+
 
 
 @login_required
@@ -910,7 +919,7 @@ def update_career_objective(request):
     context = {
         'form': form,
     }
-    return render(request, 'main/update_professional_summary.html', context)
+    return render(request, 'main/professional_summary.html', context)
 
 
 @login_required

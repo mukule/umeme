@@ -44,7 +44,7 @@
                         <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:referees' %}">Referees</a>
+                        <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
@@ -162,7 +162,7 @@
                                         <td>
                                          
                                             <a href="{% url 'main:update_basic_education' education_instance.pk %}">Edit</a> |
-                                            <a href="{% url 'main:delete_basic_education' education_instance.pk %}">Delete</a>
+                                            <a href="{% url 'main:delete_basic_education' education_instance.pk %}" onclick="return confirmDeletion(this);">Delete</a>
                                           
                                         </td>
                                     </tr>

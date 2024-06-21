@@ -152,9 +152,10 @@
                         <td>{{ referee.phone }}</td>
                         <td>{{ referee.email }}</td>
                         <td>
-                            <a href="{% url 'main:update_referee' instance_id=referee.pk %}">
-                                <i class="fas fa-edit"></i> Update
-                            </a>
+                           
+
+                          <a href="{% url 'main:update_referee' instance_id=referee.pk %}">Edit</a> |
+                          <a href="{% url 'main:delete_referee' instance_id=referee.pk %}" onclick="return confirmDeletion(this);">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
