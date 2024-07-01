@@ -26,36 +26,40 @@
     </div>
 </div>
 
-
-
-<div id="layout-wrapper">
+<div id="layout-wrapper" class="mt-4">
     <div class="main-content">
         <div class="container-fluid">
-           <div class="card">
-            <div class="card-body">
-                <div class="row mt-2">
-                    <div class="col-12">
-                        <div class="card-deck-wrapper">
-                            <div class="card-deck">
-                                {% for job_type in job_types %}
-                                    <div class="card mb-4 shadow-sm border-0">
-                                       <a href="{% url 'main:vacs' pk=job_type.pk %}">
-                                        <img class="card-img-top img-fluid" src="{{ job_type.icon.url }}" alt="{{ job_type.name }} Icon">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-center">{{ job_type.name }}</h5>
-                                            <p class="card-text text-center mb-3">{{ job_type.description }}</p>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <div class="card-deck-wrapper">
+                                <div class="card-deck">
+                                    {% for job_type in job_types %}
+                                        <div class="card text-bg-dark">
+                                          <a href="{% url 'main:vacs' pk=job_type.pk %}">
+                                            <div class="position-relative">
+                                                <img class="card-img-top img-fluid" src="{{ job_type.icon.url }}" alt="{{ job_type.name }} Icon">
+                                                <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                                    <h5 class="card-title text-center mb-0">{{ job_type.name }}</h5>
+                                                    <p class="card-text text-center">{{ job_type.description }}</p>
+                                                    <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-rounded active shadow-sm mb-0 mt-3" style="background-color: #fd7e14; border-color: #fd7e14;">
+                                                        Explore {{ job_type.name }} Opportunities
+                                                    </a>
+                                                </div>
+                                            </div>
+                                          </a>
                                         </div>
-                                       </a>
-                                    </div>
-                                {% endfor %}
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-           </div>
         </div>
     </div>
 </div>
+
 
 {% endblock content %}

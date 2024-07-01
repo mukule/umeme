@@ -65,3 +65,30 @@
             display: none; /* Hide names on smaller screens */
         }
     }
+
+
+    .text-bg-dark {
+        background-color: #343a40; /* Background color for text overlay */
+        color: white; /* Text color */
+    }
+    
+    .card-img-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem; /* Padding for the text overlay */
+        background-color: rgba(0, 0, 0, 0.5); /* Transparent background for overlay */
+    }
+    
+    .card-img-overlay h5,
+    .card-img-overlay p {
+        margin: 0; 
+        color: #fff;
+    }
+    
+    .card {
+        position: relative;
+        overflow: hidden; /* Ensure content doesn't overflow */
+    }
+    
