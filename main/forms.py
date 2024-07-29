@@ -52,13 +52,13 @@ class ResumeForm(forms.ModelForm):
         label='Phone',
 
     )
-    id_number = forms.CharField(
-        max_length=20,
-        widget=forms.TextInput(
+    id_number = forms.IntegerField(
+        widget=forms.NumberInput(
             attrs={'class': 'form-control', 'placeholder': 'ID Number'}),
         label='ID Number',
-
+        required=True
     )
+
     dob = forms.DateField(
         widget=forms.DateInput(
             attrs={'class': 'form-control', 'placeholder': 'Date of Birth', 'type': 'date'}),

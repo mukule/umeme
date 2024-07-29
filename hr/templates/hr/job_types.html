@@ -3,25 +3,50 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Kengen</h4>
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Job Types</li>
-                        </ol>
-                    </div>
+    <div class="container" style="margin-top: 100px !important;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Dashboard/Job Types</h4>
+    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:job_types' %}">Job Types</a></li>
+                    </ol>
                 </div>
             </div>
         </div>
+        <hr>
         
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
+                    <div>
+                        {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == 'success' %}
+                                <div class="alert alert-success alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% elif message.tags == 'error' %}
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe }}
+                                </div>
+                            {% elif message.tags == 'info' %}
+                                <div class="alert alert-info alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% elif message.tags == 'warning' %}
+                                <div class="alert alert-warning alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
                     <div class="card-body">
                         {% if job_types %}
                             <div class="table-responsive mt-3">
@@ -47,12 +72,12 @@
                                                 
                                                 <td>
                                                    
-                                                    <a href="{% url 'hr:edit_job_type' job_type.id %}" class="btn btn-warning mr-2">
+                                                    <a href="{% url 'hr:edit_job_type' job_type.id %}" class="btn btn-warning mr-2 text-white">
                                                         <i class="fas fa-pencil-alt"></i> Edit
                                                     </a>
                                                     
                                                     
-                                                    <a href="{% url 'hr:delete_job_type' job_type.id %}" class="btn btn-danger">
+                                                    <a href="{% url 'hr:delete_job_type' job_type.id %}" class="btn btn-danger text-white">
                                                         <i class="fas fa-trash"></i> Delete
                                                     </a>
                                                 </td>
@@ -65,7 +90,7 @@
                             <p class="text-center">No Job Types available</p>
                         {% endif %}
                         <div class="text-center mt-4">
-                            <a href="{% url 'hr:create_job_type' %}" class="btn btn-primary active">Add New</a>
+                            <a href="{% url 'hr:create_job_type' %}" class="btn active" style="background-color: #490ca6; color: #fff;">Add New</a>
                         </div>
                     </div>
                     <!-- end card-body-->
@@ -75,5 +100,5 @@
             <!-- end col -->
         </div>
     </div>
-</div>
+
 {% endblock content %}

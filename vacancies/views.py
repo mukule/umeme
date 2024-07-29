@@ -276,8 +276,6 @@ def application_succ(request):
         # Retrieve the Application object from the database using its ID
         application = get_object_or_404(Application, id=application_id)
 
-        # Access the application's attributes as needed
-        # Assuming you have a 'vacancy' attribute in your Application model
         vacancy_title = application.vacancy.title
         reference_number = application.reference_number
 
@@ -309,7 +307,8 @@ def applications(request):
 
     context = {
         'applications': applications,
-        'today_date': today_date
+        'today_date': today_date,
+        'user': user
     }
 
     return render(request, 'vacancies/applications.html', context)

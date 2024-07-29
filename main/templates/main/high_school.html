@@ -3,89 +3,73 @@
 {% load static %}
 
 {% block content %}
-<div class="carousel-container">
-    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
-        <div class="carousel-inner">
-            {% for job_type in job_types %}
-                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <div style="position: relative;">
-                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
-                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+    <div class="container-fluid" style="margin-top: 100px !important;">
+       
+        {% if user.is_authenticated %}
+        <div class="container mt-4">
+            <div class="row justify-content-center mb-3">
+                <div class="card border-0">
+                    <div class="card-header border-0">
+                        <ul class="nav nav-tabs card-header-tabs custom-tabs mt-2 mb-2">
+                            {% if user.access_level != 5 %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'bio_info' %}active{% endif %}" href="{% url 'main:bio_info' %}">Bio Information</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'high_school' %}active{% endif %}" href="{% url 'main:high_school' %}">Basic Education</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:college' %}">College/University</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Certifications</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Memberships</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'experience' %}active{% endif %}" href="{% url 'main:experience' %}">Work Experience</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'refs' %}active{% endif %}" href="{% url 'main:refs' %}">Referees</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'main:resume' %}">Review</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'staff_profile' %}active{% endif %}" href="{% url 'main:staff_profile' %}">Executive Summary</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'high_school' %}active{% endif %}" href="{% url 'main:high_school' %}">Basic Education</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:college' %}">College/University</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Certifications</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Memberships</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'experience' %}active{% endif %}" href="{% url 'main:experience' %}">Work Experience</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'refs' %}active{% endif %}" href="{% url 'main:refs' %}">Referees</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'main:resume' %}">Review</a>
+                                </li>
+                            {% endif %}
+                        </ul>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
-<div class="page-content">
-    <div class="container-fluid">
-        {% if user.is_authenticated %}
-        {% if user.access_level != 5 %}
-            <div class="row">
-                <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs">
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:bio_info' %}">Bio Information</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'main:high_school' %}">Basic Education</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:certs' %}">Certifications</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:memberships' %}">Memberships</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
-                      </li>
-                    </ul>
-                  </div>
             </div>
-        {% else %}
-        <div class="row">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs">
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:career_objective' %}">Executive Summary</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active"  href="{% url 'main:college' %}">Basic Education</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:certs' %}">Professional Certificates</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:memberships' %}">Professional Memberships</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
-                  </li>
-                </ul>
-              </div>
         </div>
-        {% endif %}
     {% endif %}
-       
+
+      <div class="container">
         <div class="row mt-4">
             <div style="width: 100%;">
                 <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
@@ -132,43 +116,44 @@
                 {% if be %}
                 <div class="row col-xl-12">
                     <div class="col-md-12">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Name of the School</th>
-                                    <th>Certification</th>
-                                    <th>Date Started</th>
-                                    <th>Date Ended</th>
-                                    <th>Grade Attained</th>
-                                    <th>Certificate</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for education_instance in be %}
+                        <div class="table-responsive">
+                            <table class="table table-striped responsive">
+                                <thead>
                                     <tr>
-                                        <td>{{ education_instance.name_of_the_school }}</td>
-                                        <td>{{ education_instance.get_certification_display }}</td>
-                                        <td>{{ education_instance.date_started }}</td>
-                                        <td>{{ education_instance.date_ended }}</td>
-                                        <td>{{ education_instance.grade_attained }}</td>
-                                        <td>
-                                            {% if education_instance.certificate %}
-                                                <a href="{{ education_instance.certificate.url }}" target="_blank">View Certificate</a>
-                                            {% else %}
-                                                No certificate uploaded
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                         
-                                            <a href="{% url 'main:update_basic_education' education_instance.pk %}">Edit</a> |
-                                            <a href="{% url 'main:delete_basic_education' education_instance.pk %}" onclick="return confirmDeletion(this);">Delete</a>
-                                          
-                                        </td>
+                                        <th>Name of the School</th>
+                                        <th>Certification</th>
+                                        <th>Date Started</th>
+                                        <th>Date Ended</th>
+                                        <th>Grade Attained</th>
+                                        <th>Certificate</th>
+                                        <th>Actions</th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {% for education_instance in be %}
+                                        <tr>
+                                            <td>{{ education_instance.name_of_the_school }}</td>
+                                            <td>{{ education_instance.get_certification_display }}</td>
+                                            <td>{{ education_instance.date_started }}</td>
+                                            <td>{{ education_instance.date_ended }}</td>
+                                            <td>{{ education_instance.grade_attained }}</td>
+                                            <td>
+                                                {% if education_instance.certificate %}
+                                                    <a href="{{ education_instance.certificate.url }}" target="_blank">View Certificate</a>
+                                                {% else %}
+                                                    No certificate uploaded
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'main:update_basic_education' education_instance.pk %}">Edit</a> |
+                                                <a href="{% url 'main:delete_basic_education' education_instance.pk %}" onclick="return confirmDeletion(this);">Delete</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
                     </div>
                 </div>
             {% else %}
@@ -188,7 +173,8 @@
                 </div>
             </div>
         </div>
+      </div>
     </div>
-</div>
+
 
 {% endblock content %}

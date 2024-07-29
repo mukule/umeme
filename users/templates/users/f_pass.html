@@ -3,8 +3,7 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
+    <div class="container" style="margin-top: 100px !important;">
         <div class="row justify-content-center">
             <div class="col-12 col-md-8 col-lg-6">
                 <div class="d-flex align-items-center min-vh-100 justify-content-center">
@@ -17,8 +16,36 @@
                                             <i class="fas fa-user-alt" style="font-size: 50px; color: #703B97;"></i>
                                         </a>
                                     </div>
-                                    <h1 class="h5 mb-1 text-center">Password reset instructions have been sent to your Email</h1>
-                                    <p class="text-muted text-center">if you dont see the email please check in junk mails.</p>
+                                    <h4>Check Your Email</h4>
+                                    <div>
+                                        {% if messages %}
+                                        {% for message in messages %}
+                                            {% if message.tags == 'success' %}
+                                                <div class="alert alert-success alert-dismissible" role="alert">
+                                                   
+                                                    {{ message|safe|escape }}
+                                                </div>
+                                            {% elif message.tags == 'error' %}
+                                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                                   
+                                                    {{ message|safe }}
+                                                </div>
+                                            {% elif message.tags == 'info' %}
+                                                <div class="alert alert-info alert-dismissible" role="alert">
+                                                   
+                                                    {{ message|safe|escape }}
+                                                </div>
+                                         
+                                    <div class="alert alert-warning alert-dismissible" role="alert">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                        {{ message|safe|escape }}
+                                    </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    </div>
+
+                                    <p>Remember to check your Spam folder if you can't Find the Email</p>
                                     
                                 </div>
                             </div>
@@ -28,5 +55,11 @@
             </div>
         </div>
     </div>
-</div>
+
+
+    <script>
+        setTimeout(function() {
+            window.location.href = "{% url 'users:login' %}";
+        }, 5000);
+    </script>
 {% endblock content %}

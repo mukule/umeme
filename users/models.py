@@ -39,8 +39,8 @@ class CustomUser(AbstractUser):
         default=0,
     )
 
-    id_number = models.CharField(
-        max_length=8, unique=True, blank=True, null=True)
+    id_number = models.PositiveIntegerField(
+        unique=True, blank=True, null=True)
 
     def image_upload_to(self, filename):
         return os.path.join('Users', self.username, filename)
@@ -51,7 +51,7 @@ class CustomUser(AbstractUser):
     )
 
     def __str__(self):
-        return f"{self.username}"
+        return f"{self.id}"
 
 
 class ProfileUpdate(models.Model):
@@ -166,8 +166,8 @@ class Resume(models.Model):
     full_name = models.CharField(max_length=255, blank=True, null=True)
     email_address = models.EmailField(blank=True, null=True, unique=True)
     phone = models.CharField(max_length=10, blank=True, null=True, unique=True)
-    id_number = models.CharField(
-        max_length=20, blank=True, null=True, unique=True)
+    id_number = models.PositiveIntegerField(
+        unique=True, blank=True, null=True)
     dob = models.DateField(blank=True, null=True)
     country_of_birth = CountryField(blank=True, null=True)
     country_of_residence = CountryField(blank=True, null=True)
@@ -215,6 +215,7 @@ class Resume(models.Model):
     def __str__(self):
         return f"Resume for {self.user.username}"
 
+
 class BasicEducation(models.Model):
     user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name='basic_education')
@@ -222,7 +223,7 @@ class BasicEducation(models.Model):
         max_length=255, blank=True, null=True)
     certification_choices = (
         ('KCSE', 'Kenya Certificate of Secondary Education (KCSE)'),
-        ('KCPE', 'Kenya Certificate of Primary Education (KCPE)'),  # Added KCPE here
+        ('KCPE', 'Kenya Certificate of Primary Education (KCPE)'),
     )
     certification = models.CharField(
         max_length=10, choices=certification_choices, default='KCSE', blank=True, null=True)

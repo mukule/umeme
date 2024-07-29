@@ -2,64 +2,49 @@
 {% load static %}
 
 {% block content %}
-<div class="carousel-container">
-    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+<div class="carousel-container pt-5">
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
         <div class="carousel-inner">
-
             {% for job_type in job_types %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                     <div style="position: relative;">
-                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
-                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
-                    </div>
-                    <div class="carousel-caption mt-md-4 d-none d-md-block">
-                        <h3 class="text-white">{{ job_type.name }}</h3>
-                        <p>{{ job_type.description }}</p>
-                        <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-rounded active btn-lg shadow-sm mb-0">
-                            Explore Opportunities
-                        </a>
+                        <img class="d-block w-100" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h3 class="text-white">{{ job_type.name }}</h3>
+                            <p>{{ job_type.description }}</p>
+                            <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-lg shadow-sm mb-0 carousel-btn">Explore Opportunities</a>
+                        </div>
+                        
                     </div>
                 </div>
             {% endfor %}
-
         </div>
     </div>
 </div>
 
-<div id="layout-wrapper" class="mt-4">
-    <div class="main-content">
-        <div class="container-fluid">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <div class="card-deck-wrapper">
-                                <div class="card-deck">
-                                    {% for job_type in job_types %}
-                                        <div class="card text-bg-dark">
-                                          <a href="{% url 'main:vacs' pk=job_type.pk %}">
-                                            <div class="position-relative">
-                                                <img class="card-img-top img-fluid" src="{{ job_type.icon.url }}" alt="{{ job_type.name }} Icon">
-                                                <div class="card-img-overlay d-flex flex-column justify-content-end">
-                                                    <h5 class="card-title text-center mb-0">{{ job_type.name }}</h5>
-                                                    <p class="card-text text-center">{{ job_type.description }}</p>
-                                                    <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-rounded active shadow-sm mb-0 mt-3" style="background-color: #fd7e14; border-color: #fd7e14;">
-                                                        Explore {{ job_type.name }} Opportunities
-                                                    </a>
-                                                </div>
-                                            </div>
-                                          </a>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Opportunities at Kengen</h2>
+    <div class="row">
+        {% for job_type in job_types %}
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 border-bottom">
+                    <a href="{% url 'main:vacs' pk=job_type.pk %}">
+                        <img class="card-img-top rounded-img shadow-sm" src="{{ job_type.icon.url }}" alt="{{ job_type.name }} Icon">
+                    </a>
+                    <div class="card-body text-start">
+                        <h5 class="card-title">{{ job_type.name }}</h5>
+                        <p class="card-text">{{ job_type.description }}</p>
+                        <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-rounded shadow-sm mb-0 position-relative" style="background-color: #fd7e14; border-color: #fd7e14; padding-right: 2.5rem;">
+                            Explore
+                            <span class="btn-icon-circle">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
-
 
 {% endblock content %}

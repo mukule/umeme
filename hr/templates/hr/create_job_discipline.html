@@ -3,23 +3,20 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Kengen</h4>
 
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Job Discipline</a></li>
-                            <li class="breadcrumb-item active">Create Job Discipline</li>
-                        </ol>
-                    </div>
-                    
+    <div class="container" style="margin-top: 100px !important;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Dashboard/Job Disciplines/{% if jd %} Update {{jd.name}} {% else %} Create {% endif %}</h4>
+    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:job_disciplines' %}">Job Disciplines</a></li>
+                    </ol>
                 </div>
             </div>
-        </div>     
+        </div>
+        <hr>
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
@@ -31,9 +28,9 @@
                                 {{ form.name|as_crispy_field }}
                             </div>
                           
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary active">Submit</button>
-                                <a href="{% url 'hr:job_disciplines' %}" class="btn btn-primary active">Back to job Disciplines</a>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn active" style="background-color: #490ca6; color: #fff;">Submit</button>
+                                <a href="{% url 'hr:job_disciplines' %}" class="btn active" style="background-color: #490ca6; color: #fff;">Back to job Disciplines</a>
                             </div>
                         </form>
                     </div>
@@ -47,5 +44,4 @@
         
        <!--end row-->
     </div>
-</div>
 {% endblock content %}

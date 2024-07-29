@@ -3,19 +3,32 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container" style="margin-top: 100px !important;">
+    <div class="col-12 mt-4">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0 font-size-18">Dashboard/Kengen Staffs</h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'hr:dashboard' %}">Dashboard/</a> 
+                        <a href="{% url 'hr:kgn_staffs' %}">Kengen Staffs</a>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <hr>
     <div class="row mt-4 justify-content-center">
-        <div class="col-xl-10">
+        <div class="col-xl-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title text-center">Staffs</h4>
-                    <!-- Search form -->
                     <form method="get" class="mb-3">
                         <div class="input-group">
                             <input type="text" name="search_query" class="form-control" placeholder="Search by Staff No or Name" value="{{ search_query }}">
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-primary">Search</button>
-                                <a href="{% url 'hr:kgn_staffs' %}" class="btn btn-secondary ml-2">Show All</a>
+                                <button type="submit" class="btn" style="background-color: #490ca6; color: #fff;">Search</button>
+                                <a href="{% url 'hr:kgn_staffs' %}" class="btn  ml-2" style="background-color: #fd7e14; color: #fff;">Show All</a>
                             </div>
                         </div>
                     </form>
@@ -53,9 +66,9 @@
                                             </td>
                                             <td>
                                                 {% if staff.is_active %}
-                                                <a href="{% url 'hr:status' user_id=staff.id %}" class="btn btn-danger">Deactivate</a>
+                                                <a href="{% url 'hr:status' user_id=staff.id %}" class="btn btn-danger text-white">Deactivate</a>
                                             {% else %}
-                                                <a href="{% url 'hr:status' user_id=staff.id %}" class="btn btn-success">Activate</a>
+                                                <a href="{% url 'hr:status' user_id=staff.id %}" class="btn btn-success text-white">Activate</a>
                                             {% endif %}
                                             
                                             </td>

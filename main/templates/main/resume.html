@@ -3,73 +3,72 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
+
+    <div class="container-fluid" style="margin-top: 100px !important;">
         {% if user.is_authenticated %}
-        {% if user.access_level != 5 %}
-            <div class="row">
-                <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs">
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:bio_info' %}">Bio Information</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" href="{% url 'main:high_school' %}">Basic Education</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:college' %}">Collgege/University</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:certs' %}">Certifications</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:memberships' %}">Memberships</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link active"  href="{% url 'main:resume' %}">Review</a>
-                      </li>
-                    </ul>
+      <div class="container mt-4">
+          <div class="row justify-content-center mb-3">
+              <div class="card border-0">
+                  <div class="card-header border-0">
+                      <ul class="nav nav-tabs card-header-tabs custom-tabs mt-2 mb-2">
+                          {% if user.access_level != 5 %}
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'bio_info' %}active{% endif %}" href="{% url 'main:bio_info' %}">Bio Information</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'high_school' %}active{% endif %}" href="{% url 'main:high_school' %}">Basic Education</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:college' %}">College/University</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Certifications</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Memberships</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'experience' %}active{% endif %}" href="{% url 'main:experience' %}">Work Experience</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'refs' %}active{% endif %}" href="{% url 'main:refs' %}">Referees</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'main:resume' %}">Review</a>
+                              </li>
+                          {% else %}
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'staff_profile' %}active{% endif %}" href="{% url 'main:staff_profile' %}">Executive Summary</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'high_school' %}active{% endif %}" href="{% url 'main:high_school' %}">Basic Education</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:college' %}">College/University</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Certifications</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Memberships</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'experience' %}active{% endif %}" href="{% url 'main:experience' %}">Work Experience</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'refs' %}active{% endif %}" href="{% url 'main:refs' %}">Referees</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'main:resume' %}">Review</a>
+                              </li>
+                          {% endif %}
+                      </ul>
                   </div>
-            </div>
-        {% else %}
-        <div class="row">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs">
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:career_objective' %}">Executive Summary</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:college' %}">Basic Education</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:certs' %}">Professional Certificates</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:memberships' %}">Professional Memberships</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active"  href="{% url 'main:resume' %}">Review</a>
-                  </li>
-                </ul>
               </div>
-        </div>
-        {% endif %}
-    {% endif %}
+          </div>
+      </div>
+  {% endif %}
+       <div class="container">
         <div class="row mt-4">
             <div style="width: 100%;">
                 <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
@@ -86,33 +85,33 @@
         <div class="card mt-4">
             <div class="card-body">
                 <a href="{% url 'main:bio_info' %}">
-                    <h4 class="mb-4 text-center" style="color: #FD7E14;">Basic information</h4>
+                    <h5 class="mb-4 text-center" style="color: #FD7E14;">Basic information</h4>
                 </a>
                 {% if resume %}
                 <div class="row col-xl-12">
                     <div class="col-md-6">
-                        <p class="card-title"><strong>Full Name:</strong> {{ resume.full_name }}</p>
-                        <p class="card-title"><strong>Email:</strong> {{ resume.email_address }}</p>
-                        <p class="card-title"><strong>Phone:</strong> {{ resume.phone }}</p>
-                        <p class="card-title"><strong>Ethnicity:</strong> {{ resume.ethnicity }}</p>
-                        <p class="card-title"><strong>Marital Status:</strong> {{ resume.marital_status }}</p>
-                        <p class="card-title"><strong>Disability:</strong> {{ resume.disability }}</p>
-                        <p class="card-title"><strong>Disability Number:</strong> {{ resume.disability_number }}</p>
+                        <p class="card-text"><strong>Full Name:</strong> {{ resume.full_name }}</p>
+                        <p class="card-text"><strong>Email:</strong> {{ resume.email_address }}</p>
+                        <p class="card-text"><strong>Phone:</strong> {{ resume.phone }}</p>
+                        <p class="card-text"><strong>Ethnicity:</strong> {{ resume.ethnicity }}</p>
+                        <p class="card-text"><strong>Marital Status:</strong> {{ resume.marital_status }}</p>
+                        <p class="card-text"><strong>Disability:</strong> {{ resume.disability }}</p>
+                        <p class="card-text"><strong>Disability Number:</strong> {{ resume.disability_number }}</p>
                        
                     </div>
                     <div class="col-md-6">
                         
-                                <p class="card-title"><strong>Date of Birth:</strong> {{ resume.dob }}</p>
-                                <p class="card-title"><strong>Country of Birth:</strong> {{ resume.get_country_of_birth_display }}</p>
-                                <p class="card-title"><strong>Country of Residence:</strong> {{ resume.get_country_of_residence_display }}</p>
+                                <p class="card-text"><strong>Date of Birth:</strong> {{ resume.dob }}</p>
+                                <p class="card-text"><strong>Country of Birth:</strong> {{ resume.get_country_of_birth_display }}</p>
+                                <p class="card-text"><strong>Country of Residence:</strong> {{ resume.get_country_of_residence_display }}</p>
                                 {% if resume.county_of_birth %}
-                                <p class="card-title"><strong>County of Birth:</strong> {{ resume.county_of_birth }}</p>
+                                <p class="card-text"><strong>County of Birth:</strong> {{ resume.county_of_birth }}</p>
                                 {%endif%}
                                 {% if resume.county_of_residence %}
-                                <p class="card-title"><strong>County of Residence:</strong> {{ resume.county_of_residence }}</p>
+                                <p class="card-text"><strong>County of Residence:</strong> {{ resume.county_of_residence }}</p>
                                 {%endif%}
-                                <p class="card-title"><strong>Age:</strong> {{ resume.age }} Years</p>
-                                <p class="card-title"><strong>Gender:</strong> {{ resume.gender }}</p>
+                                <p class="card-text"><strong>Age:</strong> {{ resume.age }} Years</p>
+                                <p class="card-text"><strong>Gender:</strong> {{ resume.gender }}</p>
                           
                     </div>
                 </div>
@@ -124,7 +123,7 @@
                 {% endif %}
                 {% if be %}
                 <a href="{% url 'main:high_school' %}">
-                    <h4 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Basic Education information</h4>
+                    <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Basic Education information</h4>
                 </a>
                 <div class="table-responsive">
                     <table class="table mb-0">
@@ -157,11 +156,11 @@
                     </table>
                 </div>
             {% else %}
-                <h4 class="mb-3 mt-3 text-center" style="color: #FD7E14;">You are missing Basic Education information</h4>
+                <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">You are missing Basic Education information</h4>
             {% endif %}
             {% if he %}
     <a href="{% url 'main:college' %}">
-        <h4 class="mb-3 mt-3 text-center" style="color: #FD7E14;">College/University Information</h4>
+        <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">College/University Information</h4>
     </a>
     <div class="table-responsive">
         <table class="table mb-0">
@@ -196,11 +195,11 @@
         </table>
     </div>
 {% else %}
-    <h4 class="mb-3 mt-3 text-center" style="color: #FD7E14;">You are missing College/University Information</h4>
+    <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">You are missing College/University Information</h4>
 {% endif %}
 {% if certs %}
-    <a href="{% url 'main:certs' %}" target="_blank">
-        <h3 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Professional Certifications</h3>
+    <a href="{% url 'main:certs' %}">
+        <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Professional Certifications</h3>
     </a>
 
    <div class="table-responsive">
@@ -230,12 +229,12 @@
     </div>
    </div>
 {% else %}
-    <h2 class="mb-3 mt-3 text-center" style="color: #FD7E14;">No Professional Certifications Found</h2>
+    <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">No Professional Certifications Found</h2>
 {% endif %}
 
 {% if ms %}
-    <a href="{% url 'main:memberships' %}" target="_blank">
-        <h3 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Professional Memberships</h3>
+    <a href="{% url 'main:memberships' %}">
+        <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Professional Memberships</h3>
     </a>
 
     <div class="container">
@@ -267,13 +266,13 @@
         </div>
     </div>
 {% else %}
-    <h3 class="mb-3 mt-3 text-center" style="color: #FD7E14;">No Professional Memberships Found</h3>
+    <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">No Professional Memberships Found</h3>
 {% endif %}
 
 
 {% if wx %}
     <a href="{% url 'main:experience' %}">
-        <h3 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Work Experience</h3>
+        <h5 class="mb-3 mt-3 text-center" style="color: #FD7E14;">Work Experience</h3>
     </a>
 
     <div class="container">
@@ -301,12 +300,12 @@
        </div>
     </div>
 {% else %}
-    <h2 class="mb-4 text-center" style="color: #FD7E14;">You are missing Work Experience Details</h2>
+    <h5 class="mb-4 text-center" style="color: #FD7E14;">You are missing Work Experience Details</h2>
 {% endif %}
 
 {% if refs %}
-    <a href="{% url 'main:refs' %}" target="_blank">
-        <h2 class="mb-4 text-center" style="color: #FD7E14;">Referees</h2>
+    <a href="{% url 'main:refs' %}">
+        <h5 class="mb-4 text-center" style="color: #FD7E14;">Referees</h2>
     </a>
 
     <div class="container">
@@ -338,7 +337,7 @@
         </div>
     </div>
 {% else %}
-    <h2 class="mb-4 text-center" style="color: #FD7E14;">No Referees Found</h2>
+    <h5 class="mb-4 text-center" style="color: #FD7E14;">No Referees Found</h2>
 {% endif %}
 
 
@@ -346,7 +345,7 @@
             </div>
         </div>
 
+       </div>
     </div>
-</div>
 
 {% endblock content %}

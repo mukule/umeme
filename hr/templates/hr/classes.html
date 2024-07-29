@@ -3,35 +3,62 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Classes Attained</h4>
-
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Careers</a></li>
-                            <li class="breadcrumb-item active">Classes Attained</li>
-                        </ol>
-                    </div>
-                    
+    <div class="container" style="margin-top: 100px !important;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Dashboard/Classes Attained</h4>
+    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:classes' %}">Classes</a></li>
+                    </ol>
                 </div>
             </div>
-        </div>     
+        </div>
+        <hr>     
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
+                    <div>
+                        {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == 'success' %}
+                                <div class="alert alert-success alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% elif message.tags == 'error' %}
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe }}
+                                </div>
+                            {% elif message.tags == 'info' %}
+                                <div class="alert alert-info alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% elif message.tags == 'warning' %}
+                                <div class="alert alert-warning alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
                     <div class="card-body">
                         {% if classes %}
                             <div class="list-group">
                                 <!-- Loop through educational levels -->
                                 {% for class in classes %}
-                                    <div class="list-group-item">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>{{ class.name }}</span>
-                                        <!-- Add Edit link -->
-                                        <a href="{% url 'hr:edit_class' class.id %}" class="btn btn-sm btn-primary float-right ml-2">Edit</a>
+                                        <div class="btn-group">
+                                            <!-- Add Edit link -->
+                                            <a href="{% url 'hr:edit_class' class.id %}" class="btn btn-sm btn-warning text-white">Edit</a>
+                                            <!-- Add Delete link -->
+                                            <a href="{% url 'hr:delete_class' class.id %}" class="btn btn-sm btn-danger text-white">Delete</a>
+                                        </div>
                                     </div>
                                 {% endfor %}
                             </div>
@@ -39,7 +66,7 @@
                             <p class="text-center">No Classes Available</p>
                         {% endif %}
                         <div class="text-center mt-3">
-                            <a href="{% url 'hr:create_class' %}" class="btn btn-primary">Add New Class</a>
+                            <a href="{% url 'hr:create_class' %}" class="btn" style="background-color: #490ca6; color: #fff;">Add New Class</a>
                         </div>
                     </div>
                     <!-- end card-body-->
@@ -50,5 +77,4 @@
         </div>
        <!--end row-->
     </div>
-</div>
 {% endblock content %}

@@ -3,32 +3,37 @@
 {% load static %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Kengen</h4>
+    <div class="container" style="margin-top: 100px !important;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Dashboard/Registrants</h4>
 
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Users</a></li>
-                            <li class="breadcrumb-item active">All users</li>
-                        </ol>
-                    </div>
-                    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:system_users' %}">Registrants</a></li>
+                    </ol>
                 </div>
+                
             </div>
-        </div>     
-        <div class="row">
+        </div>
+        <hr>
+        <div class="row justify-content-center">
             <div class="col-xl-12">
                 <div class="card">
+                    <section class="col-md-12 mx-auto shadow-sm text-center border-radius-10 p-4" style="background-color: #7266BB;">
+                    <form method="get" action="" class="mt-4 mb-4 d-flex justify-content-center">
+                        <input type="text" name="name" placeholder="Name" value="{{ request.GET.name }}" class="form-control mx-2" style="max-width: 200px;">
+                        <input type="text" name="email" placeholder="Email" value="{{ request.GET.email }}" class="form-control mx-2" style="max-width: 200px;">
+                        <button type="submit" class="btn mx-2" style="background-color: #490ca6; color: #fff;">Filter</button>
+                        <a href="{% url 'hr:system_users' %}" class="btn mx-2" style="background-color: #fd7e14; color: #fff;">Reset</a>
+                    </form>
+                    </section>
                     <div class="card-body">
-                        <h4 class="card-title">System Users</h4>
-                        <p class="card-subtitle mb-4">All system users</p>
                         <div class="table-responsive">
                             <table class="table table-sm table-hover mb-0">
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Full Name</th>
                                         <th>Email</th>
                                         <th>ID Number</th>
@@ -37,12 +42,12 @@
                                         <th>Ethnicity</th>
                                         <th>Active</th>
                                         <th>Registered</th>
-                                       
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for user in users %}
                                         <tr>
+                                            <td>{{ forloop.counter }}</td>
                                             <td>{{ user.first_name }} {{ user.last_name }}</td>
                                             <td>{{ user.email }}</td>
                                             <td>{{ user.id_number }}</td>
@@ -51,21 +56,17 @@
                                             <td>{{ user.resume.ethnicity }}</td>
                                             <td>{% if user.is_active %}Yes{% else %}No{% endif %}</td>
                                             <td>{{ user.date_joined }}</td>
-                                           
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
                     <!-- end card-body-->
                 </div>
                 <!-- end card -->
-
             </div>
             <!-- end col -->
-       </div>
+        </div>
     </div>
-</div>
 {% endblock content %}

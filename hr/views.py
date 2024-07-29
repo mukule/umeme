@@ -40,7 +40,20 @@ def dashboard(request):
 
 @admins
 def system_users(request):
+    name = request.GET.get('name')
+    email = request.GET.get('email')
+
     users = CustomUser.objects.filter(access_level=0)
+
+    if name:
+        users = users.filter(
+            Q(username__icontains=name) |
+            Q(first_name__icontains=name) |
+            Q(last_name__icontains=name)
+        )
+    if email:
+        users = users.filter(email__icontains=email)
+
     return render(request, 'hr/users.html', {'users': users})
 
 
@@ -70,11 +83,12 @@ def edit_job_type(request, job_type_id):
         form = JobTypeForm(request.POST, request.FILES, instance=job_type)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Job Type updated successfully')
             return redirect('hr:job_types')
     else:
         form = JobTypeForm(instance=job_type)
 
-    return render(request, 'hr/edit_job_type.html', {'form': form, 'job_type': job_type})
+    return render(request, 'hr/create_job_type.html', {'form': form, 'job_type': job_type})
 
 
 def delete_job_type(request, job_type_id):
@@ -82,6 +96,33 @@ def delete_job_type(request, job_type_id):
 
     job_type.delete()
     return redirect('hr:job_types')
+
+
+def create_educational_level(request):
+    if request.method == 'POST':
+        form = EducationalLevelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Education Level Added Succesfully')
+            return redirect('hr:edu_levels')
+    else:
+        form = EducationalLevelForm()
+    return render(request, 'hr/create_edu_level.html', {'form': form})
+
+# View to edit an existing Educational Level
+
+
+def edit_educational_level(request, pk):
+    educational_level = get_object_or_404(EducationalLevel, pk=pk)
+    if request.method == 'POST':
+        form = EducationalLevelForm(request.POST, instance=educational_level)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Education Level Updated Succesfully')
+            return redirect('educational_levels')
+    else:
+        form = EducationalLevelForm(instance=educational_level)
+    return render(request, 'hr/create_edu_level.html', {'form': form, 'edu_lvl': educational_level})
 
 
 @admins
@@ -142,7 +183,7 @@ def edit_job(request, job_id):
     else:
         form = VacancyForm(instance=job)
 
-    return render(request, 'hr/edit_job.html', {'form': form, 'job': job})
+    return render(request, 'hr/create_job.html', {'form': form, 'job': job})
 
 
 @system_admin_hr_post_required
@@ -311,8 +352,6 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             full_name = resume.full_name
             username = user.username
             contacts = f"{resume.phone}\n{resume.email_address}"
-
-            
 
             application_data = {
                 # Include username in the "Name" field
@@ -486,11 +525,11 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             if header == 'Full Name':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
-            
+
             if header == 'Contact Details':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
-                
+
             if header == 'College/University':
                 ws.column_dimensions[openpyxl.utils.get_column_letter(
                     col_num)].width = 20
@@ -656,12 +695,12 @@ def update_job_discipline(request, job_discipline_id):
         form = JobDisciplineForm(request.POST, instance=job_discipline)
         if form.is_valid():
             form.save()
-            # Redirect to the job disciplines list after updating
+            messages.success(request, "Job discipline Updated succesfully")
             return redirect('hr:job_disciplines')
     else:
         form = JobDisciplineForm(instance=job_discipline)
 
-    return render(request, 'hr/update_job_discipline.html', {'form': form, 'job_discipline': job_discipline})
+    return render(request, 'hr/create_job_discipline.html', {'form': form, 'jd': job_discipline})
 
 
 @admins
@@ -700,12 +739,12 @@ def edit_certifying_body(request, certifying_body_id):
         form = CertifyingBodyForm(request.POST, instance=certifying_body)
         if form.is_valid():
             form.save()
-            # Redirect to the certifying bodies list after updating
+            messages.success(request, "Certfying body Updated succesfully")
             return redirect('hr:certifying_bodies')
     else:
         form = CertifyingBodyForm(instance=certifying_body)
 
-    return render(request, 'hr/edit_certifying_body.html', {'form': form, 'c_body': certifying_body})
+    return render(request, 'hr/create_certifying_body.html', {'form': form, 'c_body': certifying_body})
 
 
 @admins
@@ -723,7 +762,7 @@ def create_certificate(request):
         form = CertificateForm(request.POST)
         if form.is_valid():
             form.save()
-            # Redirect to a success page or the certificate list page
+            messages.success(request, "Certificate Created succesfully")
             return redirect('hr:certificates')
     else:
         form = CertificateForm()
@@ -746,12 +785,12 @@ def edit_certificate(request, certificate_id):
         form = CertificateForm(request.POST, instance=certificate)
         if form.is_valid():
             form.save()
-            # Redirect to the certificates list page
+            messages.success(request, "Certficate Updated succesfully")
             return redirect('hr:certificates')
     else:
         form = CertificateForm(instance=certificate)
 
-    return render(request, 'hr/edit_certificate.html', {'form': form, 'certificate': certificate})
+    return render(request, 'hr/create_certificate.html', {'form': form, 'certificate': certificate})
 
 
 @admins
@@ -770,7 +809,7 @@ def create_field_of_study(request):
         form = FieldOfStudyForm(request.POST)
         if form.is_valid():
             form.save()
-            # Redirect to the list view after creating
+            messages.success(request, "Field of Study Added succesfully")
             return redirect('hr:fields_of_study')
     else:
         form = FieldOfStudyForm()
@@ -786,12 +825,12 @@ def edit_field_of_study(request, field_of_study_id):
         form = FieldOfStudyForm(request.POST, instance=field_of_study)
         if form.is_valid():
             form.save()
-            # Redirect to the list view after editing
+            messages.success(request, "Field of Study Updated succesfully")
             return redirect('hr:fields_of_study')
     else:
         form = FieldOfStudyForm(instance=field_of_study)
 
-    return render(request, 'hr/edit_field_of_study.html', {'form': form})
+    return render(request, 'hr/create_field_of_study.html', {'form': form, 'fs': field_of_study})
 
 
 @admins
@@ -828,6 +867,7 @@ def create_ethnicity(request):
         form = EthnicityForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Ethnicity Group Created succesfully")
             return redirect('hr:ethnicities')
     else:
         form = EthnicityForm()
@@ -847,10 +887,11 @@ def edit_ethnicity(request, ethnicity_id):
         form = EthnicityForm(request.POST, instance=ethnicity)
         if form.is_valid():
             form.save()
+            messages.success(request, "Ethnicity Group Updated succesfully")
             return redirect('hr:ethnicities')
     else:
         form = EthnicityForm(instance=ethnicity)
-    return render(request, 'hr/edit_ethnicity.html', {'form': form, 'ethnicity': ethnicity})
+    return render(request, 'hr/create_ethnicity.html', {'form': form, 'ethnicity': ethnicity})
 
 
 @admins
@@ -1121,12 +1162,44 @@ def create_terms(request):
             if not created:
                 terms.text = text
                 terms.save()
-            # Redirect to the terms page or any other page
             return redirect('main:terms')
     else:
         initial_text = Terms.objects.first()
-        form = TermsForm(
-            initial={'text': initial_text.text if initial_text else ''})
+        initial_text_value = initial_text.text if initial_text else ''
+        form = TermsForm(initial={'text': initial_text_value})
+
+    return render(request, 'hr/create_terms.html', {'form': form})
+
+
+@admins
+def terms(request):
+    terms = Terms.objects.first()
+    return render(request, 'hr/terms.html', {'terms': terms})
+
+
+@admins
+def create_terms(request):
+    if request.method == 'POST':
+        form = TermsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('hr:terms')
+    else:
+        form = TermsForm()
+
+    return render(request, 'hr/create_terms.html', {'form': form})
+
+
+@admins
+def edit_terms(request, id):
+    terms = get_object_or_404(Terms, id=id)
+    if request.method == 'POST':
+        form = TermsForm(request.POST, instance=terms)
+        if form.is_valid():
+            form.save()
+            return redirect('main:terms')
+    else:
+        form = TermsForm(instance=terms)
 
     return render(request, 'hr/create_terms.html', {'form': form})
 
@@ -1267,7 +1340,6 @@ def reset_trials(request, user_id):
 @system_admin_required
 def delete_users_with_access_level_5(request):
     if request.method == 'POST':
-        # Delete users with access level 5
         CustomUser.objects.filter(access_level=5).delete()
         return redirect('hr:kgn_staffs')  # Redirect to a success page
 
@@ -1289,7 +1361,8 @@ def create_class(request):
         form = ClassForm(request.POST)
         if form.is_valid():
             form.save()
-            # Redirect to a success page or another URL
+            messages.success(request, "Class Created succesfully")
+
             return redirect('hr:classes')
     else:
         form = ClassForm()
@@ -1304,12 +1377,18 @@ def edit_class(request, class_id):
         form = ClassForm(request.POST, instance=class_instance)
         if form.is_valid():
             form.save()
-            # Redirect to a success page or another URL
+            messages.success(request, "Class Updated succesfully")
             return redirect('hr:classes')
     else:
         form = ClassForm(instance=class_instance)
 
-    return render(request, 'hr/create_class.html', {'form': form})
+    return render(request, 'hr/create_class.html', {'form': form, 'class': class_instance})
+
+
+def delete_class(request, class_id):
+    class_instance = get_object_or_404(Class, id=class_id)
+    class_instance.delete()
+    return redirect('hr:classes')
 
 
 def toggle_user_active_status(request, user_id):

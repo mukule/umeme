@@ -97,7 +97,7 @@ def bio_info(request):
     try:
         resume = Resume.objects.get(user=user)
     except Resume.DoesNotExist:
-      
+
         full_name = f"{user.first_name} {user.last_name}"
         id_number = user.id_number
         email_address = user.email
@@ -246,33 +246,35 @@ def experience(request):
 def resume(request):
     user = request.user
 
-    try:
-        resume = Resume.objects.get(user=user)
-    except Resume.DoesNotExist:
-      
-        full_name = f"{user.first_name} {user.last_name}"
-        id_number = user.id_number
-        email_address = user.email
-        resume = Resume.objects.create(
-            user=user,
-            full_name=full_name,
-            id_number=id_number,
-            email_address=email_address
-        )
+    # Generate full_name safely
+    full_name = " ".join(
+        filter(None, [user.first_name, user.last_name])) or "No Name Provided"
+    id_number = user.id_number or "No ID Provided"
 
-    basic_academic = BasicEducation.objects.filter(user=user).all()
+    # Ensure resume exists or create one
+    resume, created = Resume.objects.get_or_create(
+        user=user,
+        defaults={
+            'full_name': full_name,
+            'id_number': id_number,
+            'email_address': user.email
+        }
+    )
+
+    basic_academic = BasicEducation.objects.filter(user=user)
     higher_education = FurtherStudies.objects.filter(
-        user=user).order_by('-date_ended').all()
+        user=user).order_by('-date_ended')
     wx_instance = WorkExperience.objects.filter(
-        user=user).order_by('-date_ended').all()
+        user=user).order_by('-date_ended')
     certification_instance = Certification.objects.filter(
-        user=user).order_by('-date_attained').all()
+        user=user).order_by('-date_attained')
     membership_instance = Membership.objects.filter(
-        user=user).order_by('-date_joined').all()
-    referee_instance = Referee.objects.filter(user=user).all()
+        user=user).order_by('-date_joined')
+    referee_instance = Referee.objects.filter(user=user)
+
     all_instances_provided = all_fields_provided(request)
 
-    return render(request, 'main/resume.html', {
+    context = {
         'be': basic_academic,
         'he': higher_education,
         'resume': resume,
@@ -282,8 +284,9 @@ def resume(request):
         'ms': membership_instance,
         'refs': referee_instance,
         'all_fields': all_instances_provided,
+    }
 
-    })
+    return render(request, 'main/resume.html', context)
 
 
 @login_required
@@ -341,9 +344,9 @@ def basic_info(request, user_id):
         user_info = None
 
     basic_education_instance = BasicEducation.objects.filter(user=user).first()
+
     # Set initial_data for email and full_name based on the existence of user_info
     initial_data = {}
-
     if user_info is None:
         initial_data['email_address'] = user.email
         initial_data['full_name'] = user.get_full_name() or ''
@@ -355,21 +358,22 @@ def basic_info(request, user_id):
             resume = form.save(commit=False)
             resume.user = user
 
+            # Update the user's id_number with the value from the form
+            user.id_number = form.cleaned_data.get('id_number')
+            user.save()
+
             # Set disability_number to None if disability is False
             if not resume.disability:
                 resume.disability_number = None
 
-            # Set county to 'N/A' if country of birth is not Kenya
-
+            # Set county to 'N/A' if country of residence is not Kenya
             if resume.country_of_residence != 'KE':
                 resume.county = 'N/A'
 
             resume.save()
             messages.success(
                 request, 'Your information has been updated successfully.')
-
             return redirect('main:bio_info')
-
         else:
             messages.error(
                 request, 'There was an error in the form submission. Please check your inputs.')
@@ -420,9 +424,7 @@ def update_basic_academic(request, instance_id):
 
     further_studies_instance = FurtherStudies.objects.filter(user=user).first()
 
-    # Save the current certificate file and remove it from the form instance
     current_certificate = basic_education.certificate
-    # basic_education.certificate = None
 
     if request.method == 'POST':
         form = EducationalInformationForm(
@@ -433,8 +435,9 @@ def update_basic_academic(request, instance_id):
                 request, 'Your information has been updated successfully.')
             return redirect('main:high_school')
     else:
-        # Include the 'certificate' field in the form instance
+
         form = EducationalInformationForm(instance=basic_education)
+        form.fields['certificate'].initial = None
 
     context = {
         'form': form,
@@ -442,7 +445,7 @@ def update_basic_academic(request, instance_id):
         'job_types': job_types,
         'fs': further_studies_instance
     }
-    return render(request, 'main/update_basic_academic.html', context)
+    return render(request, 'main/basic_academic.html', context)
 
 
 @login_required
@@ -513,9 +516,10 @@ def update_further_studies(request, instance_id):
         'form': form,
         'job_types': job_types,
         'be': basic_education_instance,
-        'cert': certification_instance
+        'cert': certification_instance,
+        'fs': further_studies,
     }
-    return render(request, 'main/update_further_studies.html', context)
+    return render(request, 'main/further_studies.html', context)
 
 
 @login_required
@@ -597,10 +601,10 @@ def update_certification(request, instance_id):
         'form': form,
         'job_types': job_types,
         'fs': further_studies_instance,
-        'ms': membership_instance
+        'ms': certification
     }
     print(job_types)
-    return render(request, 'main/update_certification.html', context)
+    return render(request, 'main/certification.html', context)
 
 
 @login_required
@@ -682,9 +686,10 @@ def update_membership(request, instance_id):
         'form': form,
         'job_types': job_types,
         'cert': certification_instance,
-        'wx': work_experience_instance
+        'wx': work_experience_instance,
+        'ms': membership
     }
-    return render(request, 'main/update_membership.html', context)
+    return render(request, 'main/membership.html', context)
 
 
 @login_required
@@ -709,7 +714,7 @@ def work_experience(request):
             work_experience = form.save(commit=False)
             if work_experience.currently_working and work_experience.date_ended:
                 messages.error(
-                    request, "You cannot have an end date and be currently working here.")
+                    request, "You cannot have both Date ended and Current Working")
             elif not work_experience.currently_working and (not work_experience.date_started or not work_experience.date_ended):
                 messages.error(
                     request, "Please provide both start and end dates or check 'Currently Working Here'.")
@@ -730,7 +735,8 @@ def work_experience(request):
                     work_experience.years = years
                     work_experience.months = months
                 work_experience.save()
-
+                messages.success(
+                    request, 'Your information has been updated successfully.')
                 return redirect('main:experience')
     else:
         form = WorkExperienceForm()
@@ -789,9 +795,10 @@ def update_work_experience(request, instance_id):
         'form': form,
         'job_types': job_types,
         'ms': membership_instance,
-        'refs': referee_instance
+        'refs': referee_instance,
+        'we': work_experience,
     }
-    return render(request, 'main/update_work_experience.html', context)
+    return render(request, 'main/work_experience.html', context)
 
 
 @login_required
@@ -822,6 +829,8 @@ def referees(request):
                 referee = form.save(commit=False)
                 referee.user = user
                 referee.save()
+                messages.success(
+                    request, 'Referee Details updated succesfully')
                 return redirect('main:refs')
             else:
                 messages.error(request, "You can only 3 referees required.")
@@ -852,6 +861,8 @@ def update_referee(request, instance_id):
         form = RefereeForm(request.POST, instance=referee)
         if form.is_valid():
             form.save()
+            messages.success(
+                request, 'Referee Details updated succesfully')
             return redirect('main:refs')
     else:
         form = RefereeForm(instance=referee)
@@ -859,9 +870,10 @@ def update_referee(request, instance_id):
     context = {
         'form': form,
         'job_types': job_types,
-        'wx': work_experience_instance
+        'wx': work_experience_instance,
+        'refs': referee,
     }
-    return render(request, 'main/update_referee.html', context)
+    return render(request, 'main/referees.html', context)
 
 
 @login_required
@@ -881,7 +893,8 @@ def career_objective(request):
 
     if request.method == 'POST':
         if professional_summary:
-            form = ProfessionalSummaryForm(request.POST, instance=professional_summary)
+            form = ProfessionalSummaryForm(
+                request.POST, instance=professional_summary)
         else:
             form = ProfessionalSummaryForm(request.POST)
 
@@ -897,7 +910,6 @@ def career_objective(request):
         'form': form,
     }
     return render(request, 'main/professional_summary.html', context)
-
 
 
 @login_required

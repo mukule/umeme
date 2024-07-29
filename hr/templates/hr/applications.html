@@ -3,16 +3,22 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Dashboard >> Applications</h4>
-                </div>
-            </div>
-        </div>     
 
+<div class="container" style="margin-top: 100px !important;">
+    <div class="col-12 mt-4">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0 font-size-18">Dashboard/Applications</h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:applications' %}">Applications</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="container-fluid">
+    
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
@@ -20,37 +26,27 @@
                         <!-- Search Form -->
                         <div class="row mb-3">
                             <div class="col-md-10 mx-auto">
-                                <section class="shadow-sm bg-light rounded p-4">
-                                    <form method="get">
-                                        <div class="form-row">
-                                            <div class="col-md-3">
-                                                <input type="text" name="search" class="form-control" placeholder="Search By Keyword or Job Title">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <select name="job_type" class="form-control">
-                                                    <option value="">Select Job Type</option>
-                                                    {% for job_type in job_types %} {# Updated variable name #}
-                                                        <option value="{{ job_type.id }}" {% if selected_job_type == job_type.id %}selected{% endif %}>
-                                                            {{ job_type.name }} {# Assuming 'name' is the field for displaying the job type #}
-                                                        </option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="col-md-3">
-                                                <select name="job_type" class="form-control">
-                                                    <option value="">Select Job Type</option>
-                                                    {% for vacancy_type, job_type_display in vacancy_types %}
-                                                        <option value="{{ vacancy_type }}" {% if selected_job_type == vacancy_type %}selected{% endif %}>
-                                                            {{ job_type_display }}
-                                                        </option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <button type="submit" class="btn btn-primary">Search</button>
-                                            </div>
-                                        </div>
+                                <section class="col-md-12 mx-auto shadow-sm text-center border-radius-10 p-4" style="background-color: #7266BB;">
+                                    <form method="get" class="d-flex justify-content-center">
+                                        <input type="text" name="search" class="form-control mx-2" placeholder="Search By Keyword or Job Title" style="max-width: 200px;">
+                                        <select name="job_type" class="form-control mx-2" style="max-width: 200px;">
+                                            <option value="">Select Job Type</option>
+                                            {% for job_type in job_types %}
+                                                <option value="{{ job_type.id }}" {% if selected_job_type == job_type.id %}selected{% endif %}>
+                                                    {{ job_type.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <select name="vacancy_type" class="form-control mx-2" style="max-width: 200px;">
+                                            <option value="">Select Job Type</option>
+                                            {% for vacancy_type, job_type_display in vacancy_types %}
+                                                <option value="{{ vacancy_type }}" {% if selected_job_type == vacancy_type %}selected{% endif %}>
+                                                    {{ job_type_display }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="btn mx-2" style="background-color: #490ca6; color: #fff;">Search</button>
+                                        <a href="{% url 'hr:applications' %}" class="btn mx-2" style="background-color: #fd7e14; color: #fff;">Reset</a>
                                     </form>
                                 </section>
                             </div>

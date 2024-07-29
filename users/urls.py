@@ -7,7 +7,7 @@ app_name = 'users'
 urlpatterns = [
     path("register/", views.register, name="register"),
     path('login/', views.custom_login, name='login'),
-    path('profile/<username>', views.profile, name='profile'),
+    path('profile/<int:user_id>/', views.profile, name='profile'),
     path('logout', views.custom_logout, name='logout'),
     path('activate/<uidb64>/<token>', views.activate, name='activate'),
     path('secure/<uidb64>/<token>', views.secure, name='secure'),
@@ -23,10 +23,10 @@ urlpatterns = [
     path('del_user/<int:user_id>', views.delete_user, name='del_user'),
     path('terms_acceptance/',
          views.terms_acceptance, name='terms_acceptance'),
-      path('vacancy/<int:vacancy_id>/terms_acceptance/',
+    path('vacancy/<int:vacancy_id>/terms_acceptance/',
          views.internal_terms_acceptance, name='internal_terms_acceptance'),
-     path('internship/<int:vacancy_id>/terms_acceptance/',
+    path('internship/<int:vacancy_id>/terms_acceptance/',
          views.internship_terms_acceptance, name='internship_terms_acceptance'),
-      path('attachment/<int:vacancy_id>/terms_acceptance/',
+    path('attachment/<int:vacancy_id>/terms_acceptance/',
          views.attachment_terms_acceptance, name='attachment_terms_acceptance'),
 ]

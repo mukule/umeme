@@ -164,9 +164,19 @@ class AdminForm(UserCreationForm):
                   'username', 'password1', 'password2']
 
 
-class TermsForm(forms.Form):
-    text = forms.CharField(widget=TinyMCE(
-        attrs={'id': 'mce3', 'class': 'form-control'})),
+class TermsForm(forms.ModelForm):
+    class Meta:
+        model = Terms
+        fields = ['text']
+        widgets = {
+            'text': TinyMCE(attrs={
+                'id': 'mce1',
+                'class': 'form-control',
+            }),
+        }
+        labels = {
+            'text': '',
+        }
 
 
 class JobTypeForm(forms.ModelForm):
@@ -187,4 +197,16 @@ class ClassForm(forms.ModelForm):
         fields = ['name']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+        }
+
+
+class EducationalLevelForm(forms.ModelForm):
+    class Meta:
+        model = EducationalLevel
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter educational level name'}),
+        }
+        labels = {
+            'name': '',
         }

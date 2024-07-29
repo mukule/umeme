@@ -3,8 +3,7 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
+    <div class="container" style="margin-top: 100px !important;">
         <div class="row justify-content-center">
             <div class="col-12 col-md-8 col-lg-8">
                 <div class="d-flex align-items-center min-vh-100 justify-content-center">
@@ -14,19 +13,20 @@
                                 <div class="p-5">
                                     <div class="text-center mb-3">
                                         <a href="#" class="text-dark font-size-22 font-family-secondary">
-                                            <i class="fas fa-user-alt" style="font-size: 50px; color: #703B97;"></i>
+                                            <i class="fas fa-user-alt" style="font-size: 30px; color: #703B97;"></i>
                                         </a>
                                     </div>
-                                    <h1 class="h5 mb-4 text-center">Register</h1>
+                                    <h1 class="h5 mb-2 mt-2 text-center">SIGN UP</h1>
 
                                     {% if messages %}
-                                    <div class="alert alert-info text-center" role="alert" >
+                                    <div class="alert alert-info text-center" role="alert">
                                         {% for message in messages %}
                                             {{ message }}
                                             <br>
                                         {% endfor %}
                                     </div>
-                                    {%endif%}
+                                    {% endif %}
+
                                     <form method="POST">
                                         {% csrf_token %}
                                         <div class="row">
@@ -34,44 +34,43 @@
                                                 {{ form.username|as_crispy_field }}
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row mt-2">
                                             <div class="col-md-12">
                                                 {{ form.email|as_crispy_field }}
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row mt-2">
                                             <div class="col-md-12">
                                                 {{ form.id_number|as_crispy_field }}
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row mt-2">
                                             <div class="col-md-12">
                                                 {{ form.first_name|as_crispy_field }}
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row mt-2">
                                             <div class="col-md-12">
                                                 {{ form.last_name|as_crispy_field }}
                                             </div>
                                         </div>
-                                       
-                                        <div class="row">
-                                            <div class="col-md-6">
+                                        <div class="row mt-2">
+                                            <div class="col-md-6 position-relative">
                                                 {{ form.password1|as_crispy_field }}
                                                
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-6 position-relative">
                                                 {{ form.password2|as_crispy_field }}
                                                
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <button class="btn btn-success btn-block waves-effect waves-light" type="submit">Register</button>
+                                        <div class="form-group mt-4 text-center">
+                                            <button class="btn btn-success btn-block waves-effect waves-light" type="submit" style="background-color: #703B97;;">Register</button>
                                         </div>
                                     </form>
                                     <div class="row mt-4">
                                         <div class="col-12 text-center">
-                                            <p class="text-muted mb-0">Already Registered ? <a href="{% url 'users:login' %}" class="text-muted font-weight-medium ml-1"><b>Login</b></a></p>
+                                            <p class="text-muted mb-0">Already Registered? <a href="{% url 'users:login' %}" class="text-muted font-weight-medium ml-1"><b>Login</b></a></p>
                                         </div>
                                     </div>
                                 </div>
@@ -82,5 +81,6 @@
             </div>
         </div>
     </div>
-</div>
+
+
 {% endblock content %}

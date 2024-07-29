@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 import logging
 from .models import Staff
 import re
+from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model, login
 from .forms import *
@@ -32,6 +33,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import check_password
+from hr.mails import *
 
 
 def is_system_admin(user):
@@ -55,7 +57,7 @@ def register(request):
             user.save()
             activateEmail(request, user, form.cleaned_data.get('email'))
 
-            success_message = f'Dear {user}, please go to your email {form.cleaned_data.get("email")} inbox and click on the received activation link to confirm and complete the registration. Note: Check your spam folder.'
+            success_message = f'Dear {user.username}, please go to your email {form.cleaned_data.get("email")} inbox and click on the received activation link to confirm and complete the registration. Note: Check your spam folder.'
 
             messages.success(request, success_message)
             return redirect('users:register')
@@ -75,19 +77,22 @@ def register(request):
 
 
 def activateEmail(request, user, to_email):
-    mail_subject = 'KenGen Careers Portal - Activate your user account.'
+    subject = 'KenGen Careers Portal - User Registration.'
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = account_activation_token.make_token(user)
+    domain = get_current_site(request).domain
+    protocol = 'https' if request.is_secure() else 'http'
+
     message = render_to_string('users/template_activate_account.html', {
         'user': user,
-        'domain': get_current_site(request).domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': account_activation_token.make_token(user),
-        'protocol': 'https' if request.is_secure() else 'http'
+        'domain': domain,
+        'uid': uid,
+        'token': token,
+        'protocol': protocol
     })
-    email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke',
-                         to=[to_email], bcc=['nelson.masibo@kenyaweb.com'],)
-    email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
 
-    if email.send():
+    # Use the custom email function to send the email
+    if send_custom_email(subject, message, [to_email], bcc=['nelson.masibo@kenyaweb.com']):
         return True
     else:
         return False
@@ -219,47 +224,46 @@ def custom_login(request):
 
 
 def sendActivationLink(request, user, to_email):
-    mail_subject = 'Secure your user account.'
-    message = render_to_string('users/secure_account.html', {
-        'user': user.username,
-        'domain': get_current_site(request).domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': account_activation_token.make_token(user),
-        'protocol': 'https' if request.is_secure() else 'http'
-    })
-    email = EmailMessage(mail_subject, message, from_email='hrm@careers.kengen.co.ke',
-                         to=[to_email], bcc=['nelson.masibo@kenyaweb.com'],)
-    email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
+    subject = 'KenGen Careers Portal - Secure your Account'
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = account_activation_token.make_token(user)
+    activation_link = f"{'https' if request.is_secure() else 'http'}://{get_current_site(request).domain}{reverse('users:activate', kwargs={'uidb64': uid, 'token': token})}"
+    message = f"""
+    Dear {user.first_name} {user.last_name},
 
-    if email.send():
-        messages.success(
-            request, f'Hello <b>{user},an email has been sent to {to_email}')
-    else:
-        messages.error(
-            request, f'Problem sending the activation link to {to_email}, check if you typed it correctly.')
+    This is an email to secure your account through the Kengen Career Portal. Follow the link below to activate your account.
+
+    {activation_link}
+
+    If you did not make this request, you can simply ignore this email.
+
+    Sincerely,
+    Kengen Careers
+    """
+    send_custom_email(subject, message, [to_email], bcc=[
+                      'nelson.masibo@kenyaweb.com'])
+
+    messages.success(
+        request, f'Hello <b>{user.username}</b>, an email has been sent to {to_email}')
 
 
-def profile(request, username):
+def profile(request, user_id):
     if request.method == 'POST':
         user = request.user
-        form = UserUpdateForm(request.POST, request.FILES, instance=user)
+        # Removed request.FILES
+        form = UserUpdateForm(request.POST, instance=user)
         if form.is_valid():
-            print("Form is valid")
-
             user_form = form.save()
-            print("User form saved:", user_form)
-
             messages.success(
                 request, f'{user_form}, Your profile has been updated!')
-            return redirect('users:profile', user_form.username)
+            return redirect('users:profile', user_form.id)
 
         for error in list(form.errors.values()):
             messages.error(request, error)
 
-    user = get_user_model().objects.filter(username=username).first()
+    user = get_user_model().objects.filter(id=user_id).first()
     if user:
         form = UserUpdateForm(instance=user)
-        print("User instance:", user)
         return render(request, 'users/profile.html', context={'form': form})
 
     return redirect("/")
@@ -314,52 +318,58 @@ def password_change(request):
 
 @user_not_authenticated
 def password_reset_request(request):
-    errors = []
-
     if request.method == 'POST':
         form = CustomPasswordResetForm(request.POST)
         if form.is_valid():
-            user_email = form.cleaned_data['email']
+            user_email = form.cleaned_data['email'].strip().lower()
+            user_id_number = form.cleaned_data['id_number']
 
             try:
+                # First, check if the email exists
                 associated_user = get_user_model().objects.get(email__iexact=user_email)
-            except get_user_model().DoesNotExist:
-                associated_user = None
 
-            if associated_user:
-                subject = _("Password Reset request")
-                message = render_to_string("users/template_reset_password.html", {
-                    'user': associated_user,
-                    'domain': get_current_site(request).domain,
-                    'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
-                    'token': account_activation_token.make_token(associated_user),
-                    "protocol": 'https' if request.is_secure() else 'http'
-                })
+                # Print the ID numbers for debugging
+                print(f"Form ID Number: {user_id_number}")
+                print(f"User ID Number: {associated_user.id_number}")
 
-                email = EmailMessage(
-                    subject,
-                    message,
-                    from_email='hrm@careers.kengen.co.ke',
-                    to=[associated_user.email],
-                    bcc=['nelson.masibo@kenyaweb.com'],
-                )
-
-                email.extra_headers['Sender'] = 'nelson@kenyaweb.co.ke'
-
-                if email.send():
-                    return redirect('users:f_pass')
+                # Then, check if the ID number matches
+                if associated_user.id_number != user_id_number:
+                    messages.error(request, "Email and ID number don't match.")
                 else:
-                    errors.append(
-                        "Problem sending reset password email. Please retry.")
-            else:
-                errors.append(
-                    "No user account found associated with the provided email")
+                    subject = _(
+                        "KenGen Careers Portal - Password Reset request")
+                    context = {
+                        'user': associated_user,
+                        'domain': get_current_site(request).domain,
+                        'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
+                        'token': account_activation_token.make_token(associated_user),
+                        "protocol": 'https' if request.is_secure() else 'http'
+                    }
+                    message = render_to_string(
+                        "users/template_reset_password.txt", context)
 
-    form = CustomPasswordResetForm()
+                    send_custom_email(
+                        subject=subject,
+                        message=message,
+                        send_to=[associated_user.email],
+                        bcc=['nelson.masibo@kenyaweb.com']
+                    )
+
+                    messages.success(
+                        request, f"We've sent Reset instructions to {user_email}. Follow the steps to Reset.")
+                    return redirect('users:f_pass')
+            except get_user_model().DoesNotExist:
+                messages.error(
+                    request, "No user account found associated with the provided email.")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = CustomPasswordResetForm()
+
     return render(
         request=request,
         template_name="users/password_reset.html",
-        context={"form": form, "errors": errors}
+        context={"form": form}
     )
 
 

@@ -3,29 +3,31 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Kengen</h4>
-
-                   
+    <div class="container" style="margin-top: 100px !important;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Dashboard/Jobs/{{vacancy.title}}-{{vacancy.ref}}</h4>
+    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:applications' %}">Applications</a></li>
+                    </ol>
                 </div>
             </div>
-        </div>     
+        </div>
+        <hr>
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title text-center">Applicants For : {{ vacancy.title }} - {{ vacancy.vacancy_type }} - {{ vacancy.ref }}</h4>
+                        <h4 class="card-title text-center">Applicants For : {{ vacancy.title }}/{{ vacancy.ref }} - {{ vacancy.job_type.name }}</h4>
                         <p class="card-subtitle mb-4 text-center">Vacancy type: {{ vacancy.vacancy_type }} || Posts Needed: {{ vacancy.posts_needed }} || 
                             Min Education Level: {{ vacancy.min_educational_level }} || Min Work Experience: {{ vacancy.min_work_experience }}</p>
                             <!--filters row-->
-                            <section class="col-md-12 mx-auto shadow-sm mb-4" style="background-color: #fd7e14; text-align: center; border-radius: 10px; padding: 20px;">
-                                <form method="get">
-                                    <div class="form-row align-items-center">
-                                        <div class="col-md-2 input-group mb-2">
+                            <section class="col-md-12 mx-auto shadow-sm text-center border-radius-10 p-2 mb-3" style="background-color: #7266BB;">
+                                <form method="get" action="" class="mt-4 mb-4">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-2 mb-2">
                                             <select id="education_level" name="education_level" class="form-control">
                                                 <option value="" class="text-center">Min Education Level</option>
                                                 {% for level in educational_levels %}
@@ -35,7 +37,7 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                        <div class="col-md-2 input-group mb-2">
+                                        <div class="col-md-2 mb-2">
                                             <select id="ethnicity" name="ethnicity" class="form-control">
                                                 <option value="" class="text-center">Ethnicity</option>
                                                 {% for eth in ethnicities %}
@@ -45,42 +47,42 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                        <div class="col-md-2 input-group mb-2">
+                                        <div class="col-md-2 mb-2">
                                             <select id="gender" name="gender" class="form-control">
                                                 <option value="" class="text-center">Gender</option>
                                                 <option value="male" {% if selected_gender == 'male' %}selected{% endif %}>Male</option>
                                                 <option value="female" {% if selected_gender == 'female' %}selected{% endif %}>Female</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-2 input-group mb-2">
+                                        <div class="col-md-2 mb-2">
                                             <select id="disability" name="disability" class="form-control">
                                                 <option value="" class="text-center">Disability</option>
                                                 <option value="True" {% if selected_disability == 'True' %}selected{% endif %}>Yes</option>
                                                 <option value="False" {% if selected_disability == 'False' %}selected{% endif %}>No</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-2 input-group mb-2">
-                                            <input type="number" id="experience" name="experience" class="form-control" placeholder="Experience (years)">
+                                        <div class="col-md-2 mb-2">
+                                            <input type="number" id="experience" name="experience" class="form-control" placeholder="Experience (years)" value="{{ request.GET.experience }}">
                                         </div>
-                                        <div class="col-md-2 input-group mb-2 text-center">
-                                            <input type="text" id="name_search" name="name_search" class="form-control" placeholder="Name Search">
-                                        </div>
-                                    </div>
-                                    <div class="form-row text-center">
-                                        <div class="col-md-6">
-                                            <button id="apply_filters" type="submit" class="btn btn-primary active">
-                                                <i class="fas fa-search"></i> Apply Filters
-                                            </button>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <a href="?export_excel=true" class="btn btn-primary active">
-                                                <i class="fas fa-file-excel"></i>      Export to Excel
-                                            </a>
+                                        <div class="col-md-2 mb-2">
+                                            <input type="text" id="name_search" name="name_search" class="form-control" placeholder="Name Search" value="{{ request.GET.name_search }}">
                                         </div>
                                     </div>
-                                    
+                                    <div class="row justify-content-center mt-2">
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn w-100" style="background-color: #490ca6; color: #fff;">Apply Filters</button>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a href="{% url 'hr:application_detail' vacancy.id %}" class="btn w-100" style="background-color: #fd7e14; color: #fff;">Reset</a>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a href="?export_excel=true" class="btn mx-2" style="background-color:  #490ca6; color: #fff;">Export to Excel</a>
+                                        </div>
+                                    </div>
                                 </form>
                             </section>
+                            
+                            
                              
                             <div class="row mb-3">
                                 <div class="col-md-3">

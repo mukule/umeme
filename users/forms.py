@@ -34,9 +34,9 @@ class UserRegistrationForm(UserCreationForm):
         self.fields['id_number'].widget.attrs.update(
             {'class': 'form-control', 'placeholder': 'ID Number'})
         self.fields['password1'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Password'})
+            {'class': 'form-control', 'placeholder': 'Password', 'id': 'password'})
         self.fields['password2'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Confirm Password', 'id': 'show_hide_password'})
+            {'class': 'form-control', 'placeholder': 'Confirm Password', 'id': 'password'})
 
     def save(self, commit=True):
         user = super(UserRegistrationForm, self).save(commit=False)
@@ -70,12 +70,26 @@ class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(UserLoginForm, self).__init__(*args, **kwargs)
 
-    username = forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'form-control', 'placeholder': 'Username or Email'}),
-        label="Username or Email*")
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Username or Email'
+            }
+        ),
+        label=""
+    )
 
-    password = forms.CharField(widget=forms.PasswordInput(
-        attrs={'class': 'form-control', 'placeholder': 'Password'}))
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Password',
+                'id': 'password'
+            }
+        ),
+        label=""
+    )
 
 
 class SetPasswordForm(SetPasswordForm):
@@ -102,12 +116,20 @@ class ResetPasswordForm(SetPasswordForm):
 
 
 class CustomPasswordResetForm(PasswordResetForm):
-
     email = forms.EmailField(
         max_length=254,
         required=True,
         widget=forms.EmailInput(
-            attrs={'class': 'form-control', 'placeholder': 'Email'})
+            attrs={'class': 'form-control', 'placeholder': 'Email'}
+        )
+    )
+
+    id_number = forms.IntegerField(
+        widget=forms.NumberInput(
+            attrs={'class': 'form-control', 'placeholder': 'ID Number'}
+        ),
+        label='ID Number',
+        required=True
     )
 
 

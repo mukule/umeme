@@ -3,13 +3,13 @@
 {% load static %}
 
 {% block content %}
-    <div class="carousel-container">
+    <div class="custom-carousel">
         <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <div style="position: relative;">
-                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
-                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    <div class="carousel-image-container">
+                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner">
+                        <div class="carousel-overlay"></div>
                     </div>
                     <div class="carousel-caption mt-md-4 d-none d-md-block">
                         <h3 class="text-white">{{ job_type.name }}</h3>
@@ -21,16 +21,16 @@
 
     <div class="page-content">
         <div class="container-fluid">
-            <div class="card p-3">
-                <h2 class="card-title text-center" style="color: #FD7E14;">Advertised {{ job_type.name }} Opportunities</h2>
+            <div class="card p-3 border-0">
+                <h2 class="card-title text-center" style="color: #FD7E14;">Advertised Vacancies - {{ job_type.name }}</h2>
 
-                <section class="col-md-10 mx-auto shadow-sm" style="background-color: #fd7e14; text-align: center; border-radius: 10px; padding: 20px;">
+                <section class="search-section col-md-10 mx-auto shadow-sm">
                     <form method="get">
-                        <div class="form-row align-items-center">
-                            <div class="col-md-5 input-group mb-2 text-center">
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
                                 <input type="text" name="search" class="form-control" placeholder="Search By Keyword or Job Title">
                             </div>
-                            <div class="col-md-5 input-group mb-2">
+                            <div class="col-md-4 mb-2">
                                 <select name="vacancy_type" class="form-control">
                                     <option value="" class="text-center">Select Job Function</option>
                                     {% for discipline in job_disciplines %}
@@ -40,52 +40,45 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary py-1.8 px-5">Search</button>
+                            <div class="col-md-4 mb-2 d-flex">
+                                <button type="submit" class="btn filter-btn text-white py-1.8 px-5 w-50 me-2">Search</button>
+                                <a href="{{ request.META.HTTP_REFERER }}" class="btn filter-btn text-white py-1.8 px-5 w-50">Clear</a>
                             </div>
                         </div>
                     </form>
                 </section>
-
+                
+                
                 {% if jobs %}
-                        <div class="col-xl-12 mt-4">
-                            <div class="card border-0">
-                               
-                                    <div class="card-body">
-                                       
-                                        {% for job in jobs %}
-                                       <a href="{% url 'main:job_detail' job.id %}">
-                                        <ol class="breadcrumb">
-                                            <div class="col-md-6" style="display: block !important;">
-                                              <h4> <li class="breadcrumb-item active">{{ job.title }}</li></h4>
-                                              <li class="text-muted">Min Education Level: {{ job.min_educational_level }}</li>
-                                              <li class="text-muted">Date Open: {{ job.date_open }}</li>
-                                              <li class="text-muted">Date Close: {{ job.date_close }}</li>
+                <div class="job-list col-xl-12 mt-4">
+                    <div class="card border-0">
+                        <div class="card-body">
+                            <div class="row">
+                                {% for job in jobs %}
+                                    <div class="col-md-6 mb-4">
+                                        <a href="{% url 'main:job_detail' job.id %}" class="job-item-link">
+                                            <div class="job-card card border-0">
+                                                <div class="card-body">
+                                                    <h4 class="card-title">{{ job.title }} - {{job.ref}}</h4>
+                                                    <ul class="list-unstyled">
+                                                        <li class="text-muted">Min Education Level: {{ job.min_educational_level }}</li>
+                                                        <li class="text-muted">Date Open: {{ job.date_open }}</li>
+                                                        <li class="text-muted">Date Close: {{ job.date_close }}</li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                            <div class="col-md-6 d-flex justify-content-md-end justify-content-center mt-2">
-                                              <div style="display: block !important;">
-                                                  <div class="badge badge-soft-primary p-2">{{ job.job_discipline.name }}</div>
-                                                  <div class="text-center">
-                                                      <button class="btn btn-primary btn-sm mt-2">Apply Now</button>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                          
-                                          </ol>
-                                       </a>
-                                       
-                                        {% endfor %}
-                                      
+                                        </a>
                                     </div>
-                               
+                                {% endfor %}
                             </div>
                         </div>
-                   
-                {% else %}
-                    <section class="col-md-6 mx-auto my-2 shadow-sm text-center bg-primary rounded d-flex align-items-center">
-                        <p class="text-white mx-auto mt-2">There are no Advertised {{ job_type.name }} Opportunities</p>
-                    </section>
-                {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <section class="no-opportunities col-md-6 mx-auto my-2 shadow-sm text-center rounded d-flex align-items-center">
+                    <p class="text-white mx-auto mt-2 px-4">There are no Advertised Vacancies</p>
+                </section>
+            {% endif %}
             </div>
         </div>
     </div>

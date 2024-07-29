@@ -3,26 +3,50 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Kengen</h4>
-
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Careers</a></li>
-                            <li class="breadcrumb-item active">Certifications</li>
-                        </ol>
-                    </div>
+    <div class="container" style="margin-top: 100px !important;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Dashboard/Certificates</h4>
+    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:certificates' %}">Certificates</a></li>
+                    </ol>
                 </div>
             </div>
         </div>
+        <hr>
         
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
+                    <div>
+                        {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == 'success' %}
+                                <div class="alert alert-success alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% elif message.tags == 'error' %}
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe }}
+                                </div>
+                            {% elif message.tags == 'info' %}
+                                <div class="alert alert-info alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% elif message.tags == 'warning' %}
+                                <div class="alert alert-warning alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
                     <div class="card-body">
                         {% if certificate %}
                             <div class="table-responsive mt-3">
@@ -44,12 +68,12 @@
                                                 
                                                 <td>
                                                     <!-- Edit/Update action with link to edit page -->
-                                                    <a href="{% url 'hr:edit_certificate' certificate.id %}" class="btn btn-warning mr-2">
+                                                    <a href="{% url 'hr:edit_certificate' certificate.id %}" class="btn btn-warning mr-2 text-white">
                                                         <i class="fas fa-pencil-alt"></i> Edit
                                                     </a>
                                                     
                                                     <!-- Delete action with Font Awesome icon and Bootstrap spacing -->
-                                                    <a href="{% url 'hr:delete_certificate' certificate.id %}" class="btn btn-danger">
+                                                    <a href="{% url 'hr:delete_certificate' certificate.id %}" class="btn btn-danger text-white">
                                                         <i class="fas fa-trash"></i> Delete
                                                     </a>
                                                 </td>
@@ -63,7 +87,7 @@
                             <p class="text-center">No Certifications available</p>
                         {% endif %}
                         <div class="text-center mt-4">
-                            <a href="{% url 'hr:create_certificate' %}" class="btn btn-primary active">Add New</a>
+                            <a href="{% url 'hr:create_certificate' %}" class="btn active" style="background-color: #490ca6; color: #fff;">Add New</a>
                         </div>
                     </div>
                     <!-- end card-body-->

@@ -3,170 +3,156 @@
 {% load static %}
 
 {% block content %}
-<div class="carousel-container">
-    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
-        <div class="carousel-inner">
-            {% for job_type in job_types %}
-                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <div style="position: relative;">
-                        <img class="d-block img-fluid" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner" style="width: 100%;">
-                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
-<div class="page-content">
-    <div class="container-fluid">
-        {% if user.is_authenticated %}
-        {% if user.access_level != 5 %}
-            <div class="row">
-                <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs">
-                      <li class="nav-item">
-                        <a class="nav-link active"  href="{% url 'main:bio_info' %}">Bio Information</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" href="{% url 'main:high_school' %}">Basic Education</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:certs' %}">Certifications</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:memberships' %}">Memberships</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
-                      </li>
-                    </ul>
+    <div class="container-fluid" style="margin-top: 100px !important;">
+      {% if user.is_authenticated %}
+      <div class="container mt-4">
+          <div class="row justify-content-center mb-3">
+              <div class="card border-0">
+                  <div class="card-header border-0">
+                      <ul class="nav nav-tabs card-header-tabs custom-tabs mt-2 mb-2">
+                          {% if user.access_level != 5 %}
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'bio_info' %}active{% endif %}" href="{% url 'main:bio_info' %}">Bio Information</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'high_school' %}active{% endif %}" href="{% url 'main:high_school' %}">Basic Education</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:college' %}">College/University</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Certifications</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Memberships</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'experience' %}active{% endif %}" href="{% url 'main:experience' %}">Work Experience</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'refs' %}active{% endif %}" href="{% url 'main:refs' %}">Referees</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'main:resume' %}">Review</a>
+                              </li>
+                          {% else %}
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'career_objective' %}active{% endif %}" href="{% url 'main:staff_profile' %}">Executive Summary</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:high_school' %}">Basic Education</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:college' %}">College/University</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Certifications</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Memberships</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'experience' %}active{% endif %}" href="{% url 'main:experience' %}">Work Experience</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'refs' %}active{% endif %}" href="{% url 'main:refs' %}">Referees</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'main:resume' %}">Review</a>
+                              </li>
+                          {% endif %}
+                      </ul>
                   </div>
-            </div>
-        {% else %}
-        <div class="row">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs">
-                  <li class="nav-item">
-                    <a class="nav-link active"  href="{% url 'main:high_school' %}">Executive Summary</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:college' %}">College/University</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:certs' %}">Professional Certificates</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:memberships' %}">Professional Memberships</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:experience' %}">Work Experience</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:refs' %}">Referees</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link"  href="{% url 'main:resume' %}">Review</a>
-                  </li>
-                </ul>
               </div>
-        </div>
-        {% endif %}
-    {% endif %}
+          </div>
+      </div>
+  {% endif %}
        
+       <div class="container">
         <div class="row mt-4">
-            <div style="width: 100%;">
-                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
-                    <h4 style="margin-top: 3px;">Basic information</h4>
-                    {% if all_fields %}
-                    <p style="margin-bottom: 4px;" class="text-success"> Your Bio Information is Complete</p>
-                    {% else %}
-                    <p style="margin-bottom: 4px;" class="text-warning"> Your Bio Information is Incomplete</p>
-                    {% endif %}
-                </div>
-            </div>    
-        </div>
-      
-        <div class="card mt-4">
-            <div class="card-body">
-                <h2 class="mb-4 text-center" style="color: #FD7E14;">Bio Information</h2>
-                <div>
-                    {% if messages %}
-                    {% for message in messages %}
-                        {% if message.tags == 'success' %}
-                            <div class="alert alert-success alert-dismissible" role="alert">
-                               
-                                {{ message|safe|escape }}
-                            </div>
-                        {% elif message.tags == 'error' %}
-                            <div class="alert alert-danger alert-dismissible" role="alert">
-                               
-                                {{ message|safe }}
-                            </div>
-                        {% elif message.tags == 'info' %}
-                            <div class="alert alert-info alert-dismissible" role="alert">
-                               
-                                {{ message|safe|escape }}
-                            </div>
-                     
-                <div class="alert alert-warning alert-dismissible" role="alert">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                    {{ message|safe|escape }}
-                </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                </div>
-                {% if resume %}
-                <div class="row col-xl-12">
-                    <div class="col-md-6">
-                        <p class="card-title"><strong>Name:</strong> {% if resume.full_name %}{{ resume.full_name }} {% else %} :- {% endif %}</p>
-                        <p class="card-title"><strong>Email:</strong> {% if resume.email_address %}{{ resume.email_address }} {% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Phone:</strong> {% if resume.phone %}{{ resume.phone }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>ID Number:</strong> {% if resume.id_number %}{{ resume.id_number }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Date of Birth:</strong> {% if resume.dob %}{{ resume.dob }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Country of Birth:</strong> {% if resume.get_country_of_birth_display %}{{ resume.get_country_of_birth_display }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Country of Residence:</strong> {% if resume.get_country_of_residence_display %}{{ resume.get_country_of_residence_display }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>County of Birth:</strong> {% if resume.county_of_birth %}{{ resume.county_of_birth }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>County of Residence:</strong> {% if resume.county_of_residence %}{{ resume.county_of_residence }}{% else %}:-{% endif %}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="card-title"><strong>Ethnicity:</strong> {% if resume.ethnicity %}{{ resume.ethnicity }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Gender:</strong> {% if resume.gender %}{{ resume.gender }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Disability:</strong> {% if resume.disability %}Yes{% else %}No{% endif %}</p>
-                       {% if resume.disability %}
-                       <p class="card-title"><strong>Disability Number:</strong> {% if resume.disability_number %}{{ resume.disability_number }}{% else %}:-{% endif %}</p>
-                       {% endif %}
-                        <p class="card-title"><strong>Marital Status:</strong> {% if resume.marital_status %}{{ resume.marital_status }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Highest Education Level:</strong> {% if highest_edu_level %}{{ highest_edu_level }}{% else %}:-{% endif %}</p>
-                        <p class="card-title"><strong>Field of Study:</strong> {% if resume.field_of_study %}{{ resume.field_of_study }}{% else %}:-{% endif %}</p>
-                    </div>
-                </div>
-            {% else %}
-                <p class="text-center">Update your Bio information</p>
-            {% endif %}
-            
+          <div style="width: 100%;">
+              <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
+                  <h4 style="margin-top: 3px;">Basic information</h4>
+                  {% if all_fields %}
+                  <p style="margin-bottom: 4px;" class="text-success"> Your Bio Information is Complete</p>
+                  {% else %}
+                  <p style="margin-bottom: 4px;" class="text-warning"> Your Bio Information is Incomplete</p>
+                  {% endif %}
+              </div>
+          </div>    
+      </div>
+    
+      <div class="card mt-4">
+          <div class="card-body">
+              <h2 class="mb-4 text-center" style="color: #FD7E14;">Bio Information</h2>
+              <div>
+                  {% if messages %}
+                  {% for message in messages %}
+                      {% if message.tags == 'success' %}
+                          <div class="alert alert-success alert-dismissible" role="alert">
+                             
+                              {{ message|safe|escape }}
+                          </div>
+                      {% elif message.tags == 'error' %}
+                          <div class="alert alert-danger alert-dismissible" role="alert">
+                             
+                              {{ message|safe }}
+                          </div>
+                      {% elif message.tags == 'info' %}
+                          <div class="alert alert-info alert-dismissible" role="alert">
+                             
+                              {{ message|safe|escape }}
+                          </div>
+                   
+              <div class="alert alert-warning alert-dismissible" role="alert">
+                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                  {{ message|safe|escape }}
+              </div>
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+              </div>
+              {% if resume %}
+              <div class="row col-xl-12">
+                  <div class="col-md-6">
+                      <p class="card-text"><strong>Name:</strong> {% if resume.full_name %}{{ resume.full_name }} {% else %} :- {% endif %}</p>
+                      <p class="card-text"><strong>Email:</strong> {% if resume.email_address %}{{ resume.email_address }} {% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>Phone:</strong> {% if resume.phone %}{{ resume.phone }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>ID Number:</strong> {% if resume.id_number %}{{ resume.id_number }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>Date of Birth:</strong> {% if resume.dob %}{{ resume.dob }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>Country of Birth:</strong> {% if resume.get_country_of_birth_display %}{{ resume.get_country_of_birth_display }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>Country of Residence:</strong> {% if resume.get_country_of_residence_display %}{{ resume.get_country_of_residence_display }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>County of Birth:</strong> {% if resume.county_of_birth %}{{ resume.county_of_birth }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>County of Residence:</strong> {% if resume.county_of_residence %}{{ resume.county_of_residence }}{% else %}:-{% endif %}</p>
+                  </div>
+                  <div class="col-md-6">
+                      <p class="card-text"><strong>Ethnicity:</strong> {% if resume.ethnicity %}{{ resume.ethnicity }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>Gender:</strong> {% if resume.gender %}{{ resume.gender }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>Disability:</strong> {% if resume.disability %}Yes{% else %}No{% endif %}</p>
+                     {% if resume.disability %}
+                     <p class="card-text"><strong>Disability Number:</strong> {% if resume.disability_number %}{{ resume.disability_number }}{% else %}:-{% endif %}</p>
+                     {% endif %}
+                      <p class="card-text"><strong>Marital Status:</strong> {% if resume.marital_status %}{{ resume.marital_status }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>Highest Education Level:</strong> {% if highest_edu_level %}{{ highest_edu_level }}{% else %}:-{% endif %}</p>
+                      <p class="card-text"><strong>Field of Study:</strong> {% if resume.field_of_study %}{{ resume.field_of_study }}{% else %}:-{% endif %}</p>
+                  </div>
+              </div>
+          {% else %}
+              <p class="text-center">Update your Bio information</p>
+          {% endif %}
+          
 
-                <div class="text-center mt-4">
-                    <a href="{% url 'main:basic_info' user_id=user.id %}" class="btn btn-primary active">Update</a>
-                    {% if be %}
-                        <a href="{% url 'main:high_school' %}" class="btn btn-primary active ml-2">Next</a>
-                    {% else %}
-                        <a href="{% url 'main:high_school' %}" class="btn btn-primary active ml-2">Next</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+              <div class="text-center mt-4">
+                  <a href="{% url 'main:basic_info' user_id=user.id %}" class="btn btn-primary active">Update</a>
+                  {% if be %}
+                      <a href="{% url 'main:high_school' %}" class="btn btn-primary active ml-2">Next</a>
+                  {% else %}
+                      <a href="{% url 'main:high_school' %}" class="btn btn-primary active ml-2">Next</a>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+  </div>
+       </div>
 
 {% endblock content %}
