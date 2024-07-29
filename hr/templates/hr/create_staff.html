@@ -3,15 +3,19 @@
 {% load static %}
 
 {% block content %}
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0 font-size-18">Add New Staff</h4>
+    <div class="container" style="margin-top: 100px !important;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Dashboard/Staffs/{% if user %} Update {{user.username}} Details{% else %}Create{%endif%}</h4>
+    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:kgn_staffs' %}">Staffs</a></li>
+                    </ol>
                 </div>
             </div>
-        </div>     
+        </div>
+        <hr>
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
@@ -30,9 +34,9 @@
                             <div class="form-group">
                                 {{ form.last_name|as_crispy_field }}
                             </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary">Create Staff</button>
-                                <a href="{% url 'hr:kgn_staffs' %}" class="btn btn-secondary">Cancel</a>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary" style="background-color: #490ca6; color: #fff;">Submit</button>
+                                <a href="{% url 'hr:kgn_staffs' %}" class="btn btn-secondary" style="background-color: #490ca6; color: #fff;">Cancel</a>
                             </div>
                         </form>
                     </div>
@@ -43,5 +47,4 @@
             <!-- end col -->
         </div>
     </div>
-</div>
 {% endblock content %}

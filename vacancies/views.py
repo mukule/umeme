@@ -18,6 +18,9 @@ from .check_qualifications import *
 from .create_application import *
 from .send_mail import *
 import uuid
+from .ref_number import *
+import datetime
+from django.utils import timezone
 
 
 def user_has_access_level_5(user):
@@ -133,14 +136,6 @@ def attachment(request, vacancy_id):
     return render(request, 'vacancies/attachment.html', context)
 
 
-unique_identifier = uuid.uuid4().hex[:6]
-
-
-def generate_reference_number(vacancy):
-    application_count = Application.objects.filter(vacancy=vacancy).count() + 1
-    return f"{vacancy.ref}/#{application_count}"
-
-
 def send_application_confirmation_email(user, vacancy, reference_number):
     """
     This function sends an application confirmation email to the user.
@@ -213,6 +208,8 @@ def apply(request, vacancy_id):
     # Get the highest educational level
     further_studies = FurtherStudies.objects.filter(
         user=user).order_by('-certifications__index').first()
+
+    print(further_studies)
     user_educational_level = further_studies.certifications if further_studies else None
 
     if not user_educational_level:
@@ -247,6 +244,7 @@ def apply(request, vacancy_id):
 
     try:
         reference_number = generate_reference_number(vacancy)
+        print(reference_number)
         application.reference_number = reference_number
         application.full_clean()
         application.save()
@@ -273,7 +271,6 @@ def application_succ(request):
     application_id = request.session.get('application_id')
 
     if application_id:
-        # Retrieve the Application object from the database using its ID
         application = get_object_or_404(Application, id=application_id)
 
         vacancy_title = application.vacancy.title
@@ -396,23 +393,33 @@ def redirect_to_appropriate_vacancy_page(vacancy):
 
 
 def delete_application(request, application_id):
+    # Fetch the application object or return a 404 error if not found
     application = get_object_or_404(Application, id=application_id)
 
-    # Get the current date
-    current_date = timezone.now().date()
+    # Get the current date and time
+    current_datetime = timezone.now()
+
+    # Extract the current date
+    current_date = current_datetime.date()
 
     # Check if the associated vacancy's end date is not greater than the current date
     if application.vacancy.date_close >= current_date:
-        application.delete()
-        messages.success(
-            request, "Your application has been deleted successfully")
-        # Redirect back to the applications page
-        return redirect('vacancies:applications')
+        # Attempt to delete the application
+        try:
+            application.delete()
+            messages.success(
+                request, "Your application has been deleted successfully")
+        except Exception as e:
+            # Log the error or handle it as necessary
+            messages.error(
+                request, f"An error occurred while deleting the application: {e}")
     else:
         # Display an error message using the messages framework
         messages.error(
             request, "The application for this job is closed. You cannot delete.")
-        return redirect('vacancies:applications')
+
+    # Redirect back to the applications page
+    return redirect('vacancies:applications')
 
 
 @user_passes_test(user_has_access_level_5)

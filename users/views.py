@@ -98,6 +98,30 @@ def activateEmail(request, user, to_email):
         return False
 
 
+def sendPasswordResetLink(request, user, to_email):
+    subject = 'KenGen Careers Portal - Password Reset Request'
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = account_activation_token.make_token(user)
+    reset_link = f"{'https' if request.is_secure() else 'http'}://{get_current_site(request).domain}{reverse('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})}"
+    message = f"""
+    Dear {user.username},
+
+    We received a request to reset your password on the KenGen Careers Portal. Follow the link below to reset your password.
+
+    {reset_link}
+
+    If you did not request a password reset, please ignore this email.
+
+    Sincerely,
+    KenGen Careers
+    """
+    send_custom_email(subject, message, [to_email], bcc=[
+                      'nelson.masibo@kenyaweb.com'])
+
+    messages.success(
+        request, f'Hello <b>{user.username}</b>, a password reset email has been sent to {to_email}')
+
+
 def activate(request, uidb64, token):
     User = get_user_model()
     success_message = error_message = None
@@ -178,8 +202,7 @@ def custom_login(request):
                         profile_update, created = ProfileUpdate.objects.get_or_create(
                             user=user, defaults={'password_changed': False})
                         if not profile_update.password_changed:
-                            # Send activation link
-                            sendActivationLink(request, user, user.email)
+                            sendPasswordResetLink(request, user, user.email)
                             return redirect('users:staff_no')
                     except Exception as e:
                         logger.error(
@@ -224,7 +247,7 @@ def custom_login(request):
 
 
 def sendActivationLink(request, user, to_email):
-    subject = 'KenGen Careers Portal - Secure your Account'
+    subject = 'KenGen Careers Portal - User Register'
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = account_activation_token.make_token(user)
     activation_link = f"{'https' if request.is_secure() else 'http'}://{get_current_site(request).domain}{reverse('users:activate', kwargs={'uidb64': uid, 'token': token})}"
@@ -392,6 +415,18 @@ def passwordResetConfirm(request, uidb64, token):
                         request, "New password must be different from the old password.")
                 else:
                     form.save()
+
+                    if user.access_level == 5:
+                        try:
+                            profile_update = ProfileUpdate.objects.get(
+                                user=user)
+                            profile_update.password_changed = True
+                            profile_update.save()
+                        except ProfileUpdate.DoesNotExist:
+                            # If ProfileUpdate does not exist, create one
+                            ProfileUpdate.objects.create(
+                                user=user, password_changed=True)
+
                     messages.success(
                         request, "Your password has been set. You may log in now.")
                     return redirect('users:login')
@@ -406,7 +441,7 @@ def passwordResetConfirm(request, uidb64, token):
 
     messages.error(
         request, 'Something went wrong, redirecting back to Homepage')
-    return render('/')
+    return redirect('/')
 
 
 @login_required

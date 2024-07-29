@@ -1282,7 +1282,7 @@ def staffs(request):
     return render(request, 'hr/staffs.html', context)
 
 
-@system_admin_required
+# @system_admin_required
 def edit_user(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)
 
@@ -1303,7 +1303,7 @@ def edit_user(request, user_id):
         'user': user,
     }
 
-    return render(request, 'hr/edit_staff.html', context)
+    return render(request, 'hr/create_staff.html', context)
 
 
 def delete_staff(request, user_id):
