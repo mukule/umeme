@@ -271,25 +271,26 @@ def sendActivationLink(request, user, to_email):
 
 
 def profile(request, user_id):
+    if request.user.id != user_id:
+        messages.error(request, "UnAuthorized Access")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    user = get_object_or_404(get_user_model(), id=user_id)
+
     if request.method == 'POST':
-        user = request.user
-        # Removed request.FILES
         form = UserUpdateForm(request.POST, instance=user)
         if form.is_valid():
             user_form = form.save()
             messages.success(
-                request, f'{user_form}, Your profile has been updated!')
+                request, 'Your profile has been updated!')
             return redirect('users:profile', user_form.id)
 
         for error in list(form.errors.values()):
             messages.error(request, error)
-
-    user = get_user_model().objects.filter(id=user_id).first()
-    if user:
+    else:
         form = UserUpdateForm(instance=user)
-        return render(request, 'users/profile.html', context={'form': form})
 
-    return redirect("/")
+    return render(request, 'users/profile.html', context={'form': form})
 
 
 @login_required
@@ -355,32 +356,53 @@ def password_reset_request(request):
                 print(f"Form ID Number: {user_id_number}")
                 print(f"User ID Number: {associated_user.id_number}")
 
-                # Then, check if the ID number matches
-                if associated_user.id_number != user_id_number:
-                    messages.error(request, "Email and ID number don't match.")
+                # Check if the user has access level 5 and compare the email to the username (after removing the first 3 characters)
+                if associated_user.access_level == 5:
+                    # Adjust username by removing first 3 characters and convert to lower case
+                    user_value = str(user_id_number)
+                    staff_no = associated_user.username[3:].lower()
+                    print(staff_no)
+                    if staff_no != user_value:
+                        messages.error(
+                            request, "Email and Staff No. don't match. Enter Staff No. Without Kgn")
+                        return render(
+                            request=request,
+                            template_name="users/password_reset.html",
+                            context={"form": form}
+                        )
                 else:
-                    subject = _(
-                        "KenGen Careers Portal - Password Reset request")
-                    context = {
-                        'user': associated_user,
-                        'domain': get_current_site(request).domain,
-                        'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
-                        'token': account_activation_token.make_token(associated_user),
-                        "protocol": 'https' if request.is_secure() else 'http'
-                    }
-                    message = render_to_string(
-                        "users/template_reset_password.txt", context)
+                    # Check if the ID number matches for other users
+                    if associated_user.id_number != user_id_number:
+                        messages.error(
+                            request, "Email and ID number don't match.")
+                        return render(
+                            request=request,
+                            template_name="users/password_reset.html",
+                            context={"form": form}
+                        )
 
-                    send_custom_email(
-                        subject=subject,
-                        message=message,
-                        send_to=[associated_user.email],
-                        bcc=['nelson.masibo@kenyaweb.com']
-                    )
+                # Proceed with password reset
+                subject = _("KenGen Careers Portal - Password Reset request")
+                context = {
+                    'user': associated_user,
+                    'domain': get_current_site(request).domain,
+                    'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
+                    'token': account_activation_token.make_token(associated_user),
+                    "protocol": 'https' if request.is_secure() else 'http'
+                }
+                message = render_to_string(
+                    "users/template_reset_password.txt", context)
 
-                    messages.success(
-                        request, f"We've sent Reset instructions to {user_email}. Follow the steps to Reset.")
-                    return redirect('users:f_pass')
+                send_custom_email(
+                    subject=subject,
+                    message=message,
+                    send_to=[associated_user.email],
+                    bcc=['nelson.masibo@kenyaweb.com']
+                )
+
+                messages.success(
+                    request, f"We've sent Reset instructions to {user_email}. Follow the steps to Reset.")
+                return redirect('users:f_pass')
             except get_user_model().DoesNotExist:
                 messages.error(
                     request, "No user account found associated with the provided email.")

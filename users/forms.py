@@ -50,7 +50,8 @@ class UserRegistrationForm(UserCreationForm):
 class UserEditForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'first_name', 'last_name', 'email']
+        fields = ['username', 'first_name', 'last_name',
+                  'email', 'id_number', 'staff_no']
 
     def __init__(self, *args, **kwargs):
         super(UserEditForm, self).__init__(*args, **kwargs)
@@ -64,6 +65,40 @@ class UserEditForm(forms.ModelForm):
             {'class': 'form-control', 'placeholder': 'Last Name'})
         self.fields['email'].widget.attrs.update(
             {'class': 'form-control', 'placeholder': 'Email Address'})
+        self.fields['id_number'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'ID Number'})
+        self.fields['staff_no'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Staff Number'})
+
+        # Make fields optional if needed, e.g.:
+        # self.fields['id_number'].required = False
+        # self.fields['staff_no'].required = False
+
+
+class RegistrantsEditForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'first_name', 'last_name',
+                  'email', 'id_number']
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrantsEditForm, self).__init__(*args, **kwargs)
+
+        # Add CSS classes and placeholders to form fields
+        self.fields['username'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Username'})
+        self.fields['first_name'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'First Name'})
+        self.fields['last_name'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Last Name'})
+        self.fields['email'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Email Address'})
+        self.fields['id_number'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'ID Number'})
+
+        # Make fields optional if needed, e.g.:
+        # self.fields['id_number'].required = False
+        # self.fields['staff_no'].required = False
 
 
 class UserLoginForm(AuthenticationForm):
@@ -126,7 +161,8 @@ class CustomPasswordResetForm(PasswordResetForm):
 
     id_number = forms.IntegerField(
         widget=forms.NumberInput(
-            attrs={'class': 'form-control', 'placeholder': 'ID Number'}
+            attrs={'class': 'form-control',
+                   'placeholder': 'ID Number or Staff No without Kgn'}
         ),
         label='ID Number',
         required=True

@@ -1416,3 +1416,29 @@ def toggle_hired(request, vacancy_id):
         request, f"Vacancy '{vacancy.title}' has Been {'Closed' if vacancy.hired else 'Opened'}.")
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+def update_registrants(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    if request.method == 'POST':
+        form = RegistrantsEditForm(request.POST, instance=user)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(
+                    request, 'Registrants Details updated successfully.')
+                return redirect('hr:system_users')
+            except Exception as e:
+                messages.error(
+                    request, f"An error occurred while updating user details: {str(e)}")
+        else:
+            # Handle form errors and display them
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
+    else:
+        form = RegistrantsEditForm(instance=user)
+
+    return render(request, 'hr/edit_users.html', {'form': form, 'user': user})
