@@ -70,21 +70,27 @@
                                                 <td>{{ application.application_date }}</td>
                                                 <td>{{ application.vacancy.date_close }}</td>  
                                                 <td>
-                                                    {% if application.vacancy.date_close > today_date %}
-                                                    <p class="text-center">Applications Ongoing</p>
-                                                    {%else%}
-                                                    <p class="text-center">Processing</p>
-                                                    {%endif%}
-                                                </td>  
-                                                {% if application.vacancy.date_close > today_date %}
+                                                    {% if application.vacancy.hired %}
+                                                        <p class="text-center">Position Filled</p>
+                                                    {% elif application.vacancy.date_close > today_date %}
+                                                        <p class="text-center">Applications Ongoing</p>
+                                                    {% else %}
+                                                        <p class="text-center">Processing</p>
+                                                    {% endif %}
+                                                </td>
+                                                
+                                                {% if application.vacancy.hired %}
+                                                <td>N/A</td>
+                                            {% elif application.vacancy.date_close > today_date %}
                                                 <td>
                                                     <a href="#" id="confirmButton" data-bs-toggle="modal" data-bs-target="#confirmResubmitModal" data-application-id="{{ application.id }}">
                                                         <i class="fas fa-sync"></i>
                                                     </a>
                                                 </td>
                                             {% else %}
-                                                <td>Closed</td>  <!-- Empty cell if date_close is not within the allowed range -->
+                                                <td>N/A</td>
                                             {% endif %}
+                                            
                                             </tr>
                                         {% endfor %}
                                     </tbody>

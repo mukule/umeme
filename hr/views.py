@@ -1399,3 +1399,20 @@ def toggle_user_active_status(request, user_id):
     user.save()
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def toggle_hired(request, vacancy_id):
+    # Retrieve the Vacancy object by ID
+    vacancy = get_object_or_404(Vacancy, id=vacancy_id)
+
+    # Toggle the hired field
+    vacancy.hired = not vacancy.hired
+
+    # Save the changes
+    vacancy.save()
+
+    # Add a success message
+    messages.success(
+        request, f"Vacancy '{vacancy.title}' has Been {'Closed' if vacancy.hired else 'Opened'}.")
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))

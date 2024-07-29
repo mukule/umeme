@@ -102,23 +102,36 @@
                                                 <td>{{ job.job_discipline }}</td>
                                                 <td>{{ job.job_type }}</td>
                                                 <td>{{ job.application_count }}</td>
-                                                <td>
+                                                <td style="font-size: 12px;">
                                                     {% if job.published %}
                                                         <a href="{% url 'hr:publish' job.id %}">
-                                                            <i class="fas fa-eye-slash text-danger" title="Unpublish"></i>Unpublish
+                                                            <i class="fas fa-eye-slash text-danger" title="Unpublish"></i> Unpublish
                                                         </a>
                                                     {% else %}
                                                         <a href="{% url 'hr:publish' job.id %}">
-                                                            <i class="fas fa-eye text-success" title="Publish"></i>Publish
+                                                            <i class="fas fa-eye text-success" title="Publish"></i> Publish
                                                         </a>
                                                     {% endif %}
+                                                    |
+                                                    {% if job.hired %}
+                                                        <a href="{% url 'hr:hired' job.id %}">
+                                                            <i class="fas fa-eye-slash text-danger" title="Unpublish"></i> Open
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{% url 'hr:hired' job.id %}">
+                                                            <i class="fas fa-eye text-success" title="Publish"></i> Close
+                                                        </a>
+                                                    {% endif %}
+                                                    |
                                                     <a href="{% url 'hr:edit_job' job.id %}">
-                                                        <i class="fas fa-edit text-primary mx-2" title="Edit"></i>Edit
+                                                        <i class="fas fa-edit text-primary mx-2" title="Edit"></i> Edit
                                                     </a>
+                                                    |
                                                     <a href="{% url 'hr:delete_job' job.id %}">
-                                                        <i class="fas fa-trash-alt text-danger" title="Delete"></i>Delete
+                                                        <i class="fas fa-trash-alt text-danger" title="Delete"></i> Delete
                                                     </a>
                                                 </td>
+                                                
                                             </tr>
                                         {% endfor %}
                                     </tbody>

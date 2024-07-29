@@ -98,5 +98,7 @@ urlpatterns = [
          name='create_educational_level'),
     path('educational-levels/<int:pk>/edit/',
          views.edit_educational_level, name='edit_educational_level'),
+    path('vacancy/mark_as_completed/<int:vacancy_id>/',
+         views.toggle_hired, name='hired'),
 
 ]
