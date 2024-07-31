@@ -159,7 +159,7 @@ EMAIL_HOST_USER = 'nelson@kenyaweb.co.ke'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'nelson@kenyaweb.co.ke'
+DEFAULT_FROM_EMAIL = 'KenGen-Careers'
 
 ADMIN_EMAIL = 'nelson@kenyaweb.co.ke'
-PASSWORD_RESET_TIMEOUT = 1800  # 4 hrs
+PASSWORD_RESET_TIMEOUT = 1800

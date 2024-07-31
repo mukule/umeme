@@ -162,9 +162,9 @@ class CustomPasswordResetForm(PasswordResetForm):
     id_number = forms.IntegerField(
         widget=forms.NumberInput(
             attrs={'class': 'form-control',
-                   'placeholder': 'ID Number or Staff No without Kgn'}
+                   'placeholder': 'Staff No without Kgn'}
         ),
-        label='ID Number',
+        label='Staff Number',
         required=True
     )
 
