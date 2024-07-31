@@ -159,7 +159,7 @@ EMAIL_HOST_USER = 'nelson@kenyaweb.co.ke'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'KenGen Careers <careers@kengen.co.ke>'
+DEFAULT_FROM_EMAIL = 'careers <careers@kengen.co.ke>'
 
 
 ADMIN_EMAIL = 'nelson@kenyaweb.co.ke'
