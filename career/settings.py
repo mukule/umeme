@@ -156,10 +156,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'pop.kenyaweb.com'
 EMAIL_FROM = 'nelson@kenyaweb.co.ke'
 EMAIL_HOST_USER = 'nelson@kenyaweb.co.ke'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = '@NLS2023'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'careers <careers@kengen.co.ke>'
+DEFAULT_FROM_EMAIL = 'nelson@kenyaweb.com'
 
 
 ADMIN_EMAIL = 'nelson@kenyaweb.co.ke'
