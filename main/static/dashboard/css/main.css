@@ -72,13 +72,20 @@
 
 .navbar-nav .dropdown-menu .dropdown-item {
     padding: 0.5rem 1rem;
-    color: var(--text-color); /* Dropdown Item Text Color */
+    color: var(--text-color); 
 }
 
 .navbar-nav .dropdown-menu .dropdown-item:hover {
-    background-color: var(--primary-color); /* Hover Background Color for Dropdown Items */
-    color: #fff; /* Text Color on Hover */
+    background-color: var(--primary-color); 
+    color: #fff;
 }
+
+
+.navbar-nav .dropdown-menu .dropdown-item.active {
+    background-color: #ff5722 !important; 
+    color: #fff !important; 
+}
+
 
 .navbar-toggler {
     border: none;
@@ -395,12 +402,46 @@ a {
     text-decoration: none !important;
 }
 
-/* Set the color for the icons */
+
 .card .card-title i {
-    color: #490ca6; /* Change this to your desired icon color */
+    color: #490ca6; 
+    
 }
 
-/* Set the color for the titles */
+
+
 .card .card-title {
-    color: #fd7e14; /* Change this to your desired title color */
+    color: var(--secondary-color); 
+    
+}
+
+
+/* btn-primary styles */
+.btn-primary {
+    background-color: var(--primary-color) !important; 
+    color: var(--light-color) !important; 
+    border: none !important;
+    padding: 10px 20px !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color) !important;
+}
+
+/* btn-secondary styles */
+.btn-secondary {
+    background-color: var(--secondary-color) !important; 
+    color: var(--light-color) !important; 
+    border: none !important;
+    padding: 10px 20px !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-color) !important; 
 }

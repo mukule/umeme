@@ -12,12 +12,40 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="p-5">
+                                    <div>
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                                {% if message.tags == 'success' %}
+                                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                        {{ message|safe|escape }}
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% elif message.tags == 'error' %}
+                                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                        {{ message|safe|escape }}
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% elif message.tags == 'info' %}
+                                                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                                        {{ message|safe|escape }}
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% elif message.tags == 'warning' %}
+                                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                                        {{ message|safe|escape }}
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
                                     <div class="text-center mb-5">
                                         <a href="#" class="text-dark font-size-22 font-family-secondary">
                                             <i class="fas fa-ban fa-5x text-danger"></i>
                                         </a>
+
                                     </div>
-                                    <h1 class="h5 mb-1 text-center">You dont have permission to perfom this action</h1>
+                                    <h1 class="h5 mb-1 text-center">You dont have Enough Permission to Access this Resource</h1>
                                     
                                 </div>
                             </div>
@@ -32,6 +60,6 @@
 <script>
     setTimeout(function() {
         window.location.href = "{% url 'users:login' %}";
-    }, 5000);
+    }, 2000);
 </script>
 {% endblock content %}

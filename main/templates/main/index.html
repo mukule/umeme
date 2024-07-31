@@ -3,27 +3,33 @@
 
 {% block content %}
 <div class="carousel-container pt-5">
-    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
         <div class="carousel-inner">
             {% for job_type in job_types %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <div style="position: relative;">
-                        <img class="d-block w-100" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h3 class="text-white">{{ job_type.name }}</h3>
-                            <p>{{ job_type.description }}</p>
-                            <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-lg shadow-sm mb-0 carousel-btn">Explore Opportunities</a>
-                        </div>
-                        
+                    <img class="d-block w-100" src="{{ job_type.banner.url }}" alt="{{ job_type.name }} Banner">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h3 class="text-white">{{ job_type.name }}</h3>
+                        <p>{{ job_type.description }}</p>
+                        <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-lg shadow-sm mb-0 carousel-btn">Explore Opportunities</a>
                     </div>
                 </div>
             {% endfor %}
         </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
 </div>
 
+
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Opportunities at Kengen</h2>
+    <h2 class="text-center mb-4">Opportunities at KenGen</h2>
     <div class="row">
         {% for job_type in job_types %}
             <div class="col-md-4 mb-4">
@@ -34,7 +40,7 @@
                     <div class="card-body text-start">
                         <h5 class="card-title">{{ job_type.name }}</h5>
                         <p class="card-text">{{ job_type.description }}</p>
-                        <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-primary btn-rounded shadow-sm mb-0 position-relative" style="background-color: #fd7e14; border-color: #fd7e14; padding-right: 2.5rem;">
+                        <a href="{% url 'main:vacs' pk=job_type.pk %}" class="btn btn-rounded shadow-sm mb-0 position-relative" style="background-color: #fd7e14; border-color: #fd7e14; padding-right: 2.5rem;">
                             Explore
                             <span class="btn-icon-circle">
                                 <i class="fas fa-arrow-right"></i>

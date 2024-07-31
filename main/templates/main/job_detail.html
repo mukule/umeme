@@ -65,10 +65,10 @@
                                 <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:college' %}">College/University</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Professional Certificates</a>
+                                <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Certifications</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Professional Memberships</a>
+                                <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Memberships</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {% if request.resolver_match.url_name == 'experience' %}active{% endif %}" href="{% url 'main:experience' %}">Work Experience</a>

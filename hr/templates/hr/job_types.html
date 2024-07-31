@@ -77,7 +77,7 @@
                                                     </a>
                                                     
                                                     
-                                                    <a href="{% url 'hr:delete_job_type' job_type.id %}" class="btn btn-danger text-white">
+                                                    <a href="{% url 'hr:delete_job_type' job_type.id %}" class="btn btn-danger text-white" onclick="return confirmDeletion(this);">
                                                         <i class="fas fa-trash"></i> Delete
                                                     </a>
                                                 </td>

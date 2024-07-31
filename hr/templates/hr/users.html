@@ -51,8 +51,8 @@
                     <form method="get" action="" class="mt-4 mb-4 d-flex justify-content-center">
                         <input type="text" name="name" placeholder="Name" value="{{ request.GET.name }}" class="form-control mx-2" style="max-width: 200px;">
                         <input type="text" name="email" placeholder="Email" value="{{ request.GET.email }}" class="form-control mx-2" style="max-width: 200px;">
-                        <button type="submit" class="btn mx-2" style="background-color: #490ca6; color: #fff;">Filter</button>
-                        <a href="{% url 'hr:system_users' %}" class="btn mx-2" style="background-color: #fd7e14; color: #fff;">Reset</a>
+                        <button type="submit" class="btn btn-primary mx-2">Filter</button>
+                        <a href="{% url 'hr:system_users' %}" class="btn btn-secondary mx-2">Reset</a>
                     </form>
                     </section>
                     <div class="card-body">
@@ -69,26 +69,36 @@
                                         <th>Ethnicity</th>
                                         <th>Active</th>
                                         <th>Registered</th>
+                                        {% if is_superuser %}
                                         <th>Action</th>
+                                        {% endif %}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for user in users %}
+                                    {% for reg in users %}
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
-                                            <td>{{ user.first_name }} {{ user.last_name }}</td>
-                                            <td>{{ user.email }}</td>
-                                            <td>{{ user.id_number }}</td>
-                                            <td>{{ user.resume.gender }}</td>
-                                            <td>{{ user.resume.age }}</td>
-                                            <td>{{ user.resume.ethnicity }}</td>
-                                            <td>{% if user.is_active %}Yes{% else %}No{% endif %}</td>
-                                            <td>{{ user.date_joined }}</td>
-                                            <td><a href="{% url 'hr:registrants_edit' user.id %}">Edit</a></td>
+                                            <td>{{ reg.first_name }} {{ user.last_name }}</td>
+                                            <td>{{ reg.email }}</td>
+                                            <td>{{ reg.id_number }}</td>
+                                            <td>{{ reg.resume.gender }}</td>
+                                            <td>{{ reg.resume.age }}</td>
+                                            <td>{{ reg.resume.ethnicity }}</td>
+                                            <td>{% if reg.is_active %}Yes{% else %}No{% endif %}</td>
+                                            <td>{{ reg.date_joined }}</td>
+                                            {% if is_superuser %}
+                                            <td>
+                                                <a href="{% url 'hr:registrants_edit' user.id %}">
+                                                    <i class="fas fa-pencil-alt"></i> Edit
+                                                </a>
+                                                
+                                            </td>
+                                            {% endif %}
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+                            
                         </div>
                     </div>
                     <!-- end card-body-->

@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block content %}
-<div class="carousel-container">
+<div class="carousel-container" style="margin-top: 80px !important;">
     <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
         <div class="carousel-inner">
 
@@ -19,8 +19,8 @@
         </div>
     </div>
 </div>
-<div class="page-content">
-    <div class="container-fluid">
+<div class="page-content" style="margin-bottom: 100px !important;">
+    <div class="container">
         <h2>Terms and Conditions</h2>
         {% if terms %}
             {{ terms.text|safe }}

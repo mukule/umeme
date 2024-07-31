@@ -80,12 +80,29 @@
                    {% if user.is_authenticated %}
                    <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user me-2"></i> <!-- User icon -->
+                        <i class="fas fa-user me-2"></i> 
                         {{ user.username }}
-                    </a>                    
+                       
+                    </a>  
+                                      
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item active" href="#">
+                                <div>
+                                    {% if user.is_superuser %}
+                                        
+                                    <i class="fas fa-user me-2"></i>     Superuser
+                                        
+                                    {% else %}
+                                       
+                                    <i class="fas fa-user me-2"></i>  {{ user.access_level_display }}
+                                     
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </li>
                         <li><a class="dropdown-item" href="{% url 'users:profile'  user.id %}">Profile</a></li>
-                        {% if user.is_authenticated and user.is_superuser or user.function == 1 or user.function == 2 or user.function == 3 or user.function == 4 or user.function == 5 %}
+                        {% if user.is_authenticated and user.is_superuser or user.function == 1 or user.function == 2 or user.function == 3 or user.function == 4 or user.function == 5 or user.function == 6 or user.function == 7 or user.function == 8 or user.function == 9 or user.function == 10 %}
                         <li><a class="dropdown-item" href="{% url 'hr:dashboard' %}">Hr Dashboard</a></li>
                         {% endif %}
                         <li><hr class="dropdown-divider"></li>

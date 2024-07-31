@@ -1,23 +1,75 @@
 from django.shortcuts import redirect
+from django.urls import reverse
 
-def user_not_authenticated(function=None, redirect_url='/'):
+
+def user_not_authenticated(view_func):
     """
-    Decorator for views that checks that the user is NOT logged in, redirecting
-    to the homepage if necessary by default.
+    Decorator for views that checks if the user is NOT logged in.
+    Redirects to 'users:denials' if the user is authenticated.
     """
-    def decorator(view_func):
-        def _wrapped_view(request, *args, **kwargs):
-            if request.user.is_authenticated:
-                return redirect(redirect_url)
-                
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('users:logout'))
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
+def admins(view_func):
+    """
+    Decorator for views that checks if the user is authenticated and
+    either has access level 5 or is a superuser. Redirects to 'users:denials'
+    if the user does not meet these conditions.
+    """
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (request.user.access_level == 5 or request.user.is_superuser):
             return view_func(request, *args, **kwargs)
+        return redirect(reverse('users:denials'))
+    return _wrapped_view
 
-        return _wrapped_view
 
-    if function:
-        return decorator(function)
+def general(view_func):
+    """
+    Decorator for views that checks if the user has function 10 (ICT),
+    is a superuser, or has function 1 (General HR). Redirects to 'users:denials'
+    if the user does not meet these conditions.
+    """
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (
+            request.user.function == 10 or
+            request.user.is_superuser or
+            request.user.function == 1
+        ):
+            return view_func(request, *args, **kwargs)
+        return redirect(reverse('users:denials'))
+    return _wrapped_view
 
-    return decorator
+
+def postone(view_func):
+
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (
+            request.user.function == 10 or
+            request.user.is_superuser or
+            request.user.function == 1 or
+            request.user.function == 2
+        ):
+            return view_func(request, *args, **kwargs)
+        return redirect(reverse('users:denials'))
+    return _wrapped_view
+
+
+def posttwo(view_func):
+
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (
+            request.user.function == 10 or
+            request.user.is_superuser or
+            request.user.function == 1 or
+            request.user.function == 3
+        ):
+            return view_func(request, *args, **kwargs)
+        return redirect(reverse('users:denials'))
+    return _wrapped_view
 
 
 def access_level_check(user_access_level, redirect_view_name):
@@ -30,48 +82,15 @@ def access_level_check(user_access_level, redirect_view_name):
     return decorator
 
 
-def system_admin_required(view_func):
+def staffs(view_func):
+    """
+    Decorator for views that checks if the user has access level 5 or is a superuser.
+    Redirects to 'users:denials' if the user does not meet these conditions.
+    """
     def wrapped(request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.function == 1 or request.user.is_superuser:
-            return view_func(request, *args, **kwargs)
-        return redirect('users:denials')
+        if request.user.is_authenticated:
+            if request.user.is_superuser or request.user.access_level == 5:
+                return view_func(request, *args, **kwargs)
+        return redirect(reverse('users:denials'))
+
     return wrapped
-
-def system_admin_hr_required(view_func):
-    def wrapped(request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.function in (1, 2) or request.user.is_superuser:  
-            return view_func(request, *args, **kwargs)
-        return redirect('users:denials')
-    return wrapped
-
-def system_admin_hr_post_required(view_func):
-    def wrapped(request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.function in (1, 2, 3) or request.user.is_superuser:  
-            return view_func(request, *args, **kwargs)
-        return redirect('users:denials')
-    return wrapped
-
-
-
-def system_admin_hr_publish_required(view_func):
-    def wrapped(request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.function in (1, 2, 4) or request.user.is_superuser:  
-            return view_func(request, *args, **kwargs)
-        return redirect('users:denials')
-    return wrapped
-
-def system_admin_hr_shortlist_required(view_func):
-    def wrapped(request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.function in (1, 2, 5) or request.user.is_superuser:  
-            return view_func(request, *args, **kwargs)
-        return redirect('users:denials')
-    return wrapped
-
-
-def admins(view_func):
-    def wrapped(request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.function in (1, 2, 3, 4, 5) or request.user.is_superuser:  
-            return view_func(request, *args, **kwargs)
-        return redirect('users:denials')
-    return wrapped
-

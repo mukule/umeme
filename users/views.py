@@ -136,7 +136,7 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
 
-        success_message = 'Thank you for your email confirmation. Now you can log in to your account.'
+        success_message = 'Thank you for your email confirmation. You can Now Login.'
         messages.success(request, success_message)
         return redirect('users:login')
 
@@ -184,7 +184,6 @@ logger = logging.getLogger(__name__)
 
 @user_not_authenticated
 def custom_login(request):
-    error_messages = []
     next_url = request.GET.get('next')
 
     if request.method == "POST":
@@ -197,7 +196,6 @@ def custom_login(request):
 
             if user is not None:
                 if user.access_level == 5:
-
                     try:
                         profile_update, created = ProfileUpdate.objects.get_or_create(
                             user=user, defaults={'password_changed': False})
@@ -211,38 +209,36 @@ def custom_login(request):
                 if user.access_level != 5 or (user.access_level == 5 and profile_update.password_changed):
                     login(request, user)
 
-                    if user.access_level in (1, 2, 3, 4):
-                        try:
+                    try:
+                        if user.access_level in (1, 2, 3, 4):
                             AdminAccessLog.objects.create(admin_user=user)
-                        except Exception as e:
-                            logger.error(
-                                f"Error creating admin access log: {e}")
-                    elif user.access_level == 0:
-                        try:
+                        elif user.access_level == 0:
                             UserAccessLog.objects.create(user=user)
-                        except Exception as e:
-                            logger.error(
-                                f"Error creating user access log: {e}")
+                    except Exception as e:
+                        logger.error(f"Error creating access log: {e}")
 
-                    messages.success(
-                        request, f"Hello {user.username}! You have been logged in.")
-                    if next_url:
-                        return redirect(next_url)
-                    else:
-                        return redirect("/")
+                    if not messages.get_messages(request):
+                        messages.success(
+                            request, f"Success, You are logged in as {user.username}")
+                        if next_url:
+                            return redirect(next_url)
+                        else:
+                            return redirect("/")
                 else:
                     return redirect('users:staff_no')
             else:
-                error_messages.append("Invalid username or password")
+                messages.error(request, "Invalid username or password")
         else:
             for error in list(form.errors.values()):
-                error_messages.append(error)
+                messages.error(request, " ".join(error))
 
-    form = UserLoginForm()
+    else:
+        form = UserLoginForm()
+
     return render(
         request=request,
         template_name="users/login.html",
-        context={"form": form, "errors": error_messages}
+        context={"form": form}
     )
 
 
@@ -252,7 +248,7 @@ def sendActivationLink(request, user, to_email):
     token = account_activation_token.make_token(user)
     activation_link = f"{'https' if request.is_secure() else 'http'}://{get_current_site(request).domain}{reverse('users:activate', kwargs={'uidb64': uid, 'token': token})}"
     message = f"""
-    Dear {user.first_name} {user.last_name},
+    Dear {user.username},
 
     This is an email to secure your account through the Kengen Career Portal. Follow the link below to activate your account.
 
@@ -349,16 +345,11 @@ def password_reset_request(request):
             user_id_number = form.cleaned_data['id_number']
 
             try:
-                # First, check if the email exists
+
                 associated_user = get_user_model().objects.get(email__iexact=user_email)
 
-                # Print the ID numbers for debugging
-                print(f"Form ID Number: {user_id_number}")
-                print(f"User ID Number: {associated_user.id_number}")
-
-                # Check if the user has access level 5 and compare the email to the username (after removing the first 3 characters)
                 if associated_user.access_level == 5:
-                    # Adjust username by removing first 3 characters and convert to lower case
+
                     user_value = str(user_id_number)
                     staff_no = associated_user.username[3:].lower()
                     print(staff_no)
@@ -371,7 +362,7 @@ def password_reset_request(request):
                             context={"form": form}
                         )
                 else:
-                    # Check if the ID number matches for other users
+
                     if associated_user.id_number != user_id_number:
                         messages.error(
                             request, "Email and ID number don't match.")
@@ -381,7 +372,6 @@ def password_reset_request(request):
                             context={"form": form}
                         )
 
-                # Proceed with password reset
                 subject = _("KenGen Careers Portal - Password Reset request")
                 context = {
                     'user': associated_user,
@@ -470,16 +460,14 @@ def passwordResetConfirm(request, uidb64, token):
 def custom_logout(request):
     logout(request)
     messages.info(request, "Logged out successfully!")
-    return redirect("/")
+    return redirect("users:login")
 
 
 def staff_no(request):
-    # Retrieve user details from the URL parameters
     query_dict = QueryDict(request.META['QUERY_STRING'])
     user_id = query_dict.get('user_id')
     username = query_dict.get('username')
 
-    # Retrieve all CustomUser objects
     custom_users = CustomUser.objects.all()
 
     return render(request, 'users/staff_no.html', {'staff': custom_users, 'user_id': user_id, 'username': username})
@@ -490,23 +478,20 @@ def create_access_level_5_user(request):
         user_form = CustomUserCreationForm(request.POST)
 
         if user_form.is_valid():
-            # Generate a random password
+
             password = ''.join(random.choices(
                 string.ascii_letters + string.digits, k=8))
 
-            # Create the user account with access level 5
             user = user_form.save(commit=False)
             user.set_password(password)
             user.access_level = 5
             user.save()
 
-            # Create a user instance in the resume model
             email_address = user.email
             full_name = f'{user.first_name} {user.last_name}'
             Resume.objects.create(
                 email_address=email_address, full_name=full_name, user=user)
 
-            # Send an activation email with the user details
             mail_subject = 'New account created on Kengen Career Portal.'
             message = render_to_string('users/new_account.html', {
                 'user': user,

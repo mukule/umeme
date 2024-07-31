@@ -10,7 +10,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
 
     ACCESS_LEVEL_CHOICES = (
-        (0, 'registrants'),
+        (0, 'Job Seeker'),
         (1, 'System Admin'),
         (2, 'HR'),
         (3, 'HR Interns'),
@@ -18,12 +18,18 @@ class CustomUser(AbstractUser):
         (5, 'staffs'),
     )
     FUNCTION_CHOICES = (
-        (0, 'Not Specified'),
-        (1, 'System Admin'),
-        (2, 'HR'),
-        (3, 'Post'),
-        (4, 'Publish'),
-        (5, 'Shortlist'),
+        (0, 'No Previllages'),
+        (1, 'Hr-General'),
+        (2, 'Hr-Post Jobs(Internal/External)'),
+        (3, 'Hr-Post Internship/Attachment'),
+        (4, 'Hr-Publsh Jobs(Internal/External)'),
+        (5, 'Hr-Publish Internship/Attachment'),
+        (6, 'Hr-Edit Jobs(Internal/External)'),
+        (7, 'Hr-Edit Internship/Attachment'),
+        (8, 'Hr-Delete Jobs(Internal/External)'),
+        (9, 'Hr-Delete Internship/Attachment'),
+        (10, 'ICT'),
+
     )
 
     staff_no = models.CharField(max_length=20, unique=True, null=True)

@@ -96,3 +96,10 @@ class UserAcceptedTerms(models.Model):
 
     def __str__(self):
         return f"{self.user.username} accepted terms"
+
+
+class ThanksMessage(models.Model):
+    message = models.TextField()
+
+    def __str__(self):
+        return f"ThanksMessage {self.id}"

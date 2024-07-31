@@ -31,6 +31,7 @@ from django.http import HttpResponseForbidden
 from users.decorators import *
 from openpyxl.styles import Alignment
 from django.http import JsonResponse
+from .thanks import *
 
 
 @admins
@@ -76,6 +77,7 @@ def create_job_type(request):
     return render(request, 'hr/create_job_type.html', {'form': form})
 
 
+@admins
 def edit_job_type(request, job_type_id):
     job_type = get_object_or_404(JobType, id=job_type_id)
 
@@ -91,6 +93,7 @@ def edit_job_type(request, job_type_id):
     return render(request, 'hr/create_job_type.html', {'form': form, 'job_type': job_type})
 
 
+@admins
 def delete_job_type(request, job_type_id):
     job_type = get_object_or_404(JobType, id=job_type_id)
 
@@ -98,6 +101,7 @@ def delete_job_type(request, job_type_id):
     return redirect('hr:job_types')
 
 
+@admins
 def create_educational_level(request):
     if request.method == 'POST':
         form = EducationalLevelForm(request.POST)
@@ -109,9 +113,8 @@ def create_educational_level(request):
         form = EducationalLevelForm()
     return render(request, 'hr/create_edu_level.html', {'form': form})
 
-# View to edit an existing Educational Level
 
-
+@admins
 def edit_educational_level(request, pk):
     educational_level = get_object_or_404(EducationalLevel, pk=pk)
     if request.method == 'POST':
@@ -164,14 +167,36 @@ def jobs(request):
     return render(request, 'hr/jobs.html', context)
 
 
-@system_admin_hr_post_required
+@admins
 def edit_job(request, job_id):
     job = get_object_or_404(Vacancy, pk=job_id)
+    user = request.user
+    job_type = job.job_type.name
+
+    # Determine user permissions
+    is_superuser = user.is_superuser
+    is_ict = user.function == 10 or is_superuser
+    is_hradmin = user.function == 1 or is_ict
+    is_edit1 = user.function == 6
+    is_edit2 = user.function == 7
+
+    is_hreditjobs = is_hradmin or is_edit1
+    is_hreditinterns = is_hradmin or is_edit2
+
+    can_edit = (
+        (job_type in ['Careers', 'Internal'] and is_hreditjobs) or
+        (job_type in ['Internship', 'Industrial Attachment']
+         and is_hreditinterns)
+    )
+
+    if not can_edit:
+        messages.error(
+            request, "You do not have permission to Complete this Action")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
     if request.method == 'POST':
         form = VacancyForm(request.POST, instance=job)
         if form.is_valid():
-            user = request.user
             job.last_updated_by = f'{user.first_name} {user.last_name}' if user.first_name and user.last_name else user.username
             form.save()
             messages.success(request, 'Vacancy updated successfully')
@@ -186,21 +211,64 @@ def edit_job(request, job_id):
     return render(request, 'hr/create_job.html', {'form': form, 'job': job})
 
 
-@system_admin_hr_post_required
+@admins
 def delete_job(request, job_id):
     job = get_object_or_404(Vacancy, pk=job_id)
-    job.delete()
-    messages.success(request, 'Vacancy Deleted successfully')
-    return redirect('hr:jobs')
+
+    user = request.user
+    job_type = job.job_type.name
+
+    is_superuser = user.is_superuser
+    is_ict = user.function == 10 or is_superuser
+    is_hradmin = user.function == 1 or is_ict
+    is_del1 = user.function == 8
+    is_del2 = user.function == 9
+
+    is_hrdeljobs = is_hradmin or is_del1
+    is_hrdelinterns = is_hradmin or is_del2
+
+    can_del = (
+        (job_type in ['Careers', 'Internal'] and is_hrdeljobs) or
+        (job_type in ['Internship', 'Industrial Attachment']
+         and is_hrdelinterns)
+    )
+
+    if can_del:
+        job.delete()
+        messages.success(
+            request, f'Vacancy {job.title} has been Deleted sucessfully')
+        return redirect('hr:jobs')
+    else:
+        messages.error(
+            request, 'You do not have permission to Complete this Action')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-@system_admin_hr_post_required
+@admins
 def create_job(request):
+    user = request.user
+
+    is_superuser = user.is_superuser
+    is_ict = user.function == 10 or is_superuser
+    is_hradmin = user.function == 1 or is_ict
+    is_post1 = user.function == 2
+    is_post2 = user.function == 3
+
+    can_create_jobs = is_hradmin or is_post1
+    can_create_internships = is_hradmin or is_post2
+
     if request.method == 'POST':
         form = VacancyForm(request.POST)
         if form.is_valid():
             vacancy = form.save(commit=False)
-            user = request.user
+            job_type = vacancy.job_type.name
+
+            if (job_type in ['Careers', 'Internal'] and not can_create_jobs) or \
+               (job_type in ['Internship', 'Industrial Attachment'] and not can_create_internships):
+                messages.error(
+                    request, "You do not have permission to create this type of Vacancy.")
+                return redirect(request.META.get('HTTP_REFERER', '/'))
+
             vacancy.created_by = f'{user.first_name} {user.last_name}' if user.first_name and user.last_name else user.username
             vacancy.save()
             messages.success(
@@ -225,12 +293,36 @@ def job_detail(request, vacancy_id):
     return render(request, 'hr/job_detail.html', context)
 
 
-# @system_admin_hr_publish_required
-@system_admin_hr_post_required
+@admins
 def publish(request, job_id):
-    job = Vacancy.objects.get(pk=job_id)
-    job.published = not job.published
-    job.save()
+    job = get_object_or_404(Vacancy, pk=job_id)
+    user = request.user
+    job_type = job.job_type.name
+
+    is_superuser = user.is_superuser
+    is_ict = user.function == 10 or is_superuser
+    is_hradmin = user.function == 1 or is_ict
+    is_pub1 = user.function == 4
+    is_pub2 = user.function == 5
+
+    is_hrpostjobs = is_hradmin or is_pub1
+    is_hrpostinterns = is_hradmin or is_pub2
+
+    can_publish = (
+        (job_type in ['Careers', 'Internal'] and is_hrpostjobs) or
+        (job_type in ['Internship', 'Industrial Attachment']
+         and is_hrpostinterns)
+    )
+
+    if can_publish:
+        job.published = not job.published
+        job.save()
+        messages.success(
+            request, f'Vacancy {job.title} has been {"published" if job.published else "unpublished"}.')
+    else:
+        messages.error(
+            request, 'You do not have permission to Complete this Action')
+
     return redirect('hr:jobs')
 
 
@@ -238,10 +330,9 @@ def publish(request, job_id):
 def applications(request):
     search_query = request.GET.get('search')
     job_discipline_filter = request.GET.get('job_discipline')
-    # Changed from 'vacancy_type' to 'job_type'
+
     job_type_filter = request.GET.get('job_type')
 
-    # Retrieve all vacancies
     jobs = Vacancy.objects.all()
 
     if search_query:
@@ -251,14 +342,13 @@ def applications(request):
         )
 
     if job_discipline_filter:
-        # Ensure you filter by the correct field name ('job_discipline_id')
+
         jobs = jobs.filter(job_discipline_id=job_discipline_filter)
 
     if job_type_filter:
-        # Ensure you filter by the correct field name ('job_type_id')
+
         jobs = jobs.filter(job_type_id=job_type_filter)
 
-    # Retrieve all applications
     applications = Application.objects.all()
 
     job_disciplines = JobDiscipline.objects.all()
@@ -266,10 +356,10 @@ def applications(request):
     context = {
         'jobs': jobs,
         'applications': applications,
-        'selected_job_type': job_type_filter,  # Updated variable name
+        'selected_job_type': job_type_filter,
         'search_query': search_query,
         'job_disciplines': job_disciplines,
-        # Assuming JobType is the model for job types
+
         'job_types': JobType.objects.all(),
     }
 
@@ -278,15 +368,13 @@ def applications(request):
 
 @admins
 def application_detail(request, vacancy_id, filter_criteria=None):
-    # Retrieve the vacancy object or return a 404 if it doesn't exist
+
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
 
-    # Retrieve all applications related to this vacancy
     applications = Application.objects.filter(vacancy=vacancy)
 
     educational_levels = EducationalLevel.objects.all()
 
-    # Apply filters based on the filter criteria if it's provided
     if filter_criteria:
         if filter_criteria == 'qualified':
             applications = applications.filter(qualify=True)
@@ -591,62 +679,60 @@ def application_detail(request, vacancy_id, filter_criteria=None):
     return render(request, 'hr/application_detail.html', context)
 
 
-@system_admin_required
+@admins
 def toggle_shortlist(request, vacancy_id, application_id):
     application = get_object_or_404(Application, pk=application_id)
 
-    # Toggle the shortlisted status
     application.shortlisted = not application.shortlisted
     application.save()
 
-    # Redirect to the application detail page for the specified vacancy_id
     return redirect('hr:application_detail', vacancy_id=vacancy_id)
 
 
-@system_admin_hr_required
+@admins
 def resume(request, user_id):
-    # Retrieve the user (applicant) and related information
+
     applicant = get_object_or_404(CustomUser, pk=user_id)
 
     try:
         resume = Resume.objects.get(user=applicant)
     except Resume.DoesNotExist:
-        resume = None  # Set resume to None if it doesn't exist
+        resume = None
 
     try:
         basic_education = BasicEducation.objects.get(user=applicant)
     except BasicEducation.DoesNotExist:
-        basic_education = None  # Set basic_education to None if it doesn't exist
+        basic_education = None
 
     try:
         further_studies = FurtherStudies.objects.get(user=applicant)
     except FurtherStudies.DoesNotExist:
-        further_studies = None  # Set further_studies to None if it doesn't exist
+        further_studies = None
 
     try:
         memberships = Membership.objects.filter(user=applicant)
     except Membership.DoesNotExist:
-        memberships = []  # Set memberships to an empty list if they don't exist
+        memberships = []
 
     try:
         work_experiences = WorkExperience.objects.filter(user=applicant)
     except WorkExperience.DoesNotExist:
-        work_experiences = []  # Set work_experiences to an empty list if they don't exist
+        work_experiences = []
 
     try:
         referees = Referee.objects.filter(user=applicant)
     except Referee.DoesNotExist:
-        referees = []  # Set referees to an empty list if they don't exist
+        referees = []
 
     try:
         certifications = Certification.objects.filter(user=applicant)
     except Certification.DoesNotExist:
-        certifications = []  # Set certifications to an empty list if they don't exist
+        certifications = []
 
     try:
         objective = ProfessionalSummary.objects.get(user=applicant)
     except ProfessionalSummary.DoesNotExist:
-        objective = None  # Set objective to None if it doesn't exist
+        objective = None
 
     context = {
         'applicant': applicant,
@@ -670,7 +756,7 @@ def create_job_discipline(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Job discipline added succesfully")
-            # Redirect to a success page after creating the discipline
+
             return redirect('hr:job_disciplines')
     else:
         form = JobDisciplineForm()
@@ -680,7 +766,7 @@ def create_job_discipline(request):
 
 @admins
 def job_disciplines(request):
-    # Retrieve all job disciplines and annotate them with the vacancy count
+
     job_disciplines = JobDiscipline.objects.annotate(
         vacancy_count=Count('vacancy'))
 
@@ -778,7 +864,7 @@ def certificates(request):
 
 @admins
 def edit_certificate(request, certificate_id):
-    # Get the certificate instance to be edited
+
     certificate = get_object_or_404(Certificate, pk=certificate_id)
 
     if request.method == 'POST':
@@ -795,11 +881,11 @@ def edit_certificate(request, certificate_id):
 
 @admins
 def delete_certificate(request, certificate_id):
-    # Get the certificate instance to be deleted
+
     certificate = get_object_or_404(Certificate, pk=certificate_id)
 
     certificate.delete()
-    # Redirect to the certificates list page
+
     return redirect('hr:certificates')
 
 
@@ -854,6 +940,7 @@ def edu_levels(request):
     return render(request, 'hr/edu_levels.html', {'edu_levels': edu_levels})
 
 
+@admins
 def delete_edu_level(request, edu_level_id):
     edu_level = get_object_or_404(EducationalLevel, id=edu_level_id)
 
@@ -916,17 +1003,14 @@ def admin_access_logs(request):
 
 @admins
 def portal_reports(request):
-    # Query to count users with access level 0
+
     access_level_0_count = CustomUser.objects.filter(access_level=0).count()
 
-    # Query to count users with access level 1-4
     access_level_1_to_4_count = CustomUser.objects.filter(
         access_level__range=(1, 4)).count()
 
-    # Query to count the number of vacancies created
     vacancy_count = Vacancy.objects.count()
 
-    # Query to count the total number of applications
     total_applications_count = Application.objects.count()
 
     context = {
@@ -943,22 +1027,19 @@ def portal_reports(request):
 
 @admins
 def vacancy_report(request):
-    # Calculate the count of open vacancies
+
     open_vacancy_count = Vacancy.objects.filter(
         Q(date_open__lte=timezone.now()) &
         Q(date_close__gt=timezone.now())
     ).count()
 
-    # Calculate the count of closed vacancies
     closed_vacancy_count = Vacancy.objects.filter(
         Q(date_close__lte=timezone.now())
     ).count()
 
-    # Use aggregation and annotation to count the vacancies for each job discipline
     job_disciplines_counts = JobDiscipline.objects.annotate(
         vacancy_count=Count('vacancy'))
 
-    # Prepare the data as a list of dictionaries
     data = [
         {
             'name': discipline.name,
@@ -967,16 +1048,13 @@ def vacancy_report(request):
         for discipline in job_disciplines_counts
     ]
 
-    # Convert data to a JSON string
     data_json = json.dumps(data)
 
-    # Prepare data for the pie chart
     pie_chart_data = {
         'open_vacancy_count': open_vacancy_count,
         'closed_vacancy_count': closed_vacancy_count,
     }
 
-    # Convert pie chart data to JSON
     pie_chart_data_json = json.dumps(pie_chart_data)
 
     all_vacancies = Vacancy.objects.all()
@@ -1007,18 +1085,16 @@ def applications_reports(request):
             'application_count': vacancy_count,
         })
 
-    # Prepare data as a dictionary
     data = {
         'labels': ['Total Applications', 'Qualify True', 'Shortlisted True'],
         'data': [total_applications, qualify_true_count, shortlisted_true_count],
         'vacancy_data': vacancy_counts,
     }
 
-    # Convert data to JSON
     data_json = json.dumps(data)
 
     context = {
-        'data_json': data_json,  # Add the JSON data to the context
+        'data_json': data_json,
     }
 
     return render(request, 'hr/application_reports.html', context)
@@ -1026,41 +1102,37 @@ def applications_reports(request):
 
 @admins
 def application_report(request, vacancy_id):
-    # Retrieve the specific vacancy or return a 404 error if not found
+
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
 
-    # Retrieve counts for this specific vacancy
     total_applications = Application.objects.filter(vacancy=vacancy).count()
     qualify_true_count = Application.objects.filter(
         vacancy=vacancy, qualify=True).count()
     shortlisted_true_count = Application.objects.filter(
         vacancy=vacancy, shortlisted=True).count()
 
-    # Prepare data for the graph as a dictionary
     graph_data = {
         'labels': ['Total Applications', 'Qualified Applicants', 'Shortlisted Applicants'],
         'data': [total_applications, qualify_true_count, shortlisted_true_count],
     }
 
-    # Convert graph data to JSON
     graph_data_json = json.dumps(graph_data)
 
     context = {
         'vacancy': vacancy,
-        # Add the JSON data for the graph to the context
         'graph_data_json': graph_data_json,
     }
 
     return render(request, 'hr/application_report.html', context)
 
 
-@system_admin_hr_post_required
+@admins
 def adms(request):
     search_query = request.GET.get('q')
     users_with_access_5 = []
 
     if search_query:
-        # Filter users based on search query and access level
+
         users_with_access_5 = CustomUser.objects.filter(
             Q(username__icontains=search_query) |
             Q(email__icontains=search_query) |
@@ -1076,7 +1148,7 @@ def adms(request):
     return render(request, 'hr/adms.html', context)
 
 
-@system_admin_required
+@admins
 def admin_role(request, admin_id):
     user_to_update = get_object_or_404(CustomUser, id=admin_id)
 
@@ -1084,8 +1156,8 @@ def admin_role(request, admin_id):
         form = UpdateFunctionForm(request.POST, instance=user_to_update)
         if form.is_valid():
             form.save()
-            # Redirect to a success page or any other appropriate action
-            return redirect('hr:hr_admins')  # Replace with your desired URL
+
+            return redirect('hr:hr_admins')
     else:
         form = UpdateFunctionForm(instance=user_to_update)
 
@@ -1097,12 +1169,11 @@ def admin_role(request, admin_id):
     return render(request, 'hr/admin_role.html', context)
 
 
-@system_admin_required
+@admins
 def hr_admin(request):
-    # Filter users with access level 5 and function values 1, 2, 3, 4, or 5
     users_with_access_and_function = CustomUser.objects.filter(
         access_level=5,
-        function__in=[1, 2, 3, 4, 5]
+        function__in=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     )
 
     context = {
@@ -1112,37 +1183,31 @@ def hr_admin(request):
     return render(request, 'hr/hr.html', context)
 
 
-@system_admin_required
+@admins
 def admin_register(request):
     if request.method == 'POST':
         form = AdminForm(request.POST)
         if form.is_valid():
             user = form.save()
 
-            # Construct the login link
             current_site = get_current_site(request)
-            # Assuming 'login' is the name of your login URL pattern
+
             login_link = reverse('users:login')
 
-            # Compose the email message
             subject = 'Account Created Successfully'
             message = f"Hello {user.username},\n\nYour admin account has been created successfully. Here are your login details:\n\nUsername: {user.username}\nEmail: {user.email}\nPassword: {form.cleaned_data['password1']}\n\nYou can now use these details to log in to your account.\n\nLogin here: {current_site}{login_link}"
 
-            from_email = 'nelson@kenyaweb.co.ke'  # Replace with your sender email
+            from_email = 'nelson@kenyaweb.co.ke'
             to_email = user.email
 
-            # Send the email
             send_mail(subject, message, from_email, [to_email])
 
-            # Add a success message
             messages.success(
                 request, f"{user.username}'s admin account has been created successfully, and login details have been sent to {user.email}.")
 
-            # You can perform any additional actions here after user creation, if needed
-            # Redirect to a success page or another URL
             return redirect('hr:adms')
         else:
-            # Form has errors, display error messages
+
             messages.error(
                 request, "There were errors in the form. Please correct them.")
     else:
@@ -1204,7 +1269,7 @@ def edit_terms(request, id):
     return render(request, 'hr/create_terms.html', {'form': form})
 
 
-@system_admin_required
+@admins
 def import_excel(request):
     if request.method == 'POST':
         form = ExcelImportForm(request.POST, request.FILES)
@@ -1224,17 +1289,16 @@ def import_excel(request):
 
                     try:
                         hashed_password = make_password(
-                            staff_no)  # Hash the password
+                            staff_no)
 
                         with transaction.atomic():
                             user = CustomUser.objects.create(
                                 username=staff_no,
                                 email=email,
                                 access_level=5,
-                                password=hashed_password  # Assign the hashed password
+                                password=hashed_password
                             )
 
-                            # Create or update the user's resume
                             resume, _ = Resume.objects.get_or_create(user=user)
                             resume.full_name = name
                             resume.email_address = email
@@ -1242,7 +1306,7 @@ def import_excel(request):
                     except ValidationError:
                         return render(request, 'error_page.html', {'message': 'Error during import'})
 
-                wb.close()  # Close the workbook
+                wb.close()
 
                 return redirect('hr:staffs')
             except (KeyError, ValidationError):
@@ -1254,22 +1318,20 @@ def import_excel(request):
     return render(request, 'hr/import_staffs.html', {'form': form})
 
 
-@system_admin_hr_post_required
+@admins
 def staffs(request):
-    # Retrieve all staff members with access level 5
+
     staff_members = CustomUser.objects.filter(access_level=5)
 
-    # Define the number of items per page
     items_per_page = 100
 
-    # Filter staff members based on search criteria
     search_query = request.GET.get('search_query', '')
     if search_query:
         staff_members = staff_members.filter(
             Q(username__icontains=search_query) | Q(email__icontains=search_query))
 
     paginator = Paginator(staff_members, items_per_page)
-    # Get the current page number from the request
+
     page = request.GET.get('page')
 
     staff_members = paginator.get_page(page)
@@ -1282,70 +1344,76 @@ def staffs(request):
     return render(request, 'hr/staffs.html', context)
 
 
-# @system_admin_required
+@admins
 def edit_user(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)
 
-    if user.access_level != 5:
+    # Check if the user has access level 5
+    if request.user.access_level != 5:
         return HttpResponseForbidden("Access denied")
 
     if request.method == 'POST':
         form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
-            form.save()
-            # Redirect to the user list page after editing
-            return redirect('hr:kgn_staffs')
+            try:
+                form.save()
+                messages.success(request, 'User details updated successfully.')
+                return redirect('hr:kgn_staffs')
+            except Exception as e:
+                messages.error(
+                    request, f"An error occurred while updating user details: {str(e)}")
+        else:
+
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     else:
         form = UserEditForm(instance=user)
 
     context = {
         'form': form,
-        'user': user,
+        'user1': user,
     }
 
     return render(request, 'hr/create_staff.html', context)
 
 
+@admins
 def delete_staff(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)
 
-    # Check if the user has access level 5
     if user.access_level != 5:
         return HttpResponseForbidden("Access denied")
 
     user.delete()
-    # Redirect to the user list page after deleting
+
     return redirect('hr:kgn_staffs')
 
 
-@system_admin_required
+@admins
 def reset_trials(request, user_id):
-    # Get the admin user (you can implement admin authentication)
-    # Get the user to reset trials for (or use get_object_or_404 to handle non-existent user)
-    user_to_reset = get_object_or_404(CustomUser, id=user_id)
 
-    # Reset the trials for the selected user
-    user_to_reset.trials = 4  # Reset the trials to 3 or your desired value
-    user_to_reset.is_restricted = False  # Unrestrict the user
+    user_to_reset = get_object_or_404(CustomUser, id=user_id)
+    user_to_reset.trials = 4
+    user_to_reset.is_restricted = False
     user_to_reset.save()
 
-    # Add a success message
     messages.success(
         request, f"Trials reset successfully for {user_to_reset.username}. They can submit their staff No again.")
 
-    # Redirect back to the admin panel or another appropriate page
     return redirect('hr:system_users')
 
 
-@system_admin_required
+@admins
 def delete_users_with_access_level_5(request):
     if request.method == 'POST':
         CustomUser.objects.filter(access_level=5).delete()
-        return redirect('hr:kgn_staffs')  # Redirect to a success page
+        return redirect('hr:kgn_staffs')
 
     return render(request, 'hr/staffs.html')
 
 
+@admins
 def classes(request):
     classes = Class.objects.all()
 
@@ -1356,6 +1424,7 @@ def classes(request):
     return render(request, 'hr/classes.html', context)
 
 
+@admins
 def create_class(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
@@ -1369,8 +1438,9 @@ def create_class(request):
     return render(request, 'hr/create_class.html', {'form': form})
 
 
+@admins
 def edit_class(request, class_id):
-    # Get the class instance from the database using the class_id
+
     class_instance = get_object_or_404(Class, id=class_id)
 
     if request.method == 'POST':
@@ -1385,40 +1455,72 @@ def edit_class(request, class_id):
     return render(request, 'hr/create_class.html', {'form': form, 'class': class_instance})
 
 
+@admins
 def delete_class(request, class_id):
     class_instance = get_object_or_404(Class, id=class_id)
     class_instance.delete()
     return redirect('hr:classes')
 
 
+@admins
 def toggle_user_active_status(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
 
-    # Toggle the is_active status
     user.is_active = not user.is_active
     user.save()
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
+@admins
 def toggle_hired(request, vacancy_id):
-    # Retrieve the Vacancy object by ID
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
 
-    # Toggle the hired field
-    vacancy.hired = not vacancy.hired
+    user = request.user
+    job_type = vacancy.job_type.name
 
-    # Save the changes
-    vacancy.save()
+    is_superuser = user.is_superuser
+    is_ict = user.function == 10 or is_superuser
+    is_hradmin = user.function == 1 or is_ict
 
-    # Add a success message
-    messages.success(
-        request, f"Vacancy '{vacancy.title}' has Been {'Closed' if vacancy.hired else 'Opened'}.")
+    can_close = (
+        (job_type in ['Careers', 'Internal'] and is_hradmin) or
+        (job_type in ['Internship', 'Industrial Attachment']
+         and is_hradmin)
+    )
+
+    shortlisted_applicants_exist = Application.objects.filter(
+        vacancy=vacancy, shortlisted=True).exists()
+
+    if vacancy.hired:
+
+        vacancy.hired = False
+        vacancy.save()
+        messages.success(
+            request, f"Vacancy '{vacancy.title}' has been opened.")
+    else:
+        if shortlisted_applicants_exist:
+
+            vacancy.hired = True
+
+            if can_close:
+
+                vacancy.save()
+                send_emails_to_applicants(vacancy)
+                messages.success(
+                    request, f"Vacancy '{vacancy.title}' has been filled and notifications have been sent to the shortlisted applicants.")
+            else:
+                messages.error(
+                    request, 'You do not have permission to Complete this Action')
+        else:
+
+            messages.error(
+                request, f"Vacancy '{vacancy.title}' Failed to be closed and and the emails was not sent")
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-@login_required
+@admins
 def update_registrants(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
 
@@ -1434,7 +1536,7 @@ def update_registrants(request, user_id):
                 messages.error(
                     request, f"An error occurred while updating user details: {str(e)}")
         else:
-            # Handle form errors and display them
+
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"Error in {field}: {error}")
@@ -1442,3 +1544,22 @@ def update_registrants(request, user_id):
         form = RegistrantsEditForm(instance=user)
 
     return render(request, 'hr/edit_users.html', {'form': form, 'user': user})
+
+
+@admins
+def thanks_message(request):
+    try:
+        thanks_message = ThanksMessage.objects.get()
+    except ThanksMessage.DoesNotExist:
+        thanks_message = None
+
+    if request.method == 'POST':
+        form = ThanksMessageForm(request.POST, instance=thanks_message)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Feedback Message Updated succesfully")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        form = ThanksMessageForm(instance=thanks_message)
+
+    return render(request, 'hr/message.html', {'form': form})

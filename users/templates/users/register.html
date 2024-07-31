@@ -18,14 +18,34 @@
                                     </div>
                                     <h1 class="h5 mb-2 mt-2 text-center">SIGN UP</h1>
 
-                                    {% if messages %}
-                                    <div class="alert alert-info text-center" role="alert">
-                                        {% for message in messages %}
-                                            {{ message }}
-                                            <br>
-                                        {% endfor %}
+                                    <div>
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                                {% if message.tags == 'success' %}
+                                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                        {{ message|safe|escape }}
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% elif message.tags == 'error' %}
+                                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                        {{ message|safe|escape }}
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% elif message.tags == 'info' %}
+                                                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                                        {{ message|safe|escape }}
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% elif message.tags == 'warning' %}
+                                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                                        {{ message|safe|escape }}
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
                                     </div>
-                                    {% endif %}
+                                    
 
                                     <form method="POST">
                                         {% csrf_token %}

@@ -21,6 +21,7 @@ import uuid
 from .ref_number import *
 import datetime
 from django.utils import timezone
+from users.decorators import *
 
 
 def user_has_access_level_5(user):
@@ -172,28 +173,22 @@ def apply(request, vacancy_id):
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
     user = request.user
 
-    # Check if user has already applied
     if Application.objects.filter(applicant=user, vacancy=vacancy).exists():
         return redirect_with_error('You have already applied for this job.')
 
-    # Check for basic education and resume
     if not BasicEducation.objects.filter(user=user).exists() or not Resume.objects.filter(user=user).exists():
         if user.access_level != 5:
             return redirect_with_error('Update your Basic information / academic Details to apply !!')
 
-    # Check for required certifications
     if vacancy.certifications_required and not Certification.objects.filter(user=user).exists():
         return redirect_with_error('Certifications are required for this position')
 
-    # Check for required college/university details
     if vacancy.college_required and not FurtherStudies.objects.filter(user=user).exists():
         return redirect_with_error('College/University Details are required for this position')
 
-    # Check for required professional membership
     if vacancy.membership_required and not Membership.objects.filter(user=user).exists():
         return redirect_with_error('Professional Membership required for this position')
 
-    # Check for minimum number of referees
     if Referee.objects.filter(user=user).count() < 3:
         if user.access_level != 5:
             return redirect_with_error('You don\'t have enough referees to apply. 3 referees are required.')
@@ -205,7 +200,6 @@ def apply(request, vacancy_id):
 
     min_educational_level = vacancy.min_educational_level
 
-    # Get the highest educational level
     further_studies = FurtherStudies.objects.filter(
         user=user).order_by('-certifications__index').first()
 
@@ -215,12 +209,10 @@ def apply(request, vacancy_id):
     if not user_educational_level:
         return redirect_with_error('Missing Highest Education Level, Update College/University to apply')
 
-    # Check qualification levels
     qualify_educational_level = user_educational_level.index >= min_educational_level.index
     qualify_work_experience = (total_work_experience_years * 12 +
                                total_work_experience_months) >= vacancy.min_work_experience
 
-    # Determine disqualification reason
     disqualification_reason = "Not Available"
     if not qualify_educational_level and not qualify_work_experience:
         disqualification_reason = "Does not meet required education level and work experience"
@@ -231,7 +223,6 @@ def apply(request, vacancy_id):
 
     highest_educational_level = user_educational_level.name if user_educational_level else None
 
-    # Create and save application
     application = Application(
         applicant=user,
         vacancy=vacancy,
@@ -249,12 +240,11 @@ def apply(request, vacancy_id):
         application.full_clean()
         application.save()
 
-        # Attempt to send confirmation email
         try:
             send_application_confirmation_email(
                 user, vacancy, reference_number)
         except Exception as e:
-            # Log the error or handle it accordingly
+
             messages.warning(
                 request, 'Application submitted successfully, but there was an error sending the confirmation email.')
 
@@ -267,7 +257,6 @@ def apply(request, vacancy_id):
 
 
 def application_succ(request):
-    # Retrieve the Application object's ID from the session
     application_id = request.session.get('application_id')
 
     if application_id:
@@ -422,9 +411,9 @@ def delete_application(request, application_id):
     return redirect('vacancies:applications')
 
 
-@user_passes_test(user_has_access_level_5)
+@staffs
 def internal(request):
-    user = request.user  # Get the logged-in user
+    user = request.user
     if user.access_level == 5:
         try:
             profile_update = ProfileUpdate.objects.get(user=user)
@@ -460,13 +449,10 @@ def internal(request):
     return render(request, 'vacancies/internal.html', context)
 
 
-# Apply the decorator to restrict access to the 'internal_detail' view
-
-
 @login_required
 @user_passes_test(user_has_access_level_5)
 def internal_detail(request, vacancy_id):
-    # Retrieve the specific vacancy by ID or return a 404 error if not found
+
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
 
     user = request.user
@@ -477,7 +463,7 @@ def internal_detail(request, vacancy_id):
 
     context = {
         'vacancy': vacancy,
-        'user_accepted_terms': user_accepted_terms,  # Include this in the context
+        'user_accepted_terms': user_accepted_terms,
     }
     return render(request, 'vacancies/internal_detail.html', context)
 

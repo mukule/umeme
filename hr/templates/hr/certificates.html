@@ -68,12 +68,12 @@
                                                 
                                                 <td>
                                                     <!-- Edit/Update action with link to edit page -->
-                                                    <a href="{% url 'hr:edit_certificate' certificate.id %}" class="btn btn-warning mr-2 text-white">
+                                                    <a href="{% url 'hr:edit_certificate' certificate.id %}" class="btn btn-primary mr-2">
                                                         <i class="fas fa-pencil-alt"></i> Edit
                                                     </a>
                                                     
                                                     <!-- Delete action with Font Awesome icon and Bootstrap spacing -->
-                                                    <a href="{% url 'hr:delete_certificate' certificate.id %}" class="btn btn-danger text-white">
+                                                    <a href="{% url 'hr:delete_certificate' certificate.id %}" class="btn btn-secondary">
                                                         <i class="fas fa-trash"></i> Delete
                                                     </a>
                                                 </td>
@@ -87,7 +87,7 @@
                             <p class="text-center">No Certifications available</p>
                         {% endif %}
                         <div class="text-center mt-4">
-                            <a href="{% url 'hr:create_certificate' %}" class="btn active" style="background-color: #490ca6; color: #fff;">Add New</a>
+                            <a href="{% url 'hr:create_certificate' %}" class="btn btn-primary">Add New</a>
                         </div>
                     </div>
                     <!-- end card-body-->

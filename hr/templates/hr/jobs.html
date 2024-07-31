@@ -10,7 +10,7 @@
 
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{% url 'hr:jobs' %}">Jobs</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a> <a href="{{ request.META.HTTP_REFERER }}">Back</a></li>
                 </ol>
             </div>
         </div>
@@ -24,33 +24,34 @@
                     <div class="card-body">
                         <!-- Search Form -->
                         <div class="row-2">
-                            <div>
+                            <div class="container">
                                 {% if messages %}
-                                {% for message in messages %}
-                                    {% if message.tags == 'success' %}
-                                        <div class="alert alert-success alert-dismissible" role="alert">
-                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                            {{ message|safe|escape }}
-                                        </div>
-                                    {% elif message.tags == 'error' %}
-                                        <div class="alert alert-danger alert-dismissible" role="alert">
-                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                            {{ message|safe }}
-                                        </div>
-                                    {% elif message.tags == 'info' %}
-                                        <div class="alert alert-info alert-dismissible" role="alert">
-                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                            {{ message|safe|escape }}
-                                        </div>
-                                    {% elif message.tags == 'warning' %}
-                                        <div class="alert alert-warning alert-dismissible" role="alert">
-                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                            {{ message|safe|escape }}
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
+                                    {% for message in messages %}
+                                        {% if message.tags == 'success' %}
+                                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                {{ message|safe|escape }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% elif message.tags == 'error' %}
+                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                {{ message|safe|escape }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% elif message.tags == 'info' %}
+                                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                                {{ message|safe|escape }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% elif message.tags == 'warning' %}
+                                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                                {{ message|safe|escape }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
                                 {% endif %}
                             </div>
+                            
                             <section class="col-md-12 mx-auto shadow-sm text-center border-radius-10 p-4" style="background-color: #7266BB;">
                                 <form method="get" action="" class="mt-4 mb-4 d-flex justify-content-center">
                                     <input type="text" name="search" placeholder="Search By Keyword or Job Title" value="{{ request.GET.search }}" class="form-control mx-2" style="max-width: 200px;">
@@ -70,8 +71,8 @@
                                             </option>
                                         {% endfor %}
                                     </select>
-                                    <button type="submit" class="btn mx-2" style="background-color: #490ca6; color: #fff;">Search</button>
-                                    <a href="{% url 'hr:jobs' %}" class="btn mx-2" style="background-color: #fd7e14; color: #fff;">Reset</a>
+                                    <button type="submit" class="btn btn-primary mx-2">Search</button>
+                                    <a href="{% url 'hr:jobs' %}" class="btn btn-secondary  mx-2">Reset</a>
                                 </form>
                             </section>
                         </div>
@@ -127,7 +128,7 @@
                                                         <i class="fas fa-edit text-primary mx-2" title="Edit"></i> Edit
                                                     </a>
                                                     |
-                                                    <a href="{% url 'hr:delete_job' job.id %}">
+                                                    <a href="{% url 'hr:delete_job' job.id %}" onclick="return confirmDeletion(this);">
                                                         <i class="fas fa-trash-alt text-danger" title="Delete"></i> Delete
                                                     </a>
                                                 </td>

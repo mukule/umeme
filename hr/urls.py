@@ -102,5 +102,7 @@ urlpatterns = [
          views.toggle_hired, name='hired'),
     path('user/<int:user_id>/edit/',
          views.update_registrants, name='registrants_edit'),
+    path('applicants-feedback-message/',
+         views.thanks_message, name='applicants-feedback'),
 
 ]

@@ -210,3 +210,12 @@ class EducationalLevelForm(forms.ModelForm):
         labels = {
             'name': '',
         }
+
+
+class ThanksMessageForm(forms.ModelForm):
+    class Meta:
+        model = ThanksMessage
+        fields = ['message']
+        widgets = {
+            'message': forms.Textarea(attrs={'rows': 10, 'cols': 80, 'class': 'form-control', 'placeholder': 'Enter Message Here'}),
+        }

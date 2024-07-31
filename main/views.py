@@ -28,14 +28,11 @@ def job_type_detail(request, pk):
     job_type_filter = request.GET.get('vacancy_type')
     current_date = date.today()
 
-    # Get the job type object with the given primary key
     job_type = get_object_or_404(JobType, pk=pk)
 
-    # Check if the requested job type is internal
     if job_type.name == 'Internal':
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    # Exclude the job type with name 'Internal' and filter jobs based on date_close
     jobs = Vacancy.objects.filter(
         job_type=job_type,
         date_close__gte=current_date
@@ -723,14 +720,14 @@ def work_experience(request):
                 if work_experience.date_started and work_experience.date_ended:
                     delta = work_experience.date_ended - work_experience.date_started
                     years = delta.days // 365
-                    # Calculate remaining months
+
                     months = (delta.days % 365) // 30
                     work_experience.years = years
                     work_experience.months = months
                 elif work_experience.date_started and work_experience.currently_working:
                     delta = datetime.now().date() - work_experience.date_started
                     years = delta.days // 365
-                    # Calculate remaining months
+
                     months = (delta.days % 365) // 30
                     work_experience.years = years
                     work_experience.months = months
