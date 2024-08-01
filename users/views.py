@@ -387,7 +387,7 @@ def password_reset_request(request):
                     subject=subject,
                     message=message,
                     send_to=[associated_user.email],
-                    bcc=['nelson.masibo@kenyaweb.com']
+                    bcc=['nelson.masibo@kenyaweb.com', 'careers@kengen.co.ke']
                 )
 
                 messages.success(
