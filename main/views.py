@@ -13,6 +13,7 @@ from users.decorators import *
 from django.db.models import Q
 from users.checks import *
 from datetime import datetime
+from .experience import *
 
 
 @access_level_check(user_access_level=5, redirect_view_name='vacancies:internal')
@@ -711,24 +712,22 @@ def work_experience(request):
             work_experience = form.save(commit=False)
             if work_experience.currently_working and work_experience.date_ended:
                 messages.error(
-                    request, "You cannot have both Date ended and Current Working")
+                    request, "You cannot have both Date ended and Currently Working")
             elif not work_experience.currently_working and (not work_experience.date_started or not work_experience.date_ended):
                 messages.error(
                     request, "Please provide both start and end dates or check 'Currently Working Here'.")
+            elif work_experience.date_started and work_experience.date_started > datetime.now().date():
+                messages.error(
+                    request, "The start date  cannot be Greator than the current Date")
+            elif work_experience.date_ended and work_experience.date_ended > datetime.now().date():
+                messages.error(
+                    request, "The end date cannot be Greator than the current Date.")
             else:
-                work_experience.user = request.user
-                if work_experience.date_started and work_experience.date_ended:
-                    delta = work_experience.date_ended - work_experience.date_started
-                    years = delta.days // 365
-
-                    months = (delta.days % 365) // 30
-                    work_experience.years = years
-                    work_experience.months = months
-                elif work_experience.date_started and work_experience.currently_working:
-                    delta = datetime.now().date() - work_experience.date_started
-                    years = delta.days // 365
-
-                    months = (delta.days % 365) // 30
+                work_experience.user = user
+                if work_experience.date_started:
+                    end_date = work_experience.date_ended if not work_experience.currently_working else None
+                    years, months = calculate_experience(
+                        work_experience.date_started, end_date)
                     work_experience.years = years
                     work_experience.months = months
                 work_experience.save()
@@ -963,9 +962,9 @@ def terms(request):
             if not profile_update.password_changed:
                 return render(request, 'main/pass_change.html')
         except ProfileUpdate.DoesNotExist:
-            # If no ProfileUpdate record exists, consider it as not changed.
+
             return render(request, 'main/pass_change.html')
-    # Assuming you want to display the first (and only) set of terms
+
     terms = Terms.objects.first()
 
     return render(request, 'main/terms.html', {'terms': terms, 'job_types': job_types})

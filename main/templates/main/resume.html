@@ -291,7 +291,7 @@
                     <tr>
                         <td>{{ experience.company_name }}</td>
                         <td>{{ experience.position }}</td>
-                        <td>{{ experience.date_started }} - {% if experience.date_ended %}{{ experience.date_ended }}{% else %}Current Job{% endif %}</td>
+                        <td>{{ experience.date_started }} - {% if experience.date_ended %}{{ experience.date_ended }}{% else %}Current Job{% endif %} ({{experience.years}}yr(s) {{experience.months}}months)</td>
                         <td>{{ experience.responsibilities }}</td>
                     </tr>
                 {% endfor %}

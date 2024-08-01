@@ -1222,11 +1222,17 @@ def create_terms(request):
         form = TermsForm(request.POST)
         if form.is_valid():
             text = form.cleaned_data['text']
-            terms, created = Terms.objects.get_or_create(
-                defaults={'text': text})
-            if not created:
+
+            terms_qs = Terms.objects.all()
+            if terms_qs.exists():
+
+                terms = terms_qs.first()
+                if terms_qs.count() > 1:
+                    Terms.objects.exclude(id=terms.id).delete()
                 terms.text = text
                 terms.save()
+            else:
+                Terms.objects.create(text=text)
             return redirect('main:terms')
     else:
         initial_text = Terms.objects.first()
@@ -1240,19 +1246,6 @@ def create_terms(request):
 def terms(request):
     terms = Terms.objects.first()
     return render(request, 'hr/terms.html', {'terms': terms})
-
-
-@admins
-def create_terms(request):
-    if request.method == 'POST':
-        form = TermsForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('hr:terms')
-    else:
-        form = TermsForm()
-
-    return render(request, 'hr/create_terms.html', {'form': form})
 
 
 @admins
