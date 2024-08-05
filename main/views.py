@@ -172,7 +172,6 @@ def college(request):
     further_studies_instance = FurtherStudies.objects.filter(user=user).all()
     certs_instance = Certification.objects.filter(user=user).all()
     all_fields_provided = higher_education_fields_provided(request)
-    print(all_fields_provided)
 
     return render(request, 'main/college.html', {
         'user': user,
@@ -290,6 +289,7 @@ def resume(request):
     membership_instance = Membership.objects.filter(
         user=user).order_by('-date_joined')
     referee_instance = Referee.objects.filter(user=user)
+    executive_summery = ProfessionalSummary.objects.filter(user=user)
 
     all_instances_provided = all_fields_provided(request)
 
@@ -302,6 +302,7 @@ def resume(request):
         'certs': certification_instance,
         'ms': membership_instance,
         'refs': referee_instance,
+        'summary': executive_summery,
         'all_fields': all_instances_provided,
     }
 
@@ -339,6 +340,8 @@ def staff(request):
         work_experiences = WorkExperience.objects.filter(user=user)
         certifications = Certification.objects.filter(user=user)
         executive_summery = ProfessionalSummary.objects.filter(user=user)
+        all_fields_provided = summary_provided(request)
+        
 
     context = {
         'resume': resume,
@@ -347,6 +350,7 @@ def staff(request):
         'work_experience_instances': work_experiences,
         'certification_instances': certifications,
         'executive_summery': executive_summery,
+        'all_fields':all_fields_provided
     }
 
     return render(request, 'main/staff.html', context)

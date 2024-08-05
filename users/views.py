@@ -51,6 +51,10 @@ def not_authorized(request):
 
 @user_not_authenticated
 def register(request):
+
+    messages.info(request, "Sign Up is not supported on this System")
+    return redirect('users:login')
+
     if request.method == "POST":
         form = UserRegistrationForm(request.POST)
         if form.is_valid():

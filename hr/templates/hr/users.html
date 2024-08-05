@@ -78,12 +78,37 @@
                                     {% for reg in users %}
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
-                                            <td>{{ reg.first_name }} {{ user.last_name }}</td>
-                                            <td>{{ reg.email }}</td>
-                                            <td>{{ reg.id_number }}</td>
-                                            <td>{{ reg.resume.gender }}</td>
-                                            <td>{{ reg.resume.age }}</td>
-                                            <td>{{ reg.resume.ethnicity }}</td>
+                                            <td>{{ reg.first_name }} {{ reg.last_name }}</td>
+                                            <td>{% if reg.email %}
+                                                {{ reg.email }}
+                                                {%else%}
+                                                -
+                                                {% endif %}
+                                            </td>
+                                            <td>{% if reg.id_number %}
+                                                {{ reg.id_number }}
+                                                {% else %}
+                                                -
+                                                {%endif%}
+                                            </td>
+                                            <td>{% if reg.resume.gender %}
+                                                {{ reg.resume.gender }}
+                                                {% else %}
+                                                -
+                                                {%endif%}
+                                            </td>
+                                            <td>{% if reg.resume.age %}
+                                                {{ reg.resume.age }}
+                                                {%else%}
+                                                -
+                                                {%endif%}
+                                            </td>
+                                            <td>{% if reg.resume.ethnicity %}
+                                                {{ reg.resume.ethnicity }}
+                                                {% else %}
+                                                -
+                                                {% endif %}
+                                            </td>
                                             <td>{% if reg.is_active %}Yes{% else %}No{% endif %}</td>
                                             <td>{{ reg.date_joined }}</td>
                                             {% if is_superuser %}

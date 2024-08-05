@@ -12,8 +12,8 @@ def resume_fields_provided(request):
 
     required_fields = [
         'full_name', 'email_address', 'phone', 'id_number', 'dob',
-        'country_of_birth', 'country_of_residence', 'ethnicity', 'religeon',
-        'gender', 'disability', 'disability_number', 'marital_status',
+        'country_of_birth', 'country_of_residence', 'ethnicity',
+        'gender', 'disability', 'marital_status',
         'educational_level', 'field_of_study'
     ]
     missing_fields = [
@@ -34,7 +34,7 @@ def basic_academic_fields_provided(request):
     except BasicEducation.DoesNotExist:
         return False
 
-    if basic_education is None:  # Add a check for None
+    if basic_education is None:
         return False
 
     required_fields = ['name_of_the_school', 'certification',
@@ -78,13 +78,13 @@ def certification_fields_provided(request):
     try:
         certification = Certification.objects.filter(user=user).first()
     except Certification.DoesNotExist:
-        # If certification instance doesn't exist, return False
+        
         return False
 
-    if certification is None:  # Add a check for None
+    if certification is None:  
         return False
 
-    # Check if any required field is missing
+    
     required_fields = ['name', 'certifying_body', 'date_attained']
     missing_fields = [
         field for field in required_fields if not getattr(certification, field)]
@@ -131,17 +131,21 @@ def experience_fields_provided(request):
     try:
         work_experience = WorkExperience.objects.filter(user=user).first()
     except WorkExperience.DoesNotExist:
-        # If work experience instance doesn't exist, return False
+        # If no work experience instance exists, return False
         return False
 
     if work_experience is None:  # Add a check for None
         return False
 
-    # Check if any required field is missing
-    required_fields = ['company_name',
-                       'position', 'date_started', 'date_ended']
-    missing_fields = [
-        field for field in required_fields if not getattr(work_experience, field)]
+    # List of required fields
+    required_fields = ['company_name', 'position', 'date_started']
+
+    # Collect missing fields
+    missing_fields = [field for field in required_fields if not getattr(work_experience, field)]
+
+    # Check if date_ended is required and missing
+    if not work_experience.currently_working and not work_experience.date_ended:
+        missing_fields.append('date_ended')
 
     # Return True if there are no missing fields, False otherwise
     return not missing_fields
@@ -151,7 +155,6 @@ def experience_fields_provided(request):
 def referee_fields_provided(request):
     user = request.user
 
-    # Count the number of referees associated with the user
     referee_count = Referee.objects.filter(user=user).count()
 
     # Return False if the user has less than 3 referees
@@ -170,22 +173,42 @@ def referee_fields_provided(request):
     # If all referees have provided all required fields, return True
     return True
 
+@login_required
+def summary_provided(request):
+    user = request.user
+
+    try:
+        professional_summary = ProfessionalSummary.objects.get(user=user)
+    except ProfessionalSummary.DoesNotExist:
+        return False
+
+    required_fields = ['career_objective']
+    missing_fields = [field for field in required_fields if not getattr(professional_summary, field)]
+
+    return not missing_fields
+
+
 
 @login_required
 def all_fields_provided(request):
-    # Call each field checking function
-    resume_provided = resume_fields_provided(request)
-    basic_academic_provided = basic_academic_fields_provided(request)
-    higher_education_provided = higher_education_fields_provided(request)
-    certification_provided = certification_fields_provided(request)
-    membership_provided = membership_fields_provided(request)
-    experience_provided = experience_fields_provided(request)
-    referee_provided = referee_fields_provided(request)
+    user = request.user
 
-    # Check if all functions return True
-    if (resume_provided and basic_academic_provided and higher_education_provided
-            and certification_provided and membership_provided and experience_provided
-            and referee_provided):
-        return True
+    # Determine if resume or professional summary needs to be provided
+    if user.access_level == 5:
+        resume_provided = summary_provided(request)
     else:
-        return False
+        resume_provided = resume_fields_provided(request)
+
+    # Check if all required fields are provided
+    checks = [
+        resume_provided,
+        basic_academic_fields_provided(request),
+        higher_education_fields_provided(request),
+        certification_fields_provided(request),
+        membership_fields_provided(request),
+        experience_fields_provided(request),
+        referee_fields_provided(request)
+    ]
+
+    # Return True if all checks are True, otherwise return False
+    return all(checks)
