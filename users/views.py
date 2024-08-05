@@ -34,6 +34,8 @@ from django.utils.encoding import force_bytes
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import check_password
 from hr.mails import *
+from django.core.mail import BadHeaderError
+from django.core.exceptions import ImproperlyConfigured
 
 
 def is_system_admin(user):
@@ -55,13 +57,15 @@ def register(request):
             user = form.save(commit=False)
             user.is_active = False
             user.save()
-            activateEmail(request, user, form.cleaned_data.get('email'))
 
-            success_message = f'Dear {user.username}, please go to your email {form.cleaned_data.get("email")} inbox and click on the received activation link to confirm and complete the registration. Note: Check your spam folder.'
+            if activateEmail(request, user, form.cleaned_data.get('email')):
+                success_message = f'Dear {user.username}, please go to your email {form.cleaned_data.get("email")} inbox and click on the received activation link to confirm and complete the registration. Note: Check your spam folder.'
+                messages.success(request, success_message)
+            else:
+                messages.error(
+                    request, "Registration Was Succesful, But there was a problem send activation link to your email, Please contact the admin")
 
-            messages.success(request, success_message)
             return redirect('users:register')
-
         else:
             for error in list(form.errors.values()):
                 messages.error(request, error)
@@ -91,15 +95,14 @@ def activateEmail(request, user, to_email):
         'protocol': protocol
     })
 
-    # Use the custom email function to send the email
-    if send_custom_email(subject, message, [to_email], bcc=['nelson.masibo@kenyaweb.com']):
+    if send_custom_email(subject, message, [to_email]):
         return True
     else:
         return False
 
 
 def sendPasswordResetLink(request, user, to_email):
-    subject = 'KenGen Careers Portal - Password Reset Request'
+    subject = 'KenGen Careers Portal - Password Reset Request..'
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = account_activation_token.make_token(user)
     reset_link = f"{'https' if request.is_secure() else 'http'}://{get_current_site(request).domain}{reverse('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})}"
@@ -115,11 +118,10 @@ def sendPasswordResetLink(request, user, to_email):
     Sincerely,
     KenGen Careers
     """
-    send_custom_email(subject, message, [to_email], bcc=[
-                      'nelson.masibo@kenyaweb.com'])
-
-    messages.success(
-        request, f'Hello <b>{user.username}</b>, a password reset email has been sent to {to_email}')
+    if send_custom_email(subject, message, [to_email]):
+        return True
+    else:
+        return False
 
 
 def activate(request, uidb64, token):
@@ -142,6 +144,8 @@ def activate(request, uidb64, token):
 
     else:
         error_message = 'Activation link is invalid, or has expired, Please Conduct admin for more Details'
+        messages.error(request, error_message)
+        return redirect('users:login')
 
     return render(
         request=request,
@@ -200,11 +204,19 @@ def custom_login(request):
                         profile_update, created = ProfileUpdate.objects.get_or_create(
                             user=user, defaults={'password_changed': False})
                         if not profile_update.password_changed:
-                            sendPasswordResetLink(request, user, user.email)
-                            return redirect('users:staff_no')
+                            if sendPasswordResetLink(request, user, user.email):
+                                messages.success(
+                                    request, "Password reset link has been sent to your email. Please check your inbox.")
+                                return redirect('users:staff_no')
+                            else:
+                                messages.error(
+                                    request, "There was an issue sending the password reset link Which is Required to Reset Your Password. Please try again or contact Admin.")
+                                return redirect('users:login')
                     except Exception as e:
                         logger.error(
                             f"Error checking or creating ProfileUpdate: {e}")
+                        messages.error(
+                            request, "There was an error processing your request. Please try again.")
 
                 if user.access_level != 5 or (user.access_level == 5 and profile_update.password_changed):
                     login(request, user)
@@ -259,11 +271,12 @@ def sendActivationLink(request, user, to_email):
     Sincerely,
     Kengen Careers
     """
+
     send_custom_email(subject, message, [to_email], bcc=[
                       'nelson.masibo@kenyaweb.com'])
 
     messages.success(
-        request, f'Hello <b>{user.username}</b>, an email has been sent to {to_email}')
+        request, f'Dear <b>{user.username}</b>, an email has been sent to {to_email}')
 
 
 def profile(request, user_id):
@@ -345,14 +358,11 @@ def password_reset_request(request):
             user_id_number = form.cleaned_data['id_number']
 
             try:
-
                 associated_user = get_user_model().objects.get(email__iexact=user_email)
 
                 if associated_user.access_level == 5:
-
                     user_value = str(user_id_number)
                     staff_no = associated_user.username[3:].lower()
-                    print(staff_no)
                     if staff_no != user_value:
                         messages.error(
                             request, "Email and Staff No. don't match. Enter Staff No. Without Kgn")
@@ -362,7 +372,6 @@ def password_reset_request(request):
                             context={"form": form}
                         )
                 else:
-
                     if associated_user.id_number != user_id_number:
                         messages.error(
                             request, "Email and ID number don't match.")
@@ -383,15 +392,17 @@ def password_reset_request(request):
                 message = render_to_string(
                     "users/template_reset_password.txt", context)
 
-                send_custom_email(
-                    subject=subject,
-                    message=message,
-                    send_to=[associated_user.email],
-                    bcc=['nelson.masibo@kenyaweb.com', 'careers@kengen.co.ke']
-                )
+                if send_custom_email(
+                        subject=subject,
+                        message=message,
+                        send_to=[associated_user.email],
+                ):
+                    messages.success(
+                        request, f"We've sent Reset instructions to {user_email}. Follow the steps to Reset.")
+                else:
+                    messages.info(
+                        request, "The password reset instructions were processed, but there was an issue sending the email. Please try again.")
 
-                messages.success(
-                    request, f"We've sent Reset instructions to {user_email}. Follow the steps to Reset.")
                 return redirect('users:f_pass')
             except get_user_model().DoesNotExist:
                 messages.error(

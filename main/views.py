@@ -25,6 +25,11 @@ def index(request):
 
 
 def job_type_detail(request, pk):
+    if not request.user.is_authenticated:
+        messages.error(
+            request, "You need to log in to view Advertised Opportunities.")
+        return redirect('users:login')
+
     search_query = request.GET.get('search')
     job_type_filter = request.GET.get('vacancy_type')
     current_date = date.today()
@@ -63,12 +68,28 @@ def job_type_detail(request, pk):
 
 def job_detail(request, job_id):
     job = get_object_or_404(Vacancy, pk=job_id)
+    job_type = job.job_type.name
+    user = request.user
+
+    # Check if the job type is "Internal"
+    if job_type == "Internal":
+        if not user.is_authenticated:
+            messages.error(request, "Unauthorized Access")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+        if user.access_level != 5:
+            messages.error(
+                request, "Unauthorised Access")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        if user.is_authenticated and user.access_level == 5:
+            messages.error(
+                request, "You do not have permission to view this job.")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
 
     user_accepted_terms = None
-    if request.user.is_authenticated:
+    if user.is_authenticated:
         user_accepted_terms, created = UserAcceptedTerms.objects.get_or_create(
-            user=request.user
-        )
+            user=user)
 
     context = {
         'job': job,
@@ -750,10 +771,9 @@ def work_experience(request):
 def update_work_experience(request, instance_id):
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
-    try:
-        work_experience = WorkExperience.objects.get(user=user, pk=instance_id)
-    except WorkExperience.DoesNotExist:
-        return redirect('main:work_experience')
+
+    work_experience = get_object_or_404(
+        WorkExperience, user=user, pk=instance_id)
 
     membership_instance = Membership.objects.filter(user=user).first()
     referee_instance = Referee.objects.filter(user=user).first()
@@ -762,28 +782,33 @@ def update_work_experience(request, instance_id):
         form = WorkExperienceForm(request.POST, instance=work_experience)
         if form.is_valid():
             new_work_experience = form.save(commit=False)
+
+            # Validate date conditions
             if new_work_experience.currently_working and new_work_experience.date_ended:
                 messages.error(
-                    request, "You cannot have an end date and be currently working here.")
+                    request, "You cannot have both Date ended and Currently Working")
             elif not new_work_experience.currently_working and (not new_work_experience.date_started or not new_work_experience.date_ended):
                 messages.error(
                     request, "Please provide both start and end dates or check 'Currently Working Here'.")
+            elif new_work_experience.date_started and new_work_experience.date_started > datetime.now().date():
+                messages.error(
+                    request, "The start date cannot be greater than the current date.")
+            elif new_work_experience.date_ended and new_work_experience.date_ended > datetime.now().date():
+                messages.error(
+                    request, "The end date cannot be greater than the current date.")
             else:
-                if new_work_experience.date_started and new_work_experience.date_ended:
-                    delta = new_work_experience.date_ended - new_work_experience.date_started
-                    years = delta.days // 365
-                    months = (delta.days % 365) // 30
+                # Calculate experience based on dates
+                if new_work_experience.date_started:
+                    end_date = new_work_experience.date_ended if not new_work_experience.currently_working else None
+                    years, months = calculate_experience(
+                        new_work_experience.date_started, end_date)
                     new_work_experience.years = years
                     new_work_experience.months = months
-                elif new_work_experience.date_started and new_work_experience.currently_working:
-                    delta = datetime.now().date() - new_work_experience.date_started
-                    years = delta.days // 365
-                    months = (delta.days % 365) // 30
-                    new_work_experience.years = years
-                    new_work_experience.months = months
-                new_work_experience.save()
-                return redirect('main:experience')
 
+                new_work_experience.save()
+                messages.success(
+                    request, 'Your information has been updated successfully.')
+                return redirect('main:experience')
     else:
         form = WorkExperienceForm(instance=work_experience)
 

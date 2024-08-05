@@ -160,6 +160,8 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 'hrm@careers.kengen.co.ke'
+BCC_EMAILS = ['careers@kengen.co.ke', 'nelson.masibo@kenyaweb.com']
+# BCC_EMAILS = ['bcc1@example.com', 'bcc2@example.com']
 
 
 ADMIN_EMAIL = 'nelson@kenyaweb.com'

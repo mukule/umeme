@@ -1,0 +1,54 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container" style="margin-top: 100px;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Admin/Logs</h4>
+    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active"><a href="{% url 'hr:activity' %}">Logs</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <hr>     
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        
+                        <section class="col-md-12 mx-auto shadow-sm text-center border-radius-10 p-4" style="background-color: #7266BB;">
+                            <form method="get" action="" class="mt-4 mb-4 d-flex justify-content-center">
+                                <input type="text" name="username" placeholder="Username/Staff Number" value="{{ request.GET.username }}" class="form-control mx-2" style="max-width: 200px;">
+                                <input type="text" name="email" placeholder="Email" value="{{ request.GET.email }}" class="form-control mx-2" style="max-width: 200px;">
+                                <button type="submit" class="btn btn-primary mx-2">Filter</button>
+                                <a href="{% url 'hr:activity' %}" class="btn btn-secondary mx-2">Reset</a>
+                            </form>
+                            </section>
+
+                        {% if logs %}
+                            <div class="list-group">
+                                <!-- Loop through logs -->
+                                {% for log in logs %}
+                                    <div class="list-group-item" style="font-size: 0.9rem;">
+                                        <p>{{ forloop.counter }}. {{ log.user.username }} - {{ log.activity }} - Timestamp: {{ log.timestamp }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-center" style="font-size: 0.9rem;">No Logs Available</p>
+                        {% endif %}
+                    </div>
+                    <!-- end card-body-->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        <!--end row-->
+    </div>
+{% endblock content %}

@@ -22,6 +22,8 @@ from .ref_number import *
 import datetime
 from django.utils import timezone
 from users.decorators import *
+from .applicant_experience import *
+from hr.mails import *
 
 
 def user_has_access_level_5(user):
@@ -145,23 +147,24 @@ def send_application_confirmation_email(user, vacancy, reference_number):
     # Construct the email subject
     mail_subject = f"Application successful for {vacancy.title}"
 
-    full_name = f"{user.first_name} {user.last_name}"
+    full_name = user.username
     vacancy_details = f"{vacancy.title} ({vacancy.ref})"
 
     # Construct the email message
-    user_message = format_html(
-        "Dear {},\n\nYour application for {} has been successfully made. Only shortlisted candidates will be contacted.\n\nYour application reference number is: {}\n\nRegards,\nKenGen Careers Portal",
-        full_name,
-        vacancy_details,
-        reference_number
+    user_message = (
+        f"Dear {full_name},\n\n"
+        f"Your application for {vacancy_details} has been successfully made. "
+        f"Only shortlisted candidates will be contacted.\n\n"
+        f"Your application reference number is: {reference_number}\n\n"
+        f"Regards,\nKenGen Careers Portal"
     )
 
-    # Create the email
-    user_email = EmailMessage(mail_subject, user_message, to=[
-                              user.email], bcc=["nelson.masibo@kenyaweb.com"])
-
-    # Send the email
-    user_email.send()
+    # Use the custom email function to send the email
+    send_custom_email(
+        subject=mail_subject,
+        message=user_message,
+        send_to=[user.email]
+    )
 
 
 @login_required
@@ -173,25 +176,31 @@ def apply(request, vacancy_id):
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
     user = request.user
 
+    # Check if user already applied
     if Application.objects.filter(applicant=user, vacancy=vacancy).exists():
-        return redirect_with_error('You have already applied for this job.')
+        return redirect_with_error('You have already applied for this Position.')
 
+    # Check basic education and resume existence
     if not BasicEducation.objects.filter(user=user).exists() or not Resume.objects.filter(user=user).exists():
         if user.access_level != 5:
             return redirect_with_error('Update your Basic information / academic Details to apply !!')
 
+    # Check required certifications
     if vacancy.certifications_required and not Certification.objects.filter(user=user).exists():
         return redirect_with_error('Certifications are required for this position')
 
+    # Check college/university details
     if vacancy.college_required and not FurtherStudies.objects.filter(user=user).exists():
         return redirect_with_error('College/University Details are required for this position')
 
+    # Check professional memberships
     if vacancy.membership_required and not Membership.objects.filter(user=user).exists():
         return redirect_with_error('Professional Membership required for this position')
 
+    # Check number of referees
     if Referee.objects.filter(user=user).count() < 3:
         if user.access_level != 5:
-            return redirect_with_error('You don\'t have enough referees to apply. 3 referees are required.')
+            return redirect_with_error('You don\'t have enough referees to apply. 3 Referees are required.')
 
     user_resume = get_object_or_404(Resume, user=user)
     user_work_experience = WorkExperience.objects.filter(user=user)
@@ -202,16 +211,15 @@ def apply(request, vacancy_id):
 
     further_studies = FurtherStudies.objects.filter(
         user=user).order_by('-certifications__index').first()
-
-    print(further_studies)
     user_educational_level = further_studies.certifications if further_studies else None
 
     if not user_educational_level:
         return redirect_with_error('Missing Highest Education Level, Update College/University to apply')
 
     qualify_educational_level = user_educational_level.index >= min_educational_level.index
-    qualify_work_experience = (total_work_experience_years * 12 +
-                               total_work_experience_months) >= vacancy.min_work_experience
+    total_work_experience_years_fraction = total_work_experience_years + \
+        total_work_experience_months / 12.0
+    qualify_work_experience = total_work_experience_years_fraction >= vacancy.min_work_experience
 
     disqualification_reason = "Not Available"
     if not qualify_educational_level and not qualify_work_experience:
@@ -235,7 +243,6 @@ def apply(request, vacancy_id):
 
     try:
         reference_number = generate_reference_number(vacancy)
-        print(reference_number)
         application.reference_number = reference_number
         application.full_clean()
         application.save()
@@ -244,7 +251,6 @@ def apply(request, vacancy_id):
             send_application_confirmation_email(
                 user, vacancy, reference_number)
         except Exception as e:
-
             messages.warning(
                 request, 'Application submitted successfully, but there was an error sending the confirmation email.')
 
@@ -382,32 +388,28 @@ def redirect_to_appropriate_vacancy_page(vacancy):
 
 
 def delete_application(request, application_id):
-    # Fetch the application object or return a 404 error if not found
+
     application = get_object_or_404(Application, id=application_id)
 
-    # Get the current date and time
     current_datetime = timezone.now()
 
-    # Extract the current date
     current_date = current_datetime.date()
 
-    # Check if the associated vacancy's end date is not greater than the current date
     if application.vacancy.date_close >= current_date:
-        # Attempt to delete the application
+
         try:
             application.delete()
             messages.success(
                 request, "Your application has been deleted successfully")
         except Exception as e:
-            # Log the error or handle it as necessary
+
             messages.error(
                 request, f"An error occurred while deleting the application: {e}")
     else:
-        # Display an error message using the messages framework
+
         messages.error(
             request, "The application for this job is closed. You cannot delete.")
 
-    # Redirect back to the applications page
     return redirect('vacancies:applications')
 
 

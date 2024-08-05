@@ -68,7 +68,7 @@ class VacancyForm(forms.ModelForm):
             'date_open': 'Date Open',
             'date_close': 'Date Close',
             'posts_needed': 'Posts Needed',
-            'min_work_experience': 'Minimum Work Experience',
+            'min_work_experience': 'Minimum Work Experience (years)',
             'min_educational_level': 'Educational Level',
             'published': 'Published',
             'job_discipline': '',

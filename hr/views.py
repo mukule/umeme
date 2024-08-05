@@ -32,6 +32,7 @@ from users.decorators import *
 from openpyxl.styles import Alignment
 from django.http import JsonResponse
 from .thanks import *
+from .logs import *
 
 
 @admins
@@ -70,6 +71,7 @@ def create_job_type(request):
         form = JobTypeForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Added Job Type")
             return redirect('hr:job_types')
     else:
         form = JobTypeForm()
@@ -85,6 +87,7 @@ def edit_job_type(request, job_type_id):
         form = JobTypeForm(request.POST, request.FILES, instance=job_type)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Edited Job Type")
             messages.success(request, 'Job Type updated successfully')
             return redirect('hr:job_types')
     else:
@@ -98,6 +101,7 @@ def delete_job_type(request, job_type_id):
     job_type = get_object_or_404(JobType, id=job_type_id)
 
     job_type.delete()
+    create_log(request.user, "Deleted job Type")
     return redirect('hr:job_types')
 
 
@@ -107,6 +111,7 @@ def create_educational_level(request):
         form = EducationalLevelForm(request.POST)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Added Educational Level")
             messages.success(request, 'Education Level Added Succesfully')
             return redirect('hr:edu_levels')
     else:
@@ -121,6 +126,7 @@ def edit_educational_level(request, pk):
         form = EducationalLevelForm(request.POST, instance=educational_level)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Edited Edited Educational Level")
             messages.success(request, 'Education Level Updated Succesfully')
             return redirect('educational_levels')
     else:
@@ -199,6 +205,7 @@ def edit_job(request, job_id):
         if form.is_valid():
             job.last_updated_by = f'{user.first_name} {user.last_name}' if user.first_name and user.last_name else user.username
             form.save()
+            create_log(request.user, "Edited Job")
             messages.success(request, 'Vacancy updated successfully')
             return redirect('hr:jobs')
         else:
@@ -235,6 +242,7 @@ def delete_job(request, job_id):
 
     if can_del:
         job.delete()
+        create_log(request.user, "Deleted Job")
         messages.success(
             request, f'Vacancy {job.title} has been Deleted sucessfully')
         return redirect('hr:jobs')
@@ -271,6 +279,7 @@ def create_job(request):
 
             vacancy.created_by = f'{user.first_name} {user.last_name}' if user.first_name and user.last_name else user.username
             vacancy.save()
+            create_log(request.user, "Added Job")
             messages.success(
                 request, f'Vacancy "{vacancy.title}" created successfully.')
             return redirect('hr:jobs')
@@ -317,6 +326,7 @@ def publish(request, job_id):
     if can_publish:
         job.published = not job.published
         job.save()
+        create_log(request.user, "Publish/Unpublish Job")
         messages.success(
             request, f'Vacancy {job.title} has been {"published" if job.published else "unpublished"}.')
     else:
@@ -684,6 +694,7 @@ def toggle_shortlist(request, vacancy_id, application_id):
     application = get_object_or_404(Application, pk=application_id)
 
     application.shortlisted = not application.shortlisted
+    create_log(request.user, "Shortlisted Applicant")
     application.save()
 
     return redirect('hr:application_detail', vacancy_id=vacancy_id)
@@ -755,6 +766,7 @@ def create_job_discipline(request):
         form = JobDisciplineForm(request.POST)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Added Job Discipline")
             messages.success(request, "Job discipline added succesfully")
 
             return redirect('hr:job_disciplines')
@@ -781,6 +793,7 @@ def update_job_discipline(request, job_discipline_id):
         form = JobDisciplineForm(request.POST, instance=job_discipline)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Updated Job Discipline")
             messages.success(request, "Job discipline Updated succesfully")
             return redirect('hr:job_disciplines')
     else:
@@ -794,6 +807,7 @@ def delete_job_discipline(request, job_discipline_id):
     job_discipline = get_object_or_404(JobDiscipline, pk=job_discipline_id)
 
     job_discipline.delete()
+    create_log(request.user, "Deleted Job Discipline")
     return redirect('hr:job_disciplines')
 
 
@@ -803,6 +817,7 @@ def create_certifying_body(request):
         form = CertifyingBodyForm(request.POST)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Added Certifying Body")
             messages.success(request, "Certfying body added succesfully")
             return redirect('hr:certifying_bodies')
     else:
@@ -825,6 +840,7 @@ def edit_certifying_body(request, certifying_body_id):
         form = CertifyingBodyForm(request.POST, instance=certifying_body)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Updated Certifying Body")
             messages.success(request, "Certfying body Updated succesfully")
             return redirect('hr:certifying_bodies')
     else:
@@ -838,7 +854,7 @@ def delete_certifying_body(request, certifying_body_id):
     certifying_body = get_object_or_404(CertifyingBody, pk=certifying_body_id)
 
     certifying_body.delete()
-    # Redirect to the certifying bodies list after deletion
+    create_log(request.user, "Deleted Certifying Body")
     return redirect('hr:certifying_bodies')
 
 
@@ -848,6 +864,7 @@ def create_certificate(request):
         form = CertificateForm(request.POST)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Added Certificate")
             messages.success(request, "Certificate Created succesfully")
             return redirect('hr:certificates')
     else:
@@ -871,6 +888,7 @@ def edit_certificate(request, certificate_id):
         form = CertificateForm(request.POST, instance=certificate)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Edited Certificate")
             messages.success(request, "Certficate Updated succesfully")
             return redirect('hr:certificates')
     else:
@@ -885,7 +903,7 @@ def delete_certificate(request, certificate_id):
     certificate = get_object_or_404(Certificate, pk=certificate_id)
 
     certificate.delete()
-
+    create_log(request.user, "Delete Certificate")
     return redirect('hr:certificates')
 
 
@@ -895,6 +913,7 @@ def create_field_of_study(request):
         form = FieldOfStudyForm(request.POST)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Added Field of Study")
             messages.success(request, "Field of Study Added succesfully")
             return redirect('hr:fields_of_study')
     else:
@@ -911,6 +930,7 @@ def edit_field_of_study(request, field_of_study_id):
         form = FieldOfStudyForm(request.POST, instance=field_of_study)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Edited Field of Study")
             messages.success(request, "Field of Study Updated succesfully")
             return redirect('hr:fields_of_study')
     else:
@@ -924,7 +944,7 @@ def delete_field_of_study(request, field_of_study_id):
     field_of_study = FieldOfStudy.objects.get(pk=field_of_study_id)
 
     field_of_study.delete()
-    # Redirect to the list view after deleting
+    create_log(request.user, "Deleted Field of Study")
     return redirect('hr:fields_of_study')
 
 
@@ -945,6 +965,7 @@ def delete_edu_level(request, edu_level_id):
     edu_level = get_object_or_404(EducationalLevel, id=edu_level_id)
 
     edu_level.delete()
+    create_log(request.user, "Delete Education Levels")
     return redirect('hr:edu_levels')
 
 
@@ -954,6 +975,7 @@ def create_ethnicity(request):
         form = EthnicityForm(request.POST)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Added Ethnicity")
             messages.success(request, "Ethnicity Group Created succesfully")
             return redirect('hr:ethnicities')
     else:
@@ -974,6 +996,7 @@ def edit_ethnicity(request, ethnicity_id):
         form = EthnicityForm(request.POST, instance=ethnicity)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Edited Ethicity")
             messages.success(request, "Ethnicity Group Updated succesfully")
             return redirect('hr:ethnicities')
     else:
@@ -986,12 +1009,13 @@ def delete_ethnicity(request, ethnicity_id):
     ethnicity = get_object_or_404(Ethnicity, id=ethnicity_id)
 
     ethnicity.delete()
+    create_log(request.user, "Delete Ethnicity")
     return redirect('hr:ethnicities')
 
 
 @admins
 def user_access_logs(request):
-    user_logs = UserAccessLog.objects.all()
+    user_logs = UserAccessLog.objects.all().order_by('-timestamp')[:100]
     return render(request, 'hr/user_logs.html', {'user_logs': user_logs})
 
 
@@ -1189,7 +1213,7 @@ def admin_register(request):
         form = AdminForm(request.POST)
         if form.is_valid():
             user = form.save()
-
+            create_log(request.user, "Added Staff")
             current_site = get_current_site(request)
 
             login_link = reverse('users:login')
@@ -1231,6 +1255,7 @@ def create_terms(request):
                     Terms.objects.exclude(id=terms.id).delete()
                 terms.text = text
                 terms.save()
+                create_log(request.user, "Updated Terms")
             else:
                 Terms.objects.create(text=text)
             return redirect('main:terms')
@@ -1255,6 +1280,7 @@ def edit_terms(request, id):
         form = TermsForm(request.POST, instance=terms)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Edited Terms")
             return redirect('main:terms')
     else:
         form = TermsForm(instance=terms)
@@ -1350,6 +1376,7 @@ def edit_user(request, user_id):
         if form.is_valid():
             try:
                 form.save()
+                create_log(request.user, "Edited User")
                 messages.success(request, 'User details updated successfully.')
                 return redirect('hr:kgn_staffs')
             except Exception as e:
@@ -1379,7 +1406,7 @@ def delete_staff(request, user_id):
         return HttpResponseForbidden("Access denied")
 
     user.delete()
-
+    create_log(request.user, "Deleted User")
     return redirect('hr:kgn_staffs')
 
 
@@ -1401,6 +1428,7 @@ def reset_trials(request, user_id):
 def delete_users_with_access_level_5(request):
     if request.method == 'POST':
         CustomUser.objects.filter(access_level=5).delete()
+        create_log(request.user, "Deleted Staff")
         return redirect('hr:kgn_staffs')
 
     return render(request, 'hr/staffs.html')
@@ -1423,6 +1451,7 @@ def create_class(request):
         form = ClassForm(request.POST)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Added Class")
             messages.success(request, "Class Created succesfully")
 
             return redirect('hr:classes')
@@ -1440,6 +1469,7 @@ def edit_class(request, class_id):
         form = ClassForm(request.POST, instance=class_instance)
         if form.is_valid():
             form.save()
+            create_log(request.user, "Updated Class")
             messages.success(request, "Class Updated succesfully")
             return redirect('hr:classes')
     else:
@@ -1452,6 +1482,7 @@ def edit_class(request, class_id):
 def delete_class(request, class_id):
     class_instance = get_object_or_404(Class, id=class_id)
     class_instance.delete()
+    create_log(request.user, "Edited Classs")
     return redirect('hr:classes')
 
 
@@ -1460,6 +1491,7 @@ def toggle_user_active_status(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
 
     user.is_active = not user.is_active
+    create_log(request.user, "Update user Status")
     user.save()
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
@@ -1489,6 +1521,7 @@ def toggle_hired(request, vacancy_id):
 
         vacancy.hired = False
         vacancy.save()
+        create_log(request.user, "Updated vacancy Status")
         messages.success(
             request, f"Vacancy '{vacancy.title}' has been opened.")
     else:
@@ -1522,6 +1555,7 @@ def update_registrants(request, user_id):
         if form.is_valid():
             try:
                 form.save()
+                create_log(request.user, "Updated user Details")
                 messages.success(
                     request, 'Registrants Details updated successfully.')
                 return redirect('hr:system_users')
@@ -1556,3 +1590,20 @@ def thanks_message(request):
         form = ThanksMessageForm(instance=thanks_message)
 
     return render(request, 'hr/message.html', {'form': form})
+
+
+@admins
+def logs(request):
+    logs = Log.objects.all()
+
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+    if username:
+        logs = logs.filter(user__username=username)
+
+    if email:
+        logs = logs.filter(user__email=email)
+
+    logs = logs.order_by('-timestamp')[:100]
+
+    return render(request, 'hr/logs.html', {'logs': logs})

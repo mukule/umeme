@@ -104,5 +104,7 @@ urlpatterns = [
          views.update_registrants, name='registrants_edit'),
     path('applicants-feedback-message/',
          views.thanks_message, name='applicants-feedback'),
+    path('activity-tabs/',
+         views.logs, name='activity'),
 
 ]
