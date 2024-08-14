@@ -233,13 +233,19 @@ class ClassForm(forms.ModelForm):
 class EducationalLevelForm(forms.ModelForm):
     class Meta:
         model = EducationalLevel
-        fields = ['name']
+        fields = ['name', 'index']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter educational level name'}),
+            'index': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter index'}),
         }
         labels = {
             'name': '',
+            'index': '',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['index'].required = False
 
 
 class ThanksMessageForm(forms.ModelForm):

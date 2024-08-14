@@ -102,13 +102,15 @@ class Ethnicity(models.Model):
 
 class EducationalLevel(models.Model):
     name = models.CharField(max_length=255)
-    index = models.PositiveIntegerField(unique=True, editable=False)
+    index = models.PositiveIntegerField(unique=True)
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Only on creation, not on updates
+        # On creation, if no index is set, automatically set it to the next available index
+        if not self.pk and self.index is None:
             max_index = EducationalLevel.objects.aggregate(Max('index'))[
                 'index__max']
             self.index = (max_index or 0) + 1
+
         super().save(*args, **kwargs)
 
     def __str__(self):

@@ -130,7 +130,7 @@ def edit_educational_level(request, pk):
             form.save()
             create_log(request.user, "Edited Edited Educational Level")
             messages.success(request, 'Education Level Updated Succesfully')
-            return redirect('educational_levels')
+            return redirect('hr:edu_levels')
     else:
         form = EducationalLevelForm(instance=educational_level)
     return render(request, 'hr/create_edu_level.html', {'form': form, 'edu_lvl': educational_level})
