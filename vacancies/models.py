@@ -34,8 +34,8 @@ class Vacancy(models.Model):
     description = models.TextField()
     position_responsibilities = models.TextField()
     reports_to = models.CharField(max_length=255)
-    date_open = models.DateField()
-    date_close = models.DateField()
+    date_open = models.DateTimeField()  # Changed to DateTimeField
+    date_close = models.DateTimeField()
     posts_needed = models.PositiveIntegerField()
     min_work_experience = models.PositiveIntegerField()
     min_educational_level = models.ForeignKey(
@@ -83,10 +83,25 @@ class Application(models.Model):
 
 
 class Terms(models.Model):
+    EXTERNAL = 'external'
+    INTERNAL = 'internal'
+
+    TERM_TYPE_CHOICES = [
+        (EXTERNAL, 'External'),
+        (INTERNAL, 'Internal'),
+    ]
+    title = models.CharField(max_length=255, null=True, blank=True)
+    banner = models.ImageField(
+        default='default/banner.jpg', upload_to='terms_banners/', null=True, blank=True)
     text = models.TextField()
+    term_type = models.CharField(
+        max_length=10,
+        choices=TERM_TYPE_CHOICES,
+        default=INTERNAL,
+    )
 
     def __str__(self):
-        return "Terms and Conditions"
+        return f"Terms and Conditions ({self.get_term_type_display()})"
 
 
 class UserAcceptedTerms(models.Model):

@@ -50,8 +50,8 @@ class VacancyForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vacancy Title'}),
             'ref': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vacancy Reference'}),
             'reports_to': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Reports To'}),
-            'date_open': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Open', 'type': 'date'}),
-            'date_close': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Date Close', 'type': 'date'}),
+            'date_open': forms.DateTimeInput(attrs={'class': 'form-control', 'placeholder': 'Date Open', 'type': 'datetime-local'}),
+            'date_close': forms.DateTimeInput(attrs={'class': 'form-control', 'placeholder': 'Date Close', 'type': 'datetime-local'}),
             'posts_needed': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Posts Needed'}),
             'min_work_experience': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Minimum Work Experience'}),
             'min_educational_level': forms.Select(attrs={'class': 'form-control'}),
@@ -167,15 +167,28 @@ class AdminForm(UserCreationForm):
 class TermsForm(forms.ModelForm):
     class Meta:
         model = Terms
-        fields = ['text']
+        fields = ['term_type', 'text', 'banner', 'title']
         widgets = {
+            'term_type': forms.Select(attrs={
+                'class': 'form-control',
+            }),
             'text': TinyMCE(attrs={
                 'id': 'mce1',
                 'class': 'form-control',
             }),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+            }),
+
+            'banner': forms.ClearableFileInput(attrs={
+                'class': 'form-control-file',
+            }),
         }
         labels = {
-            'text': '',
+            'term_type': 'Select Term Type (Default - Internal)',
+            'text': 'Terms Content',
+            'banner': 'Upload Banner Image (Optional)',
+            'title': 'Terms Title'
         }
 
 

@@ -106,5 +106,6 @@ urlpatterns = [
          views.thanks_message, name='applicants-feedback'),
     path('activity-tabs/',
          views.logs, name='activity'),
+    path('term/<int:id>/', views.term, name='term'),
 
 ]

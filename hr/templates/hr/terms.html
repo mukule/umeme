@@ -24,10 +24,70 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
+                    <div class="container">
+                        {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == 'success' %}
+                                <div class="alert alert-success alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% elif message.tags == 'error' %}
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe }}
+                                </div>
+                            {% elif message.tags == 'info' %}
+                                <div class="alert alert-info alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% elif message.tags == 'warning' %}
+                                <div class="alert alert-warning alert-dismissible" role="alert">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|safe|escape }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
                     <div class="card-body">
-                        {% if terms %}
+                        <div class="d-flex justify-content-between mb-3">
                             <h5 class="card-title">Terms and Conditions</h5>
-                            <p class="card-text">{{ terms.text|safe }}</p>
+                            <a href="{% url 'hr:create_terms' %}" class="btn btn-primary">Add New Terms</a>
+                        </div>
+                        {% if terms %}
+                           <table class="table table-striped">
+                               <thead>
+                                   <tr>
+                                       <th scope="col">#</th>
+                                       <th scope="col">Title</th> <!-- Added column for title -->
+                                       <th scope="col">Term Type</th>
+                                       <th scope="col">Banner</th>
+                                       <th scope="col">Action</th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                   {% for t in terms %}
+                                   <tr>
+                                       <th scope="row">{{ forloop.counter }}</th>
+                                       <td>{{ t.title }}</td> <!-- Display title -->
+                                       <td>{{ t.get_term_type_display }}</td>
+                                       <td>
+                                           {% if t.banner %}
+                                               <img src="{{ t.banner.url }}" alt="{{ t.get_term_type_display }}" style="height: 50px; width: 100px; object-fit: cover;">
+                                           {% else %}
+                                               No banner
+                                           {% endif %}
+                                       </td>
+                                       <td>
+                                           <a href="{% url 'hr:term' t.id %}">View</a> |
+                                           <a href="{% url 'hr:edit_terms' t.id %}">Update</a>
+                                       </td>
+                                   </tr>
+                                   {% endfor %}
+                               </tbody>
+                           </table>
                         {% else %}
                             <p class="card-text">No terms and conditions available.</p>
                         {% endif %}

@@ -425,15 +425,14 @@ def internal(request):
             return render(request, 'main/pass_change.html')
     search_query = request.GET.get('search')
 
-    today = date.today()
+    now = timezone.now()
 
     staff_vacancies = Vacancy.objects.filter(
         job_type__name='Internal',
         published=True,
-        date_open__lte=today,
-        date_close__gt=today
+        date_open__lte=now,
+        date_close__gt=now
     )
-
     if search_query:
         staff_vacancies = staff_vacancies.filter(
             Q(title__icontains=search_query) |

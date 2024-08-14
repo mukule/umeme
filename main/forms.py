@@ -385,8 +385,8 @@ class WorkExperienceForm(forms.ModelForm):
         label='Company Phone', required=True
     )
     responsibilities = forms.CharField(
-        widget=forms.Textarea(
-            attrs={'class': 'form-control', 'placeholder': 'Responsibilities'}),
+        widget=TinyMCE(
+            attrs={'id': 'mce1', 'class': 'form-control', 'placeholder': 'Responsibilities', 'rows': 5}),
         label='Responsibilities', required=True
     )
     currently_working = forms.BooleanField(

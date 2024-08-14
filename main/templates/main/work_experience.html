@@ -23,33 +23,33 @@
                     Add Work Experience
                     {% endif %}
                 </h2>
-        <div>
-            {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == 'success' %}
-                    <div class="alert alert-success alert-dismissible" role="alert">
-                       
-                        {{ message|safe|escape }}
-                    </div>
-                {% elif message.tags == 'error' %}
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                       
-                        {{ message|safe }}
-                    </div>
-                {% elif message.tags == 'info' %}
-                    <div class="alert alert-info alert-dismissible" role="alert">
-                       
-                        {{ message|safe|escape }}
-                    </div>
-             
-        <div class="alert alert-warning alert-dismissible" role="alert">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{ message|safe|escape }}
-        </div>
-    {% endif %}
-        {% endfor %}
-    {% endif %}
-        </div>
+                <div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == 'success' %}
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    {{ message|safe|escape }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% elif message.tags == 'error' %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ message|safe|escape }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% elif message.tags == 'info' %}
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    {{ message|safe|escape }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% elif message.tags == 'warning' %}
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    {{ message|safe|escape }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if form.errors %}
@@ -64,7 +64,7 @@
                 </ul>
             </div>
             {% endif %}
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-6">
                     {{ form.company_name|as_crispy_field }}
                 </div>
@@ -72,7 +72,7 @@
                     {{ form.position|as_crispy_field }}
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-6">
                     {{ form.date_started|as_crispy_field }}
                 </div>
@@ -80,7 +80,7 @@
                     {{ form.date_ended|as_crispy_field }}
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-6">
                     {{ form.company_address|as_crispy_field }}
                 </div>
@@ -88,10 +88,14 @@
                     {{ form.company_phone|as_crispy_field }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
+            <div class="row mt-3">
+                <div class="col-md-12">
                     {{ form.responsibilities|as_crispy_field }}
                 </div>
+               
+            </div>
+
+            <div class="row mt-3">
                 <div class="col-md-6">
                     {{ form.currently_working|as_crispy_field }}
                 </div>

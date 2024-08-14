@@ -16,9 +16,9 @@ from datetime import datetime
 from .experience import *
 
 
-@access_level_check(user_access_level=5, redirect_view_name='vacancies:internal')
+@staffs
 def index(request):
-    job_types = JobType.objects.exclude(name="Internal")
+    job_types = JobType.objects.filter(name="Internal")
     print(job_types)
 
     return render(request, 'main/index.html', {'job_types': job_types})
@@ -341,7 +341,6 @@ def staff(request):
         certifications = Certification.objects.filter(user=user)
         executive_summery = ProfessionalSummary.objects.filter(user=user)
         all_fields_provided = summary_provided(request)
-        
 
     context = {
         'resume': resume,
@@ -350,7 +349,7 @@ def staff(request):
         'work_experience_instances': work_experiences,
         'certification_instances': certifications,
         'executive_summery': executive_summery,
-        'all_fields':all_fields_provided
+        'all_fields': all_fields_provided
     }
 
     return render(request, 'main/staff.html', context)
@@ -422,7 +421,7 @@ def basic_academic(request):
             basic_education.user = request.user
             basic_education.save()
             messages.success(
-                request, 'High School information updated successfully.')
+                request, 'Record Updated succesfully updated successfully.')
             return redirect('main:high_school')
     else:
         form = EducationalInformationForm()
@@ -455,7 +454,7 @@ def update_basic_academic(request, instance_id):
         if form.is_valid():
             form.save()
             messages.success(
-                request, 'Your information has been updated successfully.')
+                request, 'Record updated successfully.')
             return redirect('main:high_school')
     else:
 
@@ -495,7 +494,7 @@ def further_studies(request):
             further_studies.save()
 
             messages.success(
-                request, 'Higher Education Details Added succesfully.')
+                request, 'Record Updated Succesfully')
             return redirect('main:college')
 
     else:
@@ -926,6 +925,8 @@ def career_objective(request):
         if form.is_valid():
             summary = form.save(commit=False)
             summary.user = user
+            messages.success(
+                request, 'Record Updated Succesfully')
             summary.save()
             return redirect('main:staff_profile')
     else:
@@ -949,6 +950,8 @@ def update_career_objective(request):
         form = ProfessionalSummaryForm(request.POST, instance=summary)
         if form.is_valid():
             form.save()
+            messages.success(
+                request, 'Record Updated Succesfully')
             return redirect('main:staff_profile')
     else:
         form = ProfessionalSummaryForm(instance=summary)
@@ -979,24 +982,15 @@ def delete_professional_summary(request):
 
 @login_required
 def terms(request):
-    job_types = JobType.objects.exclude(name="Internal")
-
     user = request.user
-    print(user)
 
     if user.access_level == 5:
-        try:
-            profile_update = ProfileUpdate.objects.get(user=user)
-            print(profile_update)
-            if not profile_update.password_changed:
-                return render(request, 'main/pass_change.html')
-        except ProfileUpdate.DoesNotExist:
+        terms = Terms.objects.filter(term_type='internal').first()
+    else:
 
-            return render(request, 'main/pass_change.html')
+        terms = Terms.objects.filter(term_type='external').first()
 
-    terms = Terms.objects.first()
-
-    return render(request, 'main/terms.html', {'terms': terms, 'job_types': job_types})
+    return render(request, 'main/terms.html', {'terms': terms})
 
 
 @login_required

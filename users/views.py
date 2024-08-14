@@ -203,45 +203,51 @@ def custom_login(request):
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
-                if user.access_level == 5:
-                    try:
-                        profile_update, created = ProfileUpdate.objects.get_or_create(
-                            user=user, defaults={'password_changed': False})
-                        if not profile_update.password_changed:
-                            if sendPasswordResetLink(request, user, user.email):
-                                messages.success(
-                                    request, "Password reset link has been sent to your email. Please check your inbox.")
-                                return redirect('users:staff_no')
-                            else:
-                                messages.error(
-                                    request, "There was an issue sending the password reset link Which is Required to Reset Your Password. Please try again or contact Admin.")
-                                return redirect('users:login')
-                    except Exception as e:
-                        logger.error(
-                            f"Error checking or creating ProfileUpdate: {e}")
-                        messages.error(
-                            request, "There was an error processing your request. Please try again.")
+                # Allow superusers or users with access_level 5
+                if user.is_superuser or user.access_level == 5:
+                    if user.access_level == 5:
+                        try:
+                            profile_update, created = ProfileUpdate.objects.get_or_create(
+                                user=user, defaults={'password_changed': False})
+                            if not profile_update.password_changed:
+                                if sendPasswordResetLink(request, user, user.email):
+                                    messages.success(
+                                        request, "Password reset link has been sent to your email. Please check your inbox.")
+                                    return redirect('users:staff_no')
+                                else:
+                                    messages.error(
+                                        request, "There was an issue sending the password reset link. Please try again or contact Admin.")
+                                    return redirect('users:login')
+                        except Exception as e:
+                            logger.error(
+                                f"Error checking or creating ProfileUpdate: {e}")
+                            messages.error(
+                                request, "There was an error processing your request. Please try again.")
 
-                if user.access_level != 5 or (user.access_level == 5 and profile_update.password_changed):
-                    login(request, user)
+                    # Allow login if the user is a superuser or if they are a user with access_level 5 who has changed their password
+                    if user.is_superuser or (user.access_level == 5 and profile_update.password_changed):
+                        login(request, user)
 
-                    try:
-                        if user.access_level in (1, 2, 3, 4):
-                            AdminAccessLog.objects.create(admin_user=user)
-                        elif user.access_level == 0:
-                            UserAccessLog.objects.create(user=user)
-                    except Exception as e:
-                        logger.error(f"Error creating access log: {e}")
+                        try:
+                            if user.access_level in (1, 2, 3, 4):
+                                AdminAccessLog.objects.create(admin_user=user)
+                            elif user.access_level == 0:
+                                UserAccessLog.objects.create(user=user)
+                        except Exception as e:
+                            logger.error(f"Error creating access log: {e}")
 
-                    if not messages.get_messages(request):
                         messages.success(
                             request, f"Success, You are logged in as {user.username}")
                         if next_url:
                             return redirect(next_url)
                         else:
-                            return redirect("/")
+                            return redirect("vacancies:internal")
+                    else:
+                        return redirect('users:staff_no')
                 else:
-                    return redirect('users:staff_no')
+                    messages.error(
+                        request, "Access denied. Only KenGen Staff Allowed")
+                    return redirect('users:login')
             else:
                 messages.error(request, "Invalid username or password")
         else:
@@ -364,26 +370,27 @@ def password_reset_request(request):
             try:
                 associated_user = get_user_model().objects.get(email__iexact=user_email)
 
-                if associated_user.access_level == 5:
-                    user_value = str(user_id_number)
-                    staff_no = associated_user.username[3:].lower()
-                    if staff_no != user_value:
-                        messages.error(
-                            request, "Email and Staff No. don't match. Enter Staff No. Without Kgn")
-                        return render(
-                            request=request,
-                            template_name="users/password_reset.html",
-                            context={"form": form}
-                        )
-                else:
-                    if associated_user.id_number != user_id_number:
-                        messages.error(
-                            request, "Email and ID number don't match.")
-                        return render(
-                            request=request,
-                            template_name="users/password_reset.html",
-                            context={"form": form}
-                        )
+                # Check if the user has the required access level
+                if associated_user.access_level != 5:
+                    messages.error(
+                        request, "Request cannot be completed. Only KenGen Staff Allowed")
+                    return render(
+                        request=request,
+                        template_name="users/password_reset.html",
+                        context={"form": form}
+                    )
+
+                # For users with access level 5, check the Staff No.
+                user_value = str(user_id_number)
+                staff_no = associated_user.username[3:].lower()
+                if staff_no != user_value:
+                    messages.error(
+                        request, "Email and Staff No. don't match. Enter Staff No. Without Kgn")
+                    return render(
+                        request=request,
+                        template_name="users/password_reset.html",
+                        context={"form": form}
+                    )
 
                 subject = _("KenGen Careers Portal - Password Reset request")
                 context = {

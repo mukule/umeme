@@ -711,14 +711,14 @@ def resume(request, user_id):
         resume = None
 
     try:
-        basic_education = BasicEducation.objects.get(user=applicant)
+        basic_education = BasicEducation.objects.filter(user=applicant)
     except BasicEducation.DoesNotExist:
-        basic_education = None
+        basic_education = []
 
     try:
-        further_studies = FurtherStudies.objects.get(user=applicant)
+        further_studies = FurtherStudies.objects.filter(user=applicant)
     except FurtherStudies.DoesNotExist:
-        further_studies = None
+        further_studies = []
 
     try:
         memberships = Membership.objects.filter(user=applicant)
@@ -752,7 +752,7 @@ def resume(request, user_id):
         'further_studies': further_studies,
         'memberships': memberships,
         'work_experience': work_experiences,
-        'Referees': referees,
+        'referees': referees,
         'certifications': certifications,
         'objective': objective,
     }
@@ -1243,49 +1243,65 @@ def admin_register(request):
 @admins
 def create_terms(request):
     if request.method == 'POST':
-        form = TermsForm(request.POST)
+        form = TermsForm(request.POST, request.FILES)
         if form.is_valid():
             text = form.cleaned_data['text']
+            term_type = form.cleaned_data['term_type']
+            banner = form.cleaned_data['banner']
 
-            terms_qs = Terms.objects.all()
-            if terms_qs.exists():
-
-                terms = terms_qs.first()
-                if terms_qs.count() > 1:
-                    Terms.objects.exclude(id=terms.id).delete()
-                terms.text = text
-                terms.save()
-                create_log(request.user, "Updated Terms")
+            # Check if terms of the specified type already exist
+            if Terms.objects.filter(term_type=term_type).exists():
+                messages.error(
+                    request, f"Terms and Conditions for {term_type.capitalize()} already exist.")
             else:
-                Terms.objects.create(text=text)
-            return redirect('main:terms')
+                # Create new terms with banner
+                Terms.objects.create(
+                    text=text,
+                    term_type=term_type,
+                    banner=banner
+                )
+                create_log(
+                    request.user, f"Created {term_type.capitalize()} Terms")
+                messages.success(
+                    request, f"{term_type.capitalize()} Terms and Conditions created successfully.")
+                return redirect('hr:terms')
     else:
-        initial_text = Terms.objects.first()
-        initial_text_value = initial_text.text if initial_text else ''
-        form = TermsForm(initial={'text': initial_text_value})
+        form = TermsForm()
 
     return render(request, 'hr/create_terms.html', {'form': form})
 
 
 @admins
 def terms(request):
-    terms = Terms.objects.first()
+    terms = Terms.objects.all()
+    print(terms)
     return render(request, 'hr/terms.html', {'terms': terms})
 
 
 @admins
 def edit_terms(request, id):
     terms = get_object_or_404(Terms, id=id)
+
     if request.method == 'POST':
-        form = TermsForm(request.POST, instance=terms)
+        form = TermsForm(request.POST, request.FILES, instance=terms)
         if form.is_valid():
             form.save()
             create_log(request.user, "Edited Terms")
-            return redirect('main:terms')
+            messages.success(
+                request, "Terms and Conditions updated successfully.")
+            return redirect('hr:terms')
+        else:
+            messages.error(
+                request, "There was an error updating the Terms and Conditions. Please check the form and try again.")
     else:
         form = TermsForm(instance=terms)
 
     return render(request, 'hr/create_terms.html', {'form': form})
+
+
+def term(request, id):
+    terms = get_object_or_404(Terms, id=id)
+    return render(request, 'hr/term.html', {'term': terms})
 
 
 @admins

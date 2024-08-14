@@ -27,7 +27,7 @@
         
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col-md-6">
                         {{ form.institution_name|as_crispy_field }}
                     </div>
@@ -35,7 +35,7 @@
                         {{ form.course_undertaken|as_crispy_field }}
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col-md-6">
                         {{ form.date_started|as_crispy_field }}
                     </div>
@@ -43,7 +43,7 @@
                         {{ form.date_ended|as_crispy_field }}
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col-md-6">
                         {{ form.certifications|as_crispy_field }}
                     </div>

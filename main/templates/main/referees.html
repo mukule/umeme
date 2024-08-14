@@ -24,7 +24,7 @@
             <hr>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col-md-6">
                         {{ form.full_name|as_crispy_field }}
                     </div>
@@ -32,7 +32,7 @@
                         {{ form.organization|as_crispy_field }}
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col-md-4">
                         {{ form.designation|as_crispy_field }}
                     </div>
