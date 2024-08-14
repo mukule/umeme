@@ -385,6 +385,7 @@ def application_detail(request, vacancy_id, filter_criteria=None):
     educational_levels = EducationalLevel.objects.all()
     ethnicities = Ethnicity.objects.all()
 
+    # Apply filtering criteria based on the parameter
     if filter_criteria:
         if filter_criteria == 'qualified':
             applications = applications.filter(qualify=True)
@@ -393,6 +394,7 @@ def application_detail(request, vacancy_id, filter_criteria=None):
         elif filter_criteria == 'shortlisted':
             applications = applications.filter(shortlisted=True)
 
+    # Apply additional filters based on GET parameters
     education_level = request.GET.get('education_level')
     ethnicity = request.GET.get('ethnicity')
     gender = request.GET.get('gender')
@@ -420,15 +422,35 @@ def application_detail(request, vacancy_id, filter_criteria=None):
             Q(applicant__last_name__icontains=name_search)
         )
 
+    total_applications = applications.count()
+
+    # Apply pagination
+    paginator = Paginator(applications, 20)  # Show 10 applications per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Check if export to Excel is requested
     export_excel = request.GET.get('export_excel')
     if export_excel:
-        return export_applications_to_excel(request, applications)
+        if applications.count() < 1:
+            messages.error(request, "There are no applications to export.")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+        else:
 
+            response = export_applications_to_excel(request, applications)
+
+            # messages.success(
+            #     request, f"Successfully exported {applications.count()} applications.")
+
+            return response
+
+    # Prepare context data
     context = {
         'vacancy': vacancy,
         'ethnicity': ethnicities,
         'educational_levels': educational_levels,
-        'applications': applications,
+        'total_applications': total_applications,
+        'page_obj': page_obj,
     }
 
     return render(request, 'hr/application_detail.html', context)
