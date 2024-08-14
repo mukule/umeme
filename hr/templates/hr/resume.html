@@ -54,7 +54,10 @@
                                
                             </div>
                             <div class="col-md-6">
-                               {% if religeon %}
+                                {% if resume.ethnicity %}
+                                <p>Ethnicity: {% if resume.ethnicity %} {{resume.ethnicity}} {% else %} - {% endif %}</p>
+                                {% endif %}
+                               {% if resume.religeon %}
                                <p>Religeon: {% if resume.religeon %} {{resume.religion}} {% else %} - {% endif %}</p>
                                {% endif %}
                                <p>Gender: {% if resume.gender %} {{resume.gender}} {% else %} - {% endif %}</p>
@@ -267,6 +270,7 @@
                                 <hr>
                                 <div class="row">
                                     <h4 class="card-title">Employment History</h4>
+                                    <p>Total Working Experience for the Applicant: <b>{{experience}}</b> </p>
                                     {% if work_experience %}
                                     <div class="col-xl-12">
                                         <div class="table-responsive">

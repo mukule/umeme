@@ -107,5 +107,7 @@ urlpatterns = [
     path('activity-tabs/',
          views.logs, name='activity'),
     path('term/<int:id>/', views.term, name='term'),
+    path('apps/', views.apps, name='apps'),
+    path('apps/<int:pk>/update/', views.update_apps, name='update_apps'),
 
 ]

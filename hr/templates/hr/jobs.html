@@ -109,18 +109,18 @@
                                                             <i class="fas fa-eye-slash text-danger" title="Unpublish"></i> Unpublish
                                                         </a>
                                                     {% else %}
-                                                        <a href="{% url 'hr:publish' job.id %}">
+                                                        <a href="{% url 'hr:publish' job.id %}" class="text-success">
                                                             <i class="fas fa-eye text-success" title="Publish"></i> Publish
                                                         </a>
                                                     {% endif %}
                                                     |
                                                     {% if job.hired %}
-                                                        <a href="{% url 'hr:hired' job.id %}">
-                                                            <i class="fas fa-eye-slash text-danger" title="Unpublish"></i> Open
+                                                        <a href="{% url 'hr:hired' job.id %}" class="text-success">
+                                                            <i class="fas fa-eye-slash text-success" title="Open jobs"></i> Open
                                                         </a>
                                                     {% else %}
-                                                        <a href="{% url 'hr:hired' job.id %}">
-                                                            <i class="fas fa-eye text-success" title="Publish"></i> Close
+                                                        <a href="{% url 'hr:hired' job.id %}" class="text-danger">
+                                                            <i class="fas fa-eye text-danger" title="Close and send mails to shortlisted applicants"></i> Close
                                                         </a>
                                                     {% endif %}
                                                     |

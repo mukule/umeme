@@ -1,0 +1,125 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+    <div class="container" style="margin-top: 100px !important;">
+        <div class="col-12 mt-4">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Dashboard/All Applications</h4>
+    
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'hr:dashboard' %}">Dashboard/</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+
+                        <!-- Filters row -->
+                        <section class="col-md-12 mx-auto shadow-sm text-center border-radius-10 p-2 mb-3" style="background-color: #7266BB;">
+                            <form method="get" action="" class="mt-4 mb-4">
+                                <div class="row justify-content-center">
+                                    <!-- Filter by Reference Number -->
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" id="ref_number" name="ref_number" class="form-control" placeholder="Reference Number" value="{{ request.GET.ref_number }}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn w-100" style="background-color: #490ca6; color: #fff;">Apply Filter</button>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a href="{% url 'hr:apps' %}" class="btn w-100" style="background-color: #fd7e14; color: #fff;">Reset</a>
+                                    </div>
+                                </div>
+                              
+                            </form>
+                        </section>
+                        
+                        
+                        {% if page_obj %}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Date Applied</th>
+                                            <th>Ref No.</th>
+                                            <th>Experience</th>
+                                            <th>Status</th>
+                                            <th>Disqualification Reason</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for application in page_obj %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>
+                                                    <a href="{% url 'hr:applicant_resume' application.applicant.id %}">
+                                                        {{ application.applicant.get_full_name }} ({{ application.applicant.username }})
+                                                    </a>
+                                                </td>
+                                                <td>{{ application.application_date|date:"F d, Y H:i A" }}</td>
+                                                <td>{{ application.reference_number }}</td>
+                                                <td>{{ application.work_experience }} years</td>
+                                                <td>
+                                                    {% if application.qualify %}
+                                                        <span class="badge" style="background-color: #490ca6;">Qualified</span>
+                                                    {% else %}
+                                                        <span class="badge" style="background-color: #fd7e14;">Not Qualified</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ application.disqualification_reason }}</td>
+                                                <td>
+                                                    <a href="{% url 'hr:update_apps' application.id %}">
+                                                        <i class="fas fa-edit text-danger" title="Edit application"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination Controls -->
+                            <div class="pagination mt-4">
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?{% if request.GET.ref_number %}ref_number={{ request.GET.ref_number }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+                                        </li>
+                                    {% endif %}
+                                    {% for num in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == num %}
+                                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                        {% else %}
+                                            <li class="page-item"><a class="page-link" href="?{% if request.GET.ref_number %}ref_number={{ request.GET.ref_number }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?{% if request.GET.ref_number %}ref_number={{ request.GET.ref_number }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            
+                        {% else %}
+                            <p class="text-center">There are currently no applications.</p>
+                        {% endif %}
+                    </div>
+                    <!-- end card-body-->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div>
+{% endblock content %}

@@ -33,6 +33,8 @@ from openpyxl.styles import Alignment
 from django.http import JsonResponse
 from .thanks import *
 from .logs import *
+from .calculate_total_work_experience import *
+from .export import *
 
 
 @admins
@@ -378,12 +380,10 @@ def applications(request):
 
 @admins
 def application_detail(request, vacancy_id, filter_criteria=None):
-
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
-
     applications = Application.objects.filter(vacancy=vacancy)
-
     educational_levels = EducationalLevel.objects.all()
+    ethnicities = Ethnicity.objects.all()
 
     if filter_criteria:
         if filter_criteria == 'qualified':
@@ -393,7 +393,6 @@ def application_detail(request, vacancy_id, filter_criteria=None):
         elif filter_criteria == 'shortlisted':
             applications = applications.filter(shortlisted=True)
 
-    # Additional filters
     education_level = request.GET.get('education_level')
     ethnicity = request.GET.get('ethnicity')
     gender = request.GET.get('gender')
@@ -401,7 +400,6 @@ def application_detail(request, vacancy_id, filter_criteria=None):
     experience = request.GET.get('experience')
     name_search = request.GET.get('name_search')
 
-    # Apply additional filters
     if education_level:
         applications = applications.filter(
             applicant__resume__educational_level=education_level)
@@ -424,264 +422,11 @@ def application_detail(request, vacancy_id, filter_criteria=None):
 
     export_excel = request.GET.get('export_excel')
     if export_excel:
-        # Create a list of dictionaries representing the data you want to export
-        data = []
-        for application in applications:
-            user = application.applicant
-            try:
-                resume = user.resume
-            except Resume.DoesNotExist:
-                # Create a new Resume if it doesn't exist
-                # Combine first and last name
-                full_name = f"{user.first_name} {user.last_name}"
-                resume = Resume.objects.create(
-                    user=user,
-                    full_name=full_name,
-                    email_address=user.email,
-                )
-
-            basic_education = user.basic_education.first()
-            further_studies = user.further_studies.first()
-            work_experience = user.work_experiences.all()[:3]
-            certifications = user.certifications.all()[:3]
-            memberships = user.memberships.all()[:3]
-            referees = user.referees.all()[:3]
-
-            full_name = resume.full_name
-            username = user.username
-            contacts = f"{resume.phone}\n{resume.email_address}"
-
-            application_data = {
-                # Include username in the "Name" field
-                'Username/Staff No.': username,
-                'Full Name': full_name,
-                'Contact Details': contacts,
-                'Gender': resume.gender if resume.gender else '',
-                'Disability': 'Yes' if resume.disability else 'No',
-                'Ethnicity': resume.ethnicity.name if resume.ethnicity else '',
-                'Highest Educational Level': resume.educational_level.name if resume.educational_level else '',
-                'High School': '',
-                'College/University': '',
-                'Professional Certifications': '',
-                'Professional Membership': '',
-                'Work Experience': '',
-                'Referees': '',
-                'Date Applied': application.application_date.strftime("%Y-%m-%d %H:%M:%S"),
-                'Reference Number': application.reference_number,
-                'Status': 'Qualified' if application.qualify else 'Not Qualified',
-                'Shortlisted': 'Yes' if application.shortlisted else 'No',
-            }
-
-            if basic_education:
-                # Handle Academic Details data
-                academic_data = ''
-                institution_name = f"School: {basic_education.name_of_the_school}"
-                start_year = f"Start Year: {basic_education.date_started}"
-                end_year = f"End Year: {basic_education.date_ended}"
-                grade = f"Grade attained: {basic_education.grade_attained}"
-                academic_data += f"{institution_name}\n{start_year}\n{end_year}\n{grade}\n\n"
-
-                application_data['High School'] = academic_data
-
-            if further_studies:
-                # Handle Further Studies data
-                further_studies_data = f"Institution Name: {further_studies.institution_name}\n" \
-                    f"Certification: {further_studies.certifications.name if further_studies.certifications else ''}\n" \
-                    f"Course Undertaken: {further_studies.course_undertaken}\n" \
-                    f"Start Date: {further_studies.date_started.strftime('%Y-%m-%d') if further_studies.date_started else ''}\n" \
-                    f"End Date: {further_studies.date_ended.strftime('%Y-%m-%d') if further_studies.date_ended else ''}\n" \
-                    f"Grade: {further_studies.grade}"
-
-                application_data['College/University'] = further_studies_data
-
-            if certifications:
-                # Handle Certifications data
-                certifications_data = ''
-                for cert in certifications:
-                    name = f"Name: {cert.name}"
-                    certifying_body_name = f"Certifying Body: {cert.certifying_body.name if cert.certifying_body else ''}"
-                    date_attained = f"Date Attained: {cert.date_attained.strftime('%Y-%m-%d') if cert.date_attained else ''}"
-
-                    certifications_data += f"{name}\n{certifying_body_name}\n{date_attained}\n\n"
-
-                application_data['Professional Certifications'] = certifications_data
-
-            if certifications:
-                # Handle Certifications data
-                certifications_data = ''
-                for cert in certifications:
-                    name = f"Name: {cert.name}"
-                    certifying_body_name = f"Certifying Body: {cert.certifying_body.name if cert.certifying_body else ''}"
-                    date_attained = f"Date Attained: {cert.date_attained.strftime('%Y-%m-%d') if cert.date_attained else ''}"
-
-                    certifications_data += f"{name}\n{certifying_body_name}\n{date_attained}\n\n"
-
-                application_data['Professional Certifications'] = certifications_data
-
-            if memberships:
-                # Handle Memberships data
-                memberships_data = ''
-                for membership in memberships:
-                    title = f"Membership Title: {membership.membership_title}"
-                    number = f"Membership Number: {membership.membership_number}"
-                    body = f"Membership Body: {membership.membership_body}"
-                    joined_date = f"Date Joined: {membership.date_joined.strftime('%Y-%m-%d') if membership.date_joined else ''}"
-
-                    memberships_data += f"{title}\n{number}\n{body}\n{joined_date}\n\n"
-
-                application_data['Professional Membership'] = memberships_data
-
-            if work_experience:
-                # Handle Work Experience data
-                work_experience_data = ''
-
-                total_years = 0
-                total_months = 0
-
-                for experience in work_experience:
-                    company_name = f"Company Name: {experience.company_name}"
-                    position = f"Position: {experience.position}"
-                    start_date = experience.date_started.strftime(
-                        '%Y-%m-%d') if experience.date_started else ''
-                    end_date = experience.date_ended.strftime(
-                        '%Y-%m-%d') if experience.date_ended else 'In Progress' if experience.currently_working else ''
-                    company_address = f"Company Address: {experience.company_address}"
-                    company_phone = f"Company Phone: {experience.company_phone}"
-                    responsibilities = f"Responsibilities: {experience.responsibilities}"
-
-                    work_experience_data += f"{company_name}\n{position}\nStart Date: {start_date}\nEnd Date: {end_date}\n{company_address}\n{company_phone}\n{responsibilities}\n"
-
-                    # Calculate the duration of each experience
-                    if experience.date_started and experience.date_ended:
-                        delta = experience.date_ended - experience.date_started
-                        years_worked = delta.days // 365
-                        months_worked = (delta.days % 365) // 30
-
-                        work_experience_data += f"Years Worked: {years_worked} years\nMonths Worked: {months_worked} months\n\n"
-
-                        # Accumulate for total
-                        total_years += years_worked
-                        total_months += months_worked
-
-                    # Add space between instances
-                    work_experience_data += "\n"
-
-                total_experience = f"Total Experience: {total_years} years and {total_months} months"
-                work_experience_data += total_experience
-
-                application_data['Work Experience'] = work_experience_data
-
-            if referees:
-                # Handle Referees data
-                referees_data = ''
-                for referee in referees:
-                    full_name = f"Full Name: {referee.full_name}"
-                    organization = f"Organization: {referee.organization}"
-                    designation = f"Designation: {referee.designation}"
-                    phone = f"Phone: {referee.phone}"
-                    email = f"Email: {referee.email}"
-
-                    referees_data += f"{full_name}\n{organization}\n{designation}\n{phone}\n{email}\n\n"
-
-                application_data['Referees'] = referees_data
-
-            data.append(application_data)
-
-        # Define column headers for Excel export
-        headers = [
-            'Username/Staff No.', 'Full Name', 'Contact Details', 'Gender', 'Disability', 'Ethnicity',
-            'Highest Educational Level',
-            'High School',
-            'College/University',
-            'Professional Certifications',
-            'Professional Membership',
-            'Work Experience',
-            'Referees',
-            'Date Applied', 'Reference Number', 'Status', 'Shortlisted',
-        ]
-
-        # Create a workbook and add a worksheet
-        wb = openpyxl.Workbook()
-        ws = wb.active
-
-       # Write title
-        title = f"{application.vacancy.title} / {application.vacancy.ref} Applications"
-        title_row = ws.cell(row=1, column=8, value=title)
-        title_row.alignment = Alignment(horizontal='center')
-        title_row.font = openpyxl.styles.Font(size=14, bold=True)
-
-        # Write headers
-        for col_num, header in enumerate(headers, 1):
-            ws.cell(row=2, column=col_num, value=header)
-            # Adjust the width of columns as needed
-            if header == 'Highest Educational Level':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-            if header == 'High School':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-            if header == 'Full Name':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-
-            if header == 'Contact Details':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-
-            if header == 'College/University':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-            if header == 'Professional Certifications':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-
-            if header == 'Professional Membership':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-
-            if header == 'Work Experience':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-
-            if header == 'Referees':
-                ws.column_dimensions[openpyxl.utils.get_column_letter(
-                    col_num)].width = 20
-
-        # Write data
-        for row_num, application_data in enumerate(data, 3):
-            for col_num, value in enumerate(application_data.values(), 1):
-                cell = ws.cell(row=row_num, column=col_num, value=value)
-                # Adjust alignment and format for specific columns if needed
-                if headers[col_num - 1] == 'High School':
-                    cell.alignment = Alignment(wrap_text=True)
-
-                if headers[col_num - 1] == 'College/University':
-                    cell.alignment = Alignment(wrap_text=True)
-
-                if headers[col_num - 1] == 'Professional Certifications':
-                    cell.alignment = Alignment(wrap_text=True)
-
-                if headers[col_num - 1] == 'Professional Membership':
-                    cell.alignment = Alignment(wrap_text=True)
-
-                if headers[col_num - 1] == 'Work Experience':
-                    cell.alignment = Alignment(wrap_text=True)
-
-                if headers[col_num - 1] == 'Referees':
-                    cell.alignment = Alignment(wrap_text=True)
-
-        # Create response
-        response = HttpResponse(
-            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = f'attachment; filename="applications for {application.vacancy.title}-{application.vacancy.ref}.xlsx"'
-
-        # Save the workbook to the response
-        wb.save(response)
-
-        return response
+        return export_applications_to_excel(request, applications)
 
     context = {
         'vacancy': vacancy,
+        'ethnicity': ethnicities,
         'educational_levels': educational_levels,
         'applications': applications,
     }
@@ -704,6 +449,8 @@ def toggle_shortlist(request, vacancy_id, application_id):
 def resume(request, user_id):
 
     applicant = get_object_or_404(CustomUser, pk=user_id)
+
+    experience = calculate_total_work_experience(applicant)
 
     try:
         resume = Resume.objects.get(user=applicant)
@@ -755,6 +502,7 @@ def resume(request, user_id):
         'referees': referees,
         'certifications': certifications,
         'objective': objective,
+        'experience': experience,
     }
 
     return render(request, 'hr/resume.html', context)
@@ -1623,3 +1371,39 @@ def logs(request):
     logs = logs.order_by('-timestamp')[:100]
 
     return render(request, 'hr/logs.html', {'logs': logs})
+
+
+@admins
+def update_apps(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST, instance=application)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Application updated successfully.")
+            return redirect('hr:apps')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ApplicationForm(instance=application)
+
+    return render(request, 'hr/update_apps.html', {'form': form, 'apps': application})
+
+
+@admins
+def apps(request):
+
+    ref_number = request.GET.get('ref_number', '')
+
+    if ref_number:
+        applications = Application.objects.filter(
+            reference_number__icontains=ref_number)
+    else:
+        applications = Application.objects.all()
+
+    paginator = Paginator(applications, 10)  # Show 10 applications per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'hr/apps.html', {'page_obj': page_obj, 'ref_number': ref_number})

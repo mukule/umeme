@@ -389,6 +389,27 @@
                     </a>
                 </div>
             </div> <!-- end col-->
+            {% if user.is_superuser %}
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-primary">
+                    <a href="{% url 'hr:apps' %}">
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h5 class="card-title mb-0 text-center">
+                                  
+                                    <i class="fa-solid fa-biohazard fa-3x text-danger"></i>
+                                </h5>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="card-title mb-0 text-center">Update Applications</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div> <!-- end col-->
+            {% endif %}
         </div>
        
     </div>

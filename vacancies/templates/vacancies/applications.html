@@ -49,12 +49,13 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Position</th>
-                                            <th>Discipline</th>
-                                            <th>Category</th>
                                             <th>Ref No.</th>
-                                            <th>Date</th>
-                                            <th>Close Date</th>
+                                            <th>position</th>
+                                            <th>Discipline</th>
+                                            <th>Period</th>
+                                            <th>Application Date</th>
+                                            
+                                           
                                            
                                             
                                         </tr>
@@ -63,12 +64,12 @@
                                         {% for application in applications %}
                                             <tr>
                                                 <td>{{forloop.counter}}</td>
-                                                <td>{{ application.vacancy.title }} - {{ application.vacancy.ref }}</td>
+                                                <td>{{ application.vacancy.ref }}</td>
+                                                <td>{{ application.vacancy.title }}</td>
                                                 <td>{{ application.vacancy.job_discipline }}</td>
-                                                <td>{{ application.vacancy.job_type }}</td>
-                                                <td>{{ application.reference_number }}</td>
-                                                <td>{{ application.application_date }}</td>
-                                                <td>{{ application.vacancy.date_close }}</td>  
+                                                <td>{{ application.vacancy.date_open }} - {{ application.vacancy.date_close }}</td>
+                                                <td> {{application.application_date}} </td>
+                                               
                                                
                                             
                                             </tr>

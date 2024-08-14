@@ -78,6 +78,23 @@ class VacancyForm(forms.ModelForm):
         }
 
 
+class ApplicationForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = [
+            'qualify',
+            'work_experience',
+            'highest_educational_level',
+            'disqualification_reason'
+        ]
+        widgets = {
+            'qualify': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'work_experience': forms.NumberInput(attrs={'class': 'form-control'}),
+            'highest_educational_level': forms.TextInput(attrs={'class': 'form-control'}),
+            'disqualification_reason': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
 class JobDisciplineForm(forms.ModelForm):
     class Meta:
         model = JobDiscipline

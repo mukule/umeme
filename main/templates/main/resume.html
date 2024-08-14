@@ -11,32 +11,7 @@
               <div class="card border-0">
                   <div class="card-header border-0">
                       <ul class="nav nav-tabs card-header-tabs custom-tabs mt-2 mb-2">
-                          {% if user.access_level != 5 %}
-                              <li class="nav-item">
-                                  <a class="nav-link {% if request.resolver_match.url_name == 'bio_info' %}active{% endif %}" href="{% url 'main:bio_info' %}">Bio Information</a>
-                              </li>
-                              <li class="nav-item">
-                                  <a class="nav-link {% if request.resolver_match.url_name == 'high_school' %}active{% endif %}" href="{% url 'main:high_school' %}">Basic Education</a>
-                              </li>
-                              <li class="nav-item">
-                                  <a class="nav-link {% if request.resolver_match.url_name == 'college' %}active{% endif %}" href="{% url 'main:college' %}">College/University</a>
-                              </li>
-                              <li class="nav-item">
-                                  <a class="nav-link {% if request.resolver_match.url_name == 'certs' %}active{% endif %}" href="{% url 'main:certs' %}">Certifications</a>
-                              </li>
-                              <li class="nav-item">
-                                  <a class="nav-link {% if request.resolver_match.url_name == 'memberships' %}active{% endif %}" href="{% url 'main:memberships' %}">Memberships</a>
-                              </li>
-                              <li class="nav-item">
-                                  <a class="nav-link {% if request.resolver_match.url_name == 'experience' %}active{% endif %}" href="{% url 'main:experience' %}">Work Experience</a>
-                              </li>
-                              <li class="nav-item">
-                                  <a class="nav-link {% if request.resolver_match.url_name == 'refs' %}active{% endif %}" href="{% url 'main:refs' %}">Referees</a>
-                              </li>
-                              <li class="nav-item">
-                                  <a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'main:resume' %}">Review</a>
-                              </li>
-                          {% else %}
+                         
                               <li class="nav-item">
                                   <a class="nav-link {% if request.resolver_match.url_name == 'staff_profile' %}active{% endif %}" href="{% url 'main:staff_profile' %}">Executive Summary</a>
                               </li>
@@ -61,7 +36,7 @@
                               <li class="nav-item">
                                   <a class="nav-link {% if request.resolver_match.url_name == 'resume' %}active{% endif %}" href="{% url 'main:resume' %}">Review</a>
                               </li>
-                          {% endif %}
+                          
                       </ul>
                   </div>
               </div>
