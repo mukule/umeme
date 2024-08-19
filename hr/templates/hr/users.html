@@ -48,12 +48,13 @@
                         {% endif %}
                     </div>
                     <section class="col-md-12 mx-auto shadow-sm text-center border-radius-10 p-4" style="background-color: #7266BB;">
-                    <form method="get" action="" class="mt-4 mb-4 d-flex justify-content-center">
-                        <input type="text" name="name" placeholder="Name" value="{{ request.GET.name }}" class="form-control mx-2" style="max-width: 200px;">
-                        <input type="text" name="email" placeholder="Email" value="{{ request.GET.email }}" class="form-control mx-2" style="max-width: 200px;">
-                        <button type="submit" class="btn btn-primary mx-2">Filter</button>
-                        <a href="{% url 'hr:system_users' %}" class="btn btn-secondary mx-2">Reset</a>
-                    </form>
+                        <form method="get" action="" class="mt-4 mb-4 d-flex justify-content-center">
+                           
+                            <input type="text" name="name" placeholder="Name" value="{{ request.GET.name }}" class="form-control mx-2" style="max-width: 200px;">
+                            <input type="text" name="email" placeholder="Email" value="{{ request.GET.email }}" class="form-control mx-2" style="max-width: 200px;">
+                            <button type="submit" class="btn btn-primary mx-2">Filter</button>
+                            <a href="{% url 'hr:system_users' %}" class="btn btn-secondary mx-2">Reset</a>
+                        </form>
                     </section>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -75,7 +76,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for reg in users %}
+                                    {% for reg in page_obj %}
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
                                             <td>{{ reg.first_name }} {{ reg.last_name }}</td>
@@ -113,7 +114,7 @@
                                             <td>{{ reg.date_joined }}</td>
                                             {% if is_superuser %}
                                             <td>
-                                                <a href="{% url 'hr:registrants_edit' user.id %}">
+                                                <a href="{% url 'hr:registrants_edit' reg.id %}">
                                                     <i class="fas fa-pencil-alt"></i> Edit
                                                 </a>
                                                 
@@ -123,8 +124,25 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            
                         </div>
+                        
+                        <!-- Pagination Controls -->
+                        <div class="pagination mt-4 justify-content-center">
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="?page=1{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}{% if request.GET.email %}&email={{ request.GET.email }}{% endif %}">&laquo; first</a>
+                                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}{% if request.GET.email %}&email={{ request.GET.email }}{% endif %}">previous</a>
+                                {% endif %}
+                                <span class="current">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                </span>
+                                {% if page_obj.has_next %}
+                                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}{% if request.GET.email %}&email={{ request.GET.email }}{% endif %}">next</a>
+                                    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}{% if request.GET.email %}&email={{ request.GET.email }}{% endif %}">last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                        
                     </div>
                     <!-- end card-body-->
                 </div>

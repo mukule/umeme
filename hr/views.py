@@ -47,8 +47,10 @@ def system_users(request):
     name = request.GET.get('name')
     email = request.GET.get('email')
 
+    # Filter users with access_level=0
     users = CustomUser.objects.filter(access_level=0)
 
+    # Apply filters based on 'name' and 'email'
     if name:
         users = users.filter(
             Q(username__icontains=name) |
@@ -58,7 +60,21 @@ def system_users(request):
     if email:
         users = users.filter(email__icontains=email)
 
-    return render(request, 'hr/users.html', {'users': users})
+    
+    users = users.order_by('-date_joined')
+
+   
+    users_count = users.count()
+
+    # Pagination
+    paginator = Paginator(users, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'hr/users.html', {
+        'page_obj': page_obj,
+        'total_reg': users_count,
+    })
 
 
 @admins
@@ -1356,7 +1372,7 @@ def update_registrants(request, user_id):
     else:
         form = RegistrantsEditForm(instance=user)
 
-    return render(request, 'hr/edit_users.html', {'form': form, 'user': user})
+    return render(request, 'hr/edit_users.html', {'form': form, 'reg': user})
 
 
 @admins
