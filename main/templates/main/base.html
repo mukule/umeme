@@ -520,5 +520,23 @@
 </script>
 
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var filterSection = document.querySelector('.filter-section');
+        var navbarHeight = getComputedStyle(document.documentElement).getPropertyValue('--navbar-height').trim();
+        navbarHeight = parseFloat(navbarHeight); // Convert to number
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY >= navbarHeight) {
+                filterSection.classList.add('sticky-section');
+            } else {
+                filterSection.classList.remove('sticky-section');
+            }
+        });
+    });
+    </script>
+    
+
+
   </body>
 </html>

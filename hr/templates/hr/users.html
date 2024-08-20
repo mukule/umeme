@@ -47,15 +47,16 @@
                         {% endfor %}
                         {% endif %}
                     </div>
-                    <section class="col-md-12 mx-auto shadow-sm text-center border-radius-10 p-4" style="background-color: #7266BB;">
+                    <section class="filter-section col-md-12 mx-auto shadow-sm text-center border-radius-10 p-4">
                         <form method="get" action="" class="mt-4 mb-4 d-flex justify-content-center">
-                           
-                            <input type="text" name="name" placeholder="Name" value="{{ request.GET.name }}" class="form-control mx-2" style="max-width: 200px;">
-                            <input type="text" name="email" placeholder="Email" value="{{ request.GET.email }}" class="form-control mx-2" style="max-width: 200px;">
+                            <input type="text" name="name" placeholder="Name" value="{{ request.GET.name }}" class="form-control mx-2 input-field">
+                            <input type="text" name="email" placeholder="Email" value="{{ request.GET.email }}" class="form-control mx-2 input-field">
                             <button type="submit" class="btn btn-primary mx-2">Filter</button>
                             <a href="{% url 'hr:system_users' %}" class="btn btn-secondary mx-2">Reset</a>
                         </form>
                     </section>
+                    
+                    
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-sm table-hover mb-0">
@@ -115,7 +116,15 @@
                                             {% if is_superuser %}
                                             <td>
                                                 <a href="{% url 'hr:registrants_edit' reg.id %}">
-                                                    <i class="fas fa-pencil-alt"></i> Edit
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                                <a href="{% url 'hr:status' user_id=reg.id %}">
+                                                    {% if reg.is_active %}
+                                                    <i class="fa-solid fa-toggle-off text-danger" ></i>
+                                                    {% else %}
+                                                    <i class="fa-solid fa-toggle-on text-success"></i>
+                                                    {% endif %}
+                                                   
                                                 </a>
                                                 
                                             </td>

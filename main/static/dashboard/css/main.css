@@ -10,26 +10,26 @@
     --dark-color: #343a40; 
     --text-color: #333; 
     --link-hover-color: #ff8617;
-    --navbar-height: auto; 
+    --navbar-height: 80px; 
     --navbar-border-color: #ff8617;
-    --card-border-color: #ff8617; /* Border color for cards */
-    --active-menu-bg-color: #ff8617; /* Background color for active menu item */
-    --active-menu-text-color: #fff; /* Text color for active menu item */
+    --card-border-color: #ff8617; 
+    --active-menu-bg-color: #ff8617; 
+    --active-menu-text-color: #fff;
 }
 
-/* Base Navbar Styles */
+
 .navbar {
     padding: 0 1rem; 
     height: var(--navbar-height); 
     background-color: var(--light-color);
-    border-bottom: 2px solid var(--navbar-border-color); /* Border bottom for navbar */
-    margin-bottom: 0; /* Ensure no margin at the bottom of the navbar */
+    border-bottom: 2px solid var(--navbar-border-color); 
+    margin-bottom: 0; 
 }
 
 .navbar-brand {
     display: flex;
     align-items: center;
-    padding: 0; /* Ensure no padding */
+    padding: 0; 
 }
 
 .navbar-brand img {
@@ -37,9 +37,9 @@
 }
 
 .navbar-brand span {
-    color: var(--dark-color); /* Text Color */
+    color: var(--dark-color); 
     font-weight: bold;
-    font-size: 1.4rem; /* Default font size */
+    font-size: 1.4rem; 
 }
 
 .navbar-nav .nav-item {
@@ -444,4 +444,26 @@ a {
 
 .btn-secondary:hover {
     background-color: var(--primary-color) !important; 
+}
+
+
+.filter-section {
+    background-color: #7266BB; 
+    border-radius: 10px;
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+    margin-top: 20px; 
+    width: 80%; 
+    box-sizing: border-box; 
+}
+
+/* Sticky state */
+.sticky-section {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90% !important; 
+    max-width: 1200px;
+    z-index: 100;
+    box-sizing: border-box; 
 }

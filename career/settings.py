@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'main.middleware.AutoLogoutMiddleware',
 ]
 
 ROOT_URLCONF = 'career.urls'
@@ -78,8 +79,7 @@ TEMPLATES = [
     },
 ]
 
-SESSION_COOKIE_AGE = 1800  # 30 minutes
-SESSION_SAVE_EVERY_REQUEST = True
+
 
 
 WSGI_APPLICATION = 'career.wsgi.application'
