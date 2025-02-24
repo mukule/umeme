@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'career.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'careers',
+        'NAME': 'careerss',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -156,11 +156,11 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'kengen.kenyaweb.com'
 EMAIL_FROM = 'hrm@careers.kengen.co.ke'
 EMAIL_HOST_USER = 'hrm@careers.kengen.co.ke'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'Sasha@2024!!#'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 'hrm@careers.kengen.co.ke'
-BCC_EMAILS = ['careers@kengen.co.ke', 'nelson.masibo@kenyaweb.com']
+BCC_EMAILS = ['careers@kengen.co.ke']
 # BCC_EMAILS = ['bcc1@example.com', 'bcc2@example.com']
 
 
