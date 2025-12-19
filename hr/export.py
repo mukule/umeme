@@ -1,26 +1,41 @@
-import openpyxl
-from openpyxl.styles import Alignment
-from django.http import HttpResponse
 import re
-from users.models import Resume
+import openpyxl
+from openpyxl.styles import Alignment, Font
+from django.http import HttpResponse
+from users.models import Resume, WorkExperience
+from .educational_level import *
 from .logs import *
+
+
+# -------------------------------------------------
+# Excel safety helper (CRITICAL)
+# -------------------------------------------------
+ILLEGAL_CHARACTERS_RE = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F]')
+
+
+def clean_excel_value(value):
+    if isinstance(value, str):
+        return ILLEGAL_CHARACTERS_RE.sub('', value)
+    return value
+
 
 def export_applications_to_excel(request, applications):
     """
-    Export application data to an Excel file.
+    Export application data to an Excel file (Excel-safe).
     """
     create_log(request.user, "Exported Applications")
+
     data = []
 
     for application in applications:
         user = application.applicant
+
         try:
             resume = user.resume
         except Resume.DoesNotExist:
-            full_name = f"{user.first_name} {user.last_name}"
             resume = Resume.objects.create(
                 user=user,
-                full_name=full_name,
+                full_name=f"{user.first_name} {user.last_name}",
                 email_address=user.email,
             )
 
@@ -31,17 +46,17 @@ def export_applications_to_excel(request, applications):
         memberships = user.memberships.all()[:3]
         referees = user.referees.all()[:3]
 
-        full_name = resume.full_name
-        username = user.username
         contacts = f"{resume.phone}\n{resume.email_address}"
-        
-        educational_level_name = resume.educational_level.name if resume.educational_level else ''
+
+        educational_level = resume.educational_level or get_user_highest_educational_level(
+            user.id)
+        educational_level_name = educational_level.name if educational_level else ''
 
         application_data = {
-            'Username/Staff No.': username,
-            'Full Name': full_name,
+            'Username/Staff No.': user.username,
+            'Full Name': resume.full_name,
             'Contact Details': contacts,
-            'Gender': resume.gender if resume.gender else '',
+            'Gender': resume.gender or '',
             'Disability': 'Yes' if resume.disability else 'No',
             'Ethnicity': resume.ethnicity.name if resume.ethnicity else '',
             'Highest Educational Level': educational_level_name,
@@ -57,88 +72,136 @@ def export_applications_to_excel(request, applications):
             'Shortlisted': 'Yes' if application.shortlisted else 'No',
         }
 
+        # ---------------- BASIC EDUCATION ----------------
         if basic_education:
-            application_data['High School'] = "\n\n".join([
-                f"School: {edu.name_of_the_school}\nStart Year: {edu.date_started}\nEnd Year: {edu.date_ended}\nGrade: {edu.grade_attained}"
-                for edu in basic_education
-            ])
+            block = []
+            for edu in basic_education:
+                block.append(
+                    f"School: {edu.name_of_the_school}\n"
+                    f"Start Year: {edu.date_started}\n"
+                    f"End Year: {edu.date_ended}\n"
+                    f"Grade Attained: {edu.grade_attained}"
+                )
+            application_data['High School'] = "\n\n".join(block)
 
+        # ---------------- FURTHER STUDIES ----------------
         if further_studies:
-            application_data['College/University'] = "\n\n".join([
-                f"Institution: {study.institution_name}\nCertification: {study.certifications.name if study.certifications else ''}\n"
-                f"Course: {study.course_undertaken}\nStart: {study.date_started.strftime('%Y-%m-%d') if study.date_started else ''}\n"
-                f"End: {study.date_ended.strftime('%Y-%m-%d') if study.date_ended else ''}\nGrade: {study.grade}"
-                for study in further_studies
-            ])
+            block = []
+            for study in further_studies:
+                block.append(
+                    f"Institution: {study.institution_name}\n"
+                    f"Certification: {study.certifications.name if study.certifications else ''}\n"
+                    f"Course: {study.course_undertaken}\n"
+                    f"Start Date: {study.date_started.strftime('%Y-%m-%d') if study.date_started else ''}\n"
+                    f"End Date: {study.date_ended.strftime('%Y-%m-%d') if study.date_ended else ''}\n"
+                    f"Grade: {study.grade}"
+                )
+            application_data['College/University'] = "\n\n".join(block)
 
+        # ---------------- CERTIFICATIONS ----------------
         if certifications:
-            application_data['Professional Certifications'] = "\n\n".join([
-                f"Name: {cert.name}\nBody: {cert.certifying_body.name if cert.certifying_body else ''}\nDate: {cert.date_attained.strftime('%Y-%m-%d') if cert.date_attained else ''}"
-                for cert in certifications
-            ])
+            block = []
+            for cert in certifications:
+                block.append(
+                    f"Name: {cert.name}\n"
+                    f"Body: {cert.certifying_body.name if cert.certifying_body else ''}\n"
+                    f"Date Attained: {cert.date_attained.strftime('%Y-%m-%d') if cert.date_attained else ''}"
+                )
+            application_data['Professional Certifications'] = "\n\n".join(
+                block)
 
+        # ---------------- MEMBERSHIPS ----------------
         if memberships:
-            application_data['Professional Membership'] = "\n\n".join([
-                f"Title: {membership.membership_title}\nNumber: {membership.membership_number}\nBody: {membership.membership_body}\nJoined: {membership.date_joined.strftime('%Y-%m-%d') if membership.date_joined else ''}"
-                for membership in memberships
-            ])
+            block = []
+            for m in memberships:
+                block.append(
+                    f"Title: {m.membership_title}\n"
+                    f"Number: {m.membership_number}\n"
+                    f"Body: {m.membership_body}\n"
+                    f"Date Joined: {m.date_joined.strftime('%Y-%m-%d') if m.date_joined else ''}"
+                )
+            application_data['Professional Membership'] = "\n\n".join(block)
 
+        # ---------------- WORK EXPERIENCE ----------------
         if work_experience:
-            application_data['Work Experience'] = "\n\n".join([
-                f"Company: {experience.company_name}\nPosition: {experience.position}\n"
-                f"Start: {experience.date_started.strftime('%Y-%m-%d') if experience.date_started else ''}\n"
-                f"End: {experience.date_ended.strftime('%Y-%m-%d') if experience.date_ended else 'Present' if experience.currently_working else ''}\n"
-                f"Address: {experience.company_address}\nPhone: {experience.company_phone}\nResponsibilities: {experience.responsibilities}"
-                for experience in work_experience
-            ])
+            block = []
+            total_months = 0
 
+            for exp in work_experience:
+                start = exp.date_started.strftime(
+                    '%Y-%m-%d') if exp.date_started else ''
+                end = exp.date_ended.strftime(
+                    '%Y-%m-%d') if exp.date_ended else 'In Progress'
+
+                block.append(
+                    f"Company: {exp.company_name}\n"
+                    f"Position: {exp.position}\n"
+                    f"Start Date: {start}\n"
+                    f"End Date: {end}\n"
+                    f"Address: {exp.company_address}\n"
+                    f"Phone: {exp.company_phone}\n"
+                    f"Responsibilities: {exp.responsibilities}"
+                )
+
+                if exp.date_started and exp.date_ended:
+                    delta = exp.date_ended - exp.date_started
+                    total_months += delta.days // 30
+
+            years, months = divmod(total_months, 12)
+            block.append(f"Total Experience: {years} years {months} months")
+
+            application_data['Work Experience'] = "\n\n".join(block)
+
+        # ---------------- REFEREES ----------------
         if referees:
-            application_data['Referees'] = "\n\n".join([
-                f"Name: {referee.full_name}\nOrganization: {referee.organization}\nDesignation: {referee.designation}\nPhone: {referee.phone}\nEmail: {referee.email}"
-                for referee in referees
-            ])
+            block = []
+            for r in referees:
+                block.append(
+                    f"Name: {r.full_name}\n"
+                    f"Organization: {r.organization}\n"
+                    f"Designation: {r.designation}\n"
+                    f"Phone: {r.phone}\n"
+                    f"Email: {r.email}"
+                )
+            application_data['Referees'] = "\n\n".join(block)
 
         data.append(application_data)
 
     headers = [
-        'Username/Staff No.', 'Full Name', 'Contact Details', 'Gender', 'Disability', 'Ethnicity',
-        'Highest Educational Level',
-        'High School',
-        'College/University',
-        'Professional Certifications',
-        'Professional Membership',
-        'Work Experience',
-        'Referees',
-        'Date Applied', 'Reference Number', 'Status', 'Shortlisted',
+        'Username/Staff No.', 'Full Name', 'Contact Details', 'Gender', 'Disability',
+        'Ethnicity', 'Highest Educational Level', 'High School', 'College/University',
+        'Professional Certifications', 'Professional Membership', 'Work Experience',
+        'Referees', 'Date Applied', 'Reference Number', 'Status', 'Shortlisted'
     ]
 
     wb = openpyxl.Workbook()
     ws = wb.active
 
-    title = f"{application.vacancy.title} / {application.vacancy.ref} Applications"
-    title_row = ws.cell(row=1, column=1, value=title)
-    title_row.alignment = Alignment(horizontal='center')
-    title_row.font = openpyxl.styles.Font(size=14, bold=True)
+    title = clean_excel_value(
+        f"{application.vacancy.title} / {application.vacancy.ref} Applications"
+    )
 
-    for col_num, header in enumerate(headers, 1):
-        ws.cell(row=2, column=col_num, value=header)
-        ws.column_dimensions[openpyxl.utils.get_column_letter(col_num)].width = 25
+    title_cell = ws.cell(row=1, column=1, value=title)
+    title_cell.font = Font(size=14, bold=True)
+    title_cell.alignment = Alignment(horizontal='center')
 
-    for row_num, application_data in enumerate(data, 3):
-        for col_num, header in enumerate(headers, 1):
-            value = application_data.get(header, '')
-            cell = ws.cell(row=row_num, column=col_num, value=value)
-            cell.alignment = Alignment(wrap_text=True)
+    for col, header in enumerate(headers, 1):
+        ws.cell(row=2, column=col, value=header)
+        ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 28
 
-    # **Sanitize the Filename**
-    vacancy_title = re.sub(r'[^\w\-_]', '_', application.vacancy.title)
-    vacancy_ref = re.sub(r'[^\w\-_]', '_', application.vacancy.ref)
-    safe_filename = f"applications_for_{vacancy_title}_{vacancy_ref}.xlsx"
+    for row, record in enumerate(data, 3):
+        for col, header in enumerate(headers, 1):
+            value = clean_excel_value(record.get(header, ''))
+            cell = ws.cell(row=row, column=col, value=value)
+            cell.alignment = Alignment(wrap_text=True, vertical='top')
 
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    response['Content-Disposition'] = f'attachment; filename="{safe_filename}"; filename*=UTF-8\'\'{safe_filename}'
-    wb.save(response)
+    response['Content-Disposition'] = (
+        f'attachment; filename="applications_for_'
+        f'{application.vacancy.title}_{application.vacancy.ref}.xlsx"'
+    )
 
+    wb.save(response)
     return response

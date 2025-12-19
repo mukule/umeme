@@ -4,6 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+crispy-bootstrap4 = "*"
+django-tinymce = "*"
+django-countries = "*"
+django = "==4.2.*"
+django-excel-response = "*"
 
 [dev-packages]
 
