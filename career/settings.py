@@ -151,18 +151,18 @@ AUTHENTICATION_BACKENDS = ['users.backends.EmailBackend']
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = '/'
 
-# Email settins
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'kengen.kenyaweb.com'
-EMAIL_FROM = 'hrm@careers.kengen.co.ke'
-EMAIL_HOST_USER = 'hrm@careers.kengen.co.ke'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST = 'pop.kenyaweb.com'
+EMAIL_FROM = 'careers.kengen@kenyawebsolutions.co.ke'
+EMAIL_HOST_USER = 'careers.kengen@kenyawebsolutions.co.ke'
+EMAIL_HOST_PASSWORD = 'HRswr58#'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'hrm@careers.kengen.co.ke'
-BCC_EMAILS = ['careers@kengen.co.ke']
+DEFAULT_FROM_EMAIL = 'careers.kengen@kenyawebsolutions.co.ke'
+BCC_EMAILS = ['nelson.masibo@kenyawebsolutions.co.ke']
 # BCC_EMAILS = ['bcc1@example.com', 'bcc2@example.com']
 
 
-ADMIN_EMAIL = 'nelson@kenyaweb.com'
+ADMIN_EMAIL = 'nelson.masibo@kenyawebsolutions.co.ke'
 PASSWORD_RESET_TIMEOUT = 1800

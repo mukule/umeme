@@ -1194,7 +1194,7 @@ def edit_user(request, user_id):
 
     context = {
         'form': form,
-        'user1': user,
+        'user': user,
     }
 
     return render(request, 'hr/create_staff.html', context)

@@ -71,8 +71,8 @@ class UserEditForm(forms.ModelForm):
             {'class': 'form-control', 'placeholder': 'Staff Number'})
 
         # Make fields optional if needed, e.g.:
-        # self.fields['id_number'].required = False
-        # self.fields['staff_no'].required = False
+        self.fields['id_number'].required = False
+        self.fields['staff_no'].required = False
 
 
 class RegistrantsEditForm(forms.ModelForm):
