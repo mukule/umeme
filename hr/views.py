@@ -1090,6 +1090,7 @@ def term(request, id):
     return render(request, 'hr/term.html', {'term': terms})
 
 
+
 @admins
 def import_excel(request):
     if request.method == 'POST':
@@ -1098,40 +1099,92 @@ def import_excel(request):
             excel_file = request.FILES['excel_file']
 
             if not excel_file.name.endswith('.xlsx'):
-                return render(request, 'error_page.html', {'message': 'File is not in .xlsx format.'})
+                messages.error(request, 'File is not in .xlsx format.')
+                return redirect('hr:import_excel')
 
             try:
                 wb = load_workbook(excel_file)
-                sheet_name = 'staff list 23.10.2023'
-                sheet = wb[sheet_name]
+                sheet = wb[wb.sheetnames[0]]  # Use the first sheet
 
-                for row in sheet.iter_rows():
-                    staff_no, name, email = [cell.value for cell in row]
+                success_count = 0
+                skipped_rows = []
+
+                # Normalize headers: lowercase, remove spaces and underscores
+                def normalize_header(h):
+                    return str(h).strip().lower().replace(" ", "").replace("_", "")
+
+                header_row = [normalize_header(cell.value) for cell in sheet[1]]
+                data_rows = list(sheet.iter_rows())[1:]  # skip header
+
+                for idx, row in enumerate(data_rows, start=2):  # start=2 to match Excel row number
+                    row_values = [cell.value for cell in row]
+                    row_dict = dict(zip(header_row, row_values))
+
+                    # Flexible mapping
+                    staff_no = row_dict.get('staffno')
+                    if staff_no is not None:
+                        staff_no = str(staff_no)  # Convert to string for password
+
+                    name = row_dict.get('name') or row_dict.get('fullname')
+                    email = row_dict.get('email') or row_dict.get('emailaddress')
+
+                    # Skip missing required fields
+                    if not staff_no or not name or not email:
+                        skipped_rows.append({
+                            'row_number': idx,
+                            'staff_no': staff_no,
+                            'name': name,
+                            'email': email,
+                            'reason': 'Missing required field'
+                        })
+                        continue
+
+                    # Skip duplicates
+                    if CustomUser.objects.filter(username=staff_no).exists():
+                        skipped_rows.append({'row_number': idx, 'staff_no': staff_no, 'reason': 'Duplicate username'})
+                        continue
+                    if CustomUser.objects.filter(email=email).exists():
+                        skipped_rows.append({'row_number': idx, 'staff_no': staff_no, 'reason': 'Duplicate email'})
+                        continue
+                    if staff_no and CustomUser.objects.filter(staff_no=staff_no).exists():
+                        skipped_rows.append({'row_number': idx, 'staff_no': staff_no, 'reason': 'Duplicate staff_no'})
+                        continue
 
                     try:
-                        hashed_password = make_password(
-                            staff_no)
-
+                        hashed_password = make_password(staff_no)
                         with transaction.atomic():
                             user = CustomUser.objects.create(
                                 username=staff_no,
                                 email=email,
                                 access_level=5,
-                                password=hashed_password
+                                password=hashed_password,
+                                staff_no=staff_no
                             )
-
                             resume, _ = Resume.objects.get_or_create(user=user)
                             resume.full_name = name
                             resume.email_address = email
                             resume.save()
-                    except ValidationError:
-                        return render(request, 'error_page.html', {'message': 'Error during import'})
+                            success_count += 1
+                    except Exception as e:
+                        skipped_rows.append({
+                            'row_number': idx,
+                            'staff_no': staff_no,
+                            'reason': f'Error creating user: {e}'
+                        })
+                        continue
 
                 wb.close()
 
-                return redirect('hr:staffs')
-            except (KeyError, ValidationError):
-                return render(request, 'error_page.html', {'message': 'Error during import'})
+                if success_count:
+                    messages.success(request, f'Successfully imported {success_count} staff members.')
+                if skipped_rows:
+                    messages.warning(request, f'{len(skipped_rows)} rows were skipped. Check logs for details.')
+
+                return redirect('hr:import_excel')
+
+            except Exception as e:
+                messages.error(request, f'Unexpected error: {e}')
+                return redirect('hr:import_excel')
 
     else:
         form = ExcelImportForm()
@@ -1139,27 +1192,28 @@ def import_excel(request):
     return render(request, 'hr/import_staffs.html', {'form': form})
 
 
+
 @admins
 def staffs(request):
-
     staff_members = CustomUser.objects.filter(access_level=5)
-
-    items_per_page = 100
 
     search_query = request.GET.get('search_query', '')
     if search_query:
         staff_members = staff_members.filter(
-            Q(username__icontains=search_query) | Q(email__icontains=search_query))
+            Q(username__icontains=search_query) | Q(email__icontains=search_query)
+        )
 
+    staff_count = staff_members.count()  # Count after search/filter
+
+    items_per_page = 100
     paginator = Paginator(staff_members, items_per_page)
-
     page = request.GET.get('page')
-
     staff_members = paginator.get_page(page)
 
     context = {
         'staff_members': staff_members,
         'search_query': search_query,
+        'staff_count': staff_count,
     }
 
     return render(request, 'hr/staffs.html', context)

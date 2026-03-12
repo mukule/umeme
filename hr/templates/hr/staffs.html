@@ -19,20 +19,26 @@
         </div>
     </div>
     <hr>
+
     <div class="row mt-4 justify-content-center">
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-body">
+
+                    <!-- Search Form -->
                     <form method="get" class="mb-3">
                         <div class="input-group">
                             <input type="text" name="search_query" class="form-control" placeholder="Search by Staff No or Name" value="{{ search_query }}">
                             <div class="input-group-append">
                                 <button type="submit" class="btn" style="background-color: #490ca6; color: #fff;">Search</button>
-                                <a href="{% url 'hr:kgn_staffs' %}" class="btn  ml-2" style="background-color: #fd7e14; color: #fff;">Show All</a>
+                                <a href="{% url 'hr:kgn_staffs' %}" class="btn ml-2" style="background-color: #fd7e14; color: #fff;">Show All</a>
+                                <a href="#" class="btn btn-primary">Total {{ staff_count }}</a>
                             </div>
                         </div>
                     </form>
-                    
+
+                   
+
                     <!-- Table of staff members -->
                     <div class="table-responsive">
                         {% if staff_members %}
@@ -56,26 +62,26 @@
                                             <td>{{ staff.resume.full_name }}</td>
                                             <td>{{ staff.email }}</td>
                                             <td><a href="{% url 'hr:edit_staff' staff.id %}"><i class="fas fa-edit"></i></a></td>
-                                           
                                             <td>
                                                 {% if staff.is_active %}
-                                                active
+                                                    Active
                                                 {% else %}
-                                                Inactive
+                                                    Inactive
                                                 {% endif %}
                                             </td>
                                             <td>
                                                 {% if staff.is_active %}
-                                                <a href="{% url 'hr:status' user_id=staff.id %}" class="btn btn-danger text-white">Deactivate</a>
-                                            {% else %}
-                                                <a href="{% url 'hr:status' user_id=staff.id %}" class="btn btn-success text-white">Activate</a>
-                                            {% endif %}
-                                            
+                                                    <a href="{% url 'hr:status' user_id=staff.id %}" class="btn btn-danger text-white">Deactivate</a>
+                                                {% else %}
+                                                    <a href="{% url 'hr:status' user_id=staff.id %}" class="btn btn-success text-white">Activate</a>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+
+                            <!-- Pagination -->
                             <div class="pagination mt-4">
                                 <span class="step-links">
                                     {% if staff_members.has_previous %}
@@ -93,12 +99,15 @@
                                     {% endif %}
                                 </span>
                             </div>
+
                         {% else %}
                             <p>No staff members available.</p>
                         {% endif %}
-                        <div class="text-center">
+
+                        <!-- Actions -->
+                        <div class="text-center mt-4">
                             <a href="{% url 'users:create_staff' %}" class="btn btn-primary">Add New Staff</a>
-                            
+                            <a href="{% url 'hr:import_excel' %}" class="btn btn-outline-primary ml-2">Import Staffs</a>
                         </div>
                     </div>
                 </div>
