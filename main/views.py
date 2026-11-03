@@ -488,6 +488,7 @@ def can_view_user_files(request_user, record_user):
     return (
         request_user.is_superuser
         or request_user.access_level in [1, 2, 3, 4]
+        or request_user.function in [1, 10]
         or request_user.id == record_user.id
     )
 
