@@ -224,7 +224,7 @@ def custom_login(request):
                             messages.error(
                                 request, "There was an error processing your request. Please try again.")
 
-                    # Allow login if the user is a superuser or if they are a user with access_level 5 who has changed their password
+                   
                     if user.is_superuser or (user.access_level == 5 and profile_update.password_changed):
                         login(request, user)
 
@@ -246,7 +246,7 @@ def custom_login(request):
                         return redirect('users:staff_no')
                 else:
                     messages.error(
-                        request, "Access denied. Only KenGen Staff Allowed")
+                        request, "Access denied. Only Staff Allowed")
                     return redirect('users:login')
             else:
                 messages.error(request, "Invalid username or password")

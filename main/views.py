@@ -14,6 +14,9 @@ from django.db.models import Q
 from users.checks import *
 from datetime import datetime
 from .experience import *
+import os
+from django.http import FileResponse, Http404
+
 
 
 @staffs
@@ -180,6 +183,7 @@ def college(request):
         'all_fields': all_fields_provided
 
     })
+
 
 
 @login_required
@@ -437,37 +441,167 @@ def basic_academic(request):
 @login_required
 def update_basic_academic(request, instance_id):
     job_types = JobType.objects.exclude(name="Internal")
-    user = request.user
 
-    try:
-        basic_education = BasicEducation.objects.get(user=user, pk=instance_id)
-    except BasicEducation.DoesNotExist:
-        return redirect('main:basic_academic')
-
-    further_studies_instance = FurtherStudies.objects.filter(user=user).first()
-
-    current_certificate = basic_education.certificate
+    basic_education = get_object_or_404(
+        BasicEducation,
+        pk=instance_id,
+        user=request.user
+    )
 
     if request.method == 'POST':
         form = EducationalInformationForm(
-            request.POST, request.FILES, instance=basic_education)
+            request.POST,
+            request.FILES,
+            instance=basic_education
+        )
+
         if form.is_valid():
             form.save()
-            messages.success(
-                request, 'Record updated successfully.')
-            return redirect('main:high_school')
-    else:
 
-        form = EducationalInformationForm(instance=basic_education)
-        form.fields['certificate'].initial = None
+            messages.success(
+                request,
+                'Basic education updated successfully.'
+            )
+
+            return redirect('main:high_school')
+
+    else:
+        form = EducationalInformationForm(
+            instance=basic_education
+        )
 
     context = {
         'form': form,
-        'certificate': current_certificate,
+        'fs': basic_education,
+        'certificate': basic_education.certificate,
         'job_types': job_types,
-        'fs': further_studies_instance
     }
-    return render(request, 'main/basic_academic.html', context)
+
+    return render(
+        request,
+        'main/basic_academic.html',
+        context
+    )
+
+
+def can_view_user_files(request_user, record_user):
+    return (
+        request_user.is_superuser
+        or request_user.access_level in [1, 2, 3, 4]
+        or request_user.id == record_user.id
+    )
+
+
+@login_required
+def serve_basic_education_certificate(request, pk):
+
+    education = get_object_or_404(
+        BasicEducation,
+        pk=pk
+    )
+
+    if not can_view_user_files(request.user, education.user):
+        raise Http404("Certificate not found.")
+
+    if not education.certificate:
+        raise Http404("Certificate not found.")
+
+    try:
+        file = education.certificate.open('rb')
+
+        return FileResponse(
+            file,
+            content_type='application/pdf',
+            as_attachment=False,
+            filename=os.path.basename(education.certificate.name)
+        )
+
+    except (FileNotFoundError, OSError):
+        raise Http404("Certificate file not found.")
+
+
+@login_required
+def serve_further_studies_certificate(request, pk):
+
+    further_studies = get_object_or_404(
+        FurtherStudies,
+        pk=pk
+    )
+
+    if not can_view_user_files(request.user, further_studies.user):
+        raise Http404("Certificate not found.")
+
+    if not further_studies.certificate:
+        raise Http404("Certificate not found.")
+
+    try:
+        file = further_studies.certificate.open('rb')
+
+        return FileResponse(
+            file,
+            content_type='application/pdf',
+            as_attachment=False,
+            filename=os.path.basename(further_studies.certificate.name)
+        )
+
+    except (FileNotFoundError, OSError):
+        raise Http404("Certificate file not found.")
+
+
+@login_required
+def serve_certification_certificate(request, pk):
+
+    certification = get_object_or_404(
+        Certification,
+        pk=pk
+    )
+
+    if not can_view_user_files(request.user, certification.user):
+        raise Http404("Certificate not found.")
+
+    if not certification.certificate:
+        raise Http404("Certificate not found.")
+
+    try:
+        file = certification.certificate.open('rb')
+
+        return FileResponse(
+            file,
+            content_type='application/pdf',
+            as_attachment=False,
+            filename=os.path.basename(certification.certificate.name)
+        )
+
+    except (FileNotFoundError, OSError):
+        raise Http404("Certificate file not found.")
+
+
+@login_required
+def serve_membership_certificate(request, pk):
+
+    membership = get_object_or_404(
+        Membership,
+        pk=pk
+    )
+
+    if not can_view_user_files(request.user, membership.user):
+        raise Http404("Certificate not found.")
+
+    if not membership.certificate:
+        raise Http404("Certificate not found.")
+
+    try:
+        file = membership.certificate.open('rb')
+
+        return FileResponse(
+            file,
+            content_type='application/pdf',
+            as_attachment=False,
+            filename=os.path.basename(membership.certificate.name)
+        )
+
+    except (FileNotFoundError, OSError):
+        raise Http404("Certificate file not found.")
 
 
 @login_required
@@ -512,27 +646,46 @@ def further_studies(request):
 
 @login_required
 def update_further_studies(request, instance_id):
+
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
-    try:
-        further_studies = FurtherStudies.objects.get(user=user, pk=instance_id)
-    except FurtherStudies.DoesNotExist:
-        return redirect('main:basic_academic')
-    basic_education_instance = BasicEducation.objects.filter(user=user).first()
-    certification_instance = Certification.objects.filter(user=user).first()
+
+    further_studies = get_object_or_404(
+        FurtherStudies,
+        user=user,
+        pk=instance_id
+    )
+
+    basic_education_instance = BasicEducation.objects.filter(
+        user=user
+    ).first()
+
+    certification_instance = Certification.objects.filter(
+        user=user
+    ).first()
 
     if request.method == 'POST':
+
         form = FurtherStudiesForm(
-            request.POST, request.FILES, instance=further_studies)
+            request.POST,
+            request.FILES,
+            instance=further_studies
+        )
+
         if form.is_valid():
             form.save()
+
             messages.success(
-                request, 'Your information has been updated successfully.')
+                request,
+                'Your information has been updated successfully.'
+            )
 
             return redirect('main:college')
 
     else:
-        form = FurtherStudiesForm(instance=further_studies)
+        form = FurtherStudiesForm(
+            instance=further_studies
+        )
 
     context = {
         'form': form,
@@ -541,8 +694,12 @@ def update_further_studies(request, instance_id):
         'cert': certification_instance,
         'fs': further_studies,
     }
-    return render(request, 'main/further_studies.html', context)
 
+    return render(
+        request,
+        'main/further_studies.html',
+        context
+    )
 
 @login_required
 def delete_further_studies(request, instance_id):
@@ -591,42 +748,65 @@ def certification(request):
     return render(request, 'main/certification.html', context)
 
 
+
 @login_required
 def update_certification(request, instance_id):
+
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
-    try:
-        certification = Certification.objects.get(user=user, pk=instance_id)
-    except Certification.DoesNotExist:
-        if user.access_level == 5:
-            # Redirect to a different view if access_level is 5
-            return redirect('main:certification')
-        return redirect('main:certification')
 
-    further_studies_instance = FurtherStudies.objects.filter(user=user).first()
-    membership_instance = Membership.objects.filter(user=user).first()
+    certification = get_object_or_404(
+        Certification,
+        user=user,
+        pk=instance_id
+    )
+
+    further_studies_instance = FurtherStudies.objects.filter(
+        user=user
+    ).first()
+
+    membership_instance = Membership.objects.filter(
+        user=user
+    ).first()
 
     if request.method == 'POST':
+
         form = CertificationForm(
-            request.POST, request.FILES, instance=certification)
+            request.POST,
+            request.FILES,
+            instance=certification
+        )
+
         if form.is_valid():
             form.save()
+
             messages.success(
-                request, 'Your information has been updated successfully.')
+                request,
+                'Your information has been updated successfully.'
+            )
 
             return redirect('main:certs')
 
     else:
-        form = CertificationForm(instance=certification)
+        form = CertificationForm(
+            instance=certification
+        )
 
     context = {
         'form': form,
         'job_types': job_types,
         'fs': further_studies_instance,
-        'ms': certification
+        'ms': certification,
+        'membership': membership_instance,
     }
-    print(job_types)
-    return render(request, 'main/certification.html', context)
+
+    return render(
+        request,
+        'main/certification.html',
+        context
+    )
+
+
 
 
 @login_required
@@ -684,20 +864,36 @@ def update_membership(request, instance_id):
 
     job_types = JobType.objects.exclude(name="Internal")
     user = request.user
-    try:
-        membership = Membership.objects.get(user=user, pk=instance_id)
-    except Membership.DoesNotExist:
-        return redirect('main:membership')
 
-    certification_instance = Certification.objects.filter(user=user).first()
-    work_experience_instance = WorkExperience.objects.filter(user=user).first()
+    membership = get_object_or_404(
+        Membership,
+        user=user,
+        pk=instance_id
+    )
+
+    certification_instance = Certification.objects.filter(
+        user=user
+    ).first()
+
+    work_experience_instance = WorkExperience.objects.filter(
+        user=user
+    ).first()
 
     if request.method == 'POST':
-        form = MembershipForm(request.POST, request.FILES, instance=membership)
+
+        form = MembershipForm(
+            request.POST,
+            request.FILES,
+            instance=membership
+        )
+
         if form.is_valid():
             form.save()
+
             messages.success(
-                request, 'Your information has been updated successfully.')
+                request,
+                'Your information has been updated successfully.'
+            )
 
             return redirect('main:memberships')
 
@@ -711,8 +907,12 @@ def update_membership(request, instance_id):
         'wx': work_experience_instance,
         'ms': membership
     }
-    return render(request, 'main/membership.html', context)
 
+    return render(
+        request,
+        'main/membership.html',
+        context
+    )
 
 @login_required
 def delete_membership(request, instance_id):

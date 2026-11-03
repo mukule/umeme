@@ -94,7 +94,7 @@ def internship(request, vacancy_id):
 def attachments(request):
     search_query = request.GET.get('search')
     vacancy_type_filter = request.GET.get('vacancy_type')
-    current_date = date.today()  # Get the current date
+    current_date = date.today()  
 
     attachments = Vacancy.objects.filter(
         vacancy_type='attachment',

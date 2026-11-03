@@ -112,11 +112,16 @@
                                             <td>{{ education_instance.date_started }}</td>
                                             <td>{{ education_instance.date_ended }}</td>
                                             <td>{{ education_instance.grade_attained }}</td>
-                                            <td>
+                                           <td>
                                                 {% if education_instance.certificate %}
-                                                    <a href="{{ education_instance.certificate.url }}" target="_blank">View Certificate</a>
+                                                    <a href="{% url 'main:serve_basic_education_certificate' education_instance.pk %}"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    >
+                                                        <i class="fas fa-file-pdf"></i> View Certificate
+                                                    </a>
                                                 {% else %}
-                                                    No certificate uploaded
+                                                    <span class="text-muted">No certificate uploaded</span>
                                                 {% endif %}
                                             </td>
                                             <td>

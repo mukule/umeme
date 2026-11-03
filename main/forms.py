@@ -151,199 +151,346 @@ class ResumeForm(forms.ModelForm):
 
 
 class EducationalInformationForm(forms.ModelForm):
+
     name_of_the_school = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Name of the School'}),
-        label='Name of the School', required=True
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Name of the School'
+        }),
+        label='Name of the School',
+        required=True
     )
+
     certification = forms.ChoiceField(
         choices=BasicEducation.certification_choices,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Certification', required=True
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        }),
+        label='Certification',
+        required=True
     )
+
     date_started = forms.DateField(
-        widget=forms.DateInput(
-            attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
-        label='Date Started', required=True
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Date Started',
+            'type': 'date'
+        }),
+        label='Date Started',
+        required=True
     )
+
     date_ended = forms.DateField(
-        widget=forms.DateInput(
-            attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
-        label='Date Ended', required=True
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Date Ended',
+            'type': 'date'
+        }),
+        label='Date Ended',
+        required=True
     )
+
     grade_attained = forms.ChoiceField(
         choices=GRADE_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Grade Attained', required=True
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        }),
+        label='Grade Attained',
+        required=True
     )
+
     certificate = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdf only, Not more than 1Mb)', required=True
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': '.pdf,application/pdf'
+        }),
+        label='Certificate File (PDF only, Not more than 1MB)',
+        required=False
     )
 
     def clean_certificate(self):
         certificate = self.cleaned_data.get('certificate')
+
         if certificate:
-            if not certificate.name.endswith('.pdf'):
-                raise forms.ValidationError('Only PDF files are allowed.')
-            if certificate.size > 1 * 1024 * 1024:  # 5MB
+            # Validate file extension
+            if not certificate.name.lower().endswith('.pdf'):
                 raise forms.ValidationError(
-                    'File size must be no more than 1MB.')
+                    'Only PDF files are allowed.'
+                )
+
+           
+            if certificate.size > 1 * 1024 * 1024:
+                raise forms.ValidationError(
+                    'File size must be no more than 1MB.'
+                )
+
         return certificate
 
     class Meta:
         model = BasicEducation
         fields = [
-            'name_of_the_school', 'certification',
-            'date_started', 'date_ended', 'grade_attained', 'certificate'
+            'name_of_the_school',
+            'certification',
+            'date_started',
+            'date_ended',
+            'grade_attained',
+            'certificate'
         ]
 
 
 class FurtherStudiesForm(forms.ModelForm):
-    certification_choices = FurtherStudiesCertification.objects.all()
 
     institution_name = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Institution Name'}),
-        label='Institution Name', required=True
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Institution Name'
+        }),
+        label='Institution Name',
+        required=True
     )
+
     certifications = forms.ModelChoiceField(
         queryset=EducationalLevel.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Levels of study', empty_label="--Select Levels of Study--", required=True
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        }),
+        label='Levels of study',
+        empty_label='--Select Levels of Study--',
+        required=True
     )
+
     course_undertaken = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Course Undertaken'}),
-        label='Course Undertaken', required=True
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Course Undertaken'
+        }),
+        label='Course Undertaken',
+        required=True
     )
+
     date_started = forms.DateField(
-        widget=forms.DateInput(
-            attrs={'class': 'form-control', 'placeholder': 'Date Started', 'type': 'date'}),
-        label='Date Started', required=True
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Date Started',
+            'type': 'date'
+        }),
+        label='Date Started',
+        required=True
     )
+
     date_ended = forms.DateField(
-        widget=forms.DateInput(
-            attrs={'class': 'form-control', 'placeholder': 'Date Ended', 'type': 'date'}),
-        label='Date Ended', required=True
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Date Ended',
+            'type': 'date'
+        }),
+        label='Date Ended',
+        required=True
     )
+
     grade = forms.ModelChoiceField(
         queryset=Class.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        }),
         label='Class Attained',
         required=True,
-        empty_label="--Select Class--",
+        empty_label='--Select Class--'
     )
+
     certificate = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdfs only Not more than 1mb)', required=True
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': '.pdf,application/pdf'
+        }),
+        label='Certificate File (PDF only, Not more than 1MB)',
+        required=False
     )
 
     def clean_certificate(self):
         certificate = self.cleaned_data.get('certificate')
+
         if certificate:
-            if not certificate.name.endswith('.pdf'):
-                raise forms.ValidationError('Only PDF files are allowed.')
-            if certificate.size > 1 * 1024 * 1024:  # 5MB
+            # Validate file extension
+            if not certificate.name.lower().endswith('.pdf'):
                 raise forms.ValidationError(
-                    'File size must be no more than 1MB.')
+                    'Only PDF files are allowed.'
+                )
+
+            # Validate file size (1MB maximum)
+            if certificate.size > 1 * 1024 * 1024:
+                raise forms.ValidationError(
+                    'File size must be no more than 1MB.'
+                )
+
         return certificate
 
     class Meta:
         model = FurtherStudies
         fields = [
-            'institution_name', 'certifications', 'course_undertaken',
-            'date_started', 'date_ended', 'grade', 'certificate'
+            'institution_name',
+            'certifications',
+            'course_undertaken',
+            'date_started',
+            'date_ended',
+            'grade',
+            'certificate'
         ]
 
 
+
+
 class CertificationForm(forms.ModelForm):
-    class Meta:
-        model = Certification
-        fields = ['name', 'certifying_body', 'date_attained', 'certificate']
 
     name = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Certification Name'}),
-        label='Certification Name', required=True
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Certification Name'
+        }),
+        label='Certification Name',
+        required=True
     )
+
     certifying_body = forms.ModelChoiceField(
         queryset=CertifyingBody.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Certifying Body', required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        }),
+        label='Certifying Body',
+        required=True,
         empty_label='Select Certifying Body'
-
     )
+
     date_attained = forms.DateField(
-        widget=forms.DateInput(
-            attrs={'class': 'form-control', 'placeholder': 'Date Attained', 'type': 'date'}),
-        label='Date Awarded the Certificate', required=True
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Date Attained',
+            'type': 'date'
+        }),
+        label='Date Awarded the Certificate',
+        required=True
     )
-    certificate = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Certificate File(pdfs only, Not more than 1Mb)', required=True
 
+    certificate = forms.FileField(
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': '.pdf,application/pdf'
+        }),
+        label='Certificate File (PDF only, Not more than 1MB)',
+        required=False
     )
 
     def clean_certificate(self):
         certificate = self.cleaned_data.get('certificate')
+
         if certificate:
-            if not certificate.name.endswith('.pdf'):
-                raise ValidationError('Only PDF files are allowed.')
-            if certificate.size > 1 * 1024 * 1024:  # 5MB
-                raise ValidationError('File size must be no more than 5MB.')
+            if not certificate.name.lower().endswith('.pdf'):
+                raise ValidationError(
+                    'Only PDF files are allowed.'
+                )
+
+            if certificate.size > 1 * 1024 * 1024:
+                raise ValidationError(
+                    'File size must be no more than 1MB.'
+                )
+
         return certificate
+
+    class Meta:
+        model = Certification
+        fields = [
+            'name',
+            'certifying_body',
+            'date_attained',
+            'certificate'
+        ]
+
 
 
 class MembershipForm(forms.ModelForm):
-    class Meta:
-        model = Membership
-        fields = ['membership_title', 'membership_number', 'membership_body',
-                  'date_joined', 'certificate']
 
     membership_title = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Membership Title'}),
-        label='Membership Title', required=True
-    )
-    membership_number = forms.CharField(
-        max_length=50,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Membership Number'}),
-        label='Membership Number', required=True
-    )
-    date_joined = forms.DateField(
-        widget=forms.DateInput(
-            attrs={'class': 'form-control', 'placeholder': 'Date Joined', 'type': 'date'}),
-        label='Date Awarded the certificate', required=True
-    )
-    certificate = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        label='Membership Certificate File (PDFs only, not more than 1MB)',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Membership Title'
+        }),
+        label='Membership Title',
         required=True
     )
+
+    membership_number = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Membership Number'
+        }),
+        label='Membership Number',
+        required=True
+    )
+
+    date_joined = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Date Joined',
+            'type': 'date'
+        }),
+        label='Date Awarded the certificate',
+        required=True
+    )
+
+    certificate = forms.FileField(
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': '.pdf,application/pdf'
+        }),
+        label='Membership Certificate File (PDF only, not more than 1MB)',
+        required=False
+    )
+
     membership_body = forms.ModelChoiceField(
         queryset=CertifyingBody.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Membership Body', required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        }),
+        label='Membership Body',
+        required=True,
         empty_label='Select Membership Body'
     )
 
     def clean_certificate(self):
         certificate = self.cleaned_data.get('certificate')
+
         if certificate:
-            if not certificate.name.endswith('.pdf'):
-                raise forms.ValidationError('Only PDF files are allowed.')
-            if certificate.size > 1 * 1024 * 1024:  # 1MB
+            if not certificate.name.lower().endswith('.pdf'):
                 raise forms.ValidationError(
-                    'File size must be no more than 1MB.')
+                    'Only PDF files are allowed.'
+                )
+
+            if certificate.size > 1 * 1024 * 1024:
+                raise forms.ValidationError(
+                    'File size must be no more than 1MB.'
+                )
+
         return certificate
 
+    class Meta:
+        model = Membership
+        fields = [
+            'membership_title',
+            'membership_number',
+            'membership_body',
+            'date_joined',
+            'certificate'
+        ]
+
+
+
+        
 
 class WorkExperienceForm(forms.ModelForm):
     class Meta:

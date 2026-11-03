@@ -4,69 +4,186 @@
 
 {% block content %}
 
-    <div class="container" style="margin-top: 100px !important;">
-        <div class="row">
-            <div style="width: 100%;">
-                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
-                    <h4 style="margin-top: 3px;">Update your Resume to apply</h4>
-                    <p style="margin-bottom: 4px;">Complete You Resume to apply</p>
-                </div>
-            </div>    
-           
+<div class="container" style="margin-top: 100px !important;">
+
+    
+    <div class="row">
+        <div style="width: 100%;">
+            <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; border-left: 4px solid #4F16A7;">
+
+                <h4 style="margin-top: 3px;">Update your Resume to apply</h4>
+                <p style="margin-bottom: 4px;">Complete Your Resume to apply</p>
+
+            </div>
         </div>
-       <div class="card mt-4">
+    </div>
+
+    
+    <div class="card mt-4">
         <div class="card-body">
+
             <h2 class="mb-4 text-center" style="color: #FD7E14;">
                 {% if fs %}
-                Update Further Studies
+                    Update Further Studies
                 {% else %}
-                
-                Add College/University
-                {%endif%}
+                    Add College/University
+                {% endif %}
             </h2>
-        
+
+          
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message|safe|escape }}
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close">
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+           
             <form method="post" enctype="multipart/form-data">
+
                 {% csrf_token %}
+
+              
                 <div class="row mt-3">
+
                     <div class="col-md-6">
                         {{ form.institution_name|as_crispy_field }}
                     </div>
+
                     <div class="col-md-6">
                         {{ form.course_undertaken|as_crispy_field }}
                     </div>
+
                 </div>
+
+               
                 <div class="row mt-3">
+
                     <div class="col-md-6">
                         {{ form.date_started|as_crispy_field }}
                     </div>
+
                     <div class="col-md-6">
                         {{ form.date_ended|as_crispy_field }}
                     </div>
+
                 </div>
+
+                
                 <div class="row mt-3">
+
                     <div class="col-md-6">
                         {{ form.certifications|as_crispy_field }}
                     </div>
+
                     <div class="col-md-3">
                         {{ form.grade|as_crispy_field }}
                     </div>
-                   
+
                     <div class="col-md-3">
-                        <div id="certificate-link">
-                            {{ form.certificate|as_crispy_field }}
-                        </div>
+
+                       
+                        {% if fs and fs.certificate %}
+
+                            <div class="mb-3">
+
+                               
+
+                                <div class="border rounded p-3 bg-light">
+
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+
+                                        <div class="d-flex align-items-center">
+
+                                            <i class="fas fa-file-pdf text-danger fa-2x me-3"></i>
+
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    Academic Certificate
+                                                </div>
+
+                                                <small class="text-muted">
+                                                    Certificate uploaded
+                                                </small>
+                                            </div>
+
+                                        </div>
+
+                                       
+                                        <a href="{% url 'main:serve_further_studies_certificate' fs.pk %}"
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           >
+
+                                            <i class="fas fa-eye me-1"></i>
+                                            View
+
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                              
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="alert alert-info py-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                No certificate uploaded yet.
+                            </div>
+
+                        {% endif %}
+
+                        
+                        {{ form.certificate|as_crispy_field }}
+
                     </div>
-                    
+
                 </div>
-              
-                <div class="text-center mt-4">
-              
-                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary active">Back</a>
-                    
-                     <button type="submit" class="btn btn-primary active ml-2">Submit</button>
+
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger mt-3">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
                     </div>
+                {% endif %}
+
+               
+                <div class="text-center mt-4">
+
+                    <a href="{% url 'main:college' %}"
+                       class="btn btn-primary">
+                        Back
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary ml-2">
+                        {% if fs %}
+                            Update
+                        {% else %}
+                            Submit
+                        {% endif %}
+                    </button>
+
+                </div>
+
             </form>
+
         </div>
-       </div>
     </div>
+
+</div>
+
 {% endblock content %}

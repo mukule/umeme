@@ -54,4 +54,24 @@ urlpatterns = [
     path('update_educational_level/',
          views.update_educational_level, name='edu_level'),
     path('how_to_apply/', views.how, name='how'),
+    path('academic/certificate/<int:pk>/', views.serve_basic_education_certificate, name='serve_basic_education_certificate'),
+    path(
+     'academic/further-studies/certificate/<int:pk>/',
+     views.serve_further_studies_certificate,
+     name='serve_further_studies_certificate'
+     ),
+     path(
+    'certification/certificate/<int:pk>/',
+    views.serve_certification_certificate,
+    name='serve_certification_certificate'
+     ),
+
+     path(
+     'membership/certificate/<int:pk>/',
+     views.serve_membership_certificate,
+     name='serve_membership_certificate'
+     ),
+
 ]
+
+

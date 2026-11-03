@@ -344,9 +344,13 @@ def publish(request, job_id):
     if can_publish:
         job.published = not job.published
         job.save()
-        create_log(request.user, "Publish/Unpublish Job")
+        
+        # 🔹 Log using only the ID and the Action
+        action = "Published" if job.published else "Unpublished"
+        create_log(request.user, f"{action} Vacancy ID: {job.id}")
+        
         messages.success(
-            request, f'Vacancy {job.title} has been {"published" if job.published else "unpublished"}.')
+            request, f'Vacancy {job.title} has been {action.lower()}.')
     else:
         messages.error(
             request, 'You do not have permission to Complete this Action')
