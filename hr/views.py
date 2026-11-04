@@ -398,23 +398,34 @@ def applications(request):
     return render(request, 'hr/applications.html', context)
 
 
+
 @admins
 def application_detail(request, vacancy_id, filter_criteria=None):
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
-    applications = Application.objects.filter(vacancy=vacancy)
+
+    applications = Application.objects.filter(
+        vacancy=vacancy
+    ).select_related(
+        'applicant',
+        'applicant__resume'
+    ).prefetch_related(
+        'applicant__work_experiences'
+    )
+
     educational_levels = EducationalLevel.objects.all()
     ethnicities = Ethnicity.objects.all()
 
-    # Apply filtering criteria based on the parameter
-    if filter_criteria:
-        if filter_criteria == 'qualified':
-            applications = applications.filter(qualify=True)
-        elif filter_criteria == 'disqualified':
-            applications = applications.filter(qualify=False)
-        elif filter_criteria == 'shortlisted':
-            applications = applications.filter(shortlisted=True)
+    # Apply filtering criteria
+    if filter_criteria == 'qualified':
+        applications = applications.filter(qualify=True)
 
-    # Apply additional filters based on GET parameters
+    elif filter_criteria == 'disqualified':
+        applications = applications.filter(qualify=False)
+
+    elif filter_criteria == 'shortlisted':
+        applications = applications.filter(shortlisted=True)
+
+    # Additional filters
     education_level = request.GET.get('education_level')
     ethnicity = request.GET.get('ethnicity')
     gender = request.GET.get('gender')
@@ -424,56 +435,63 @@ def application_detail(request, vacancy_id, filter_criteria=None):
 
     if education_level:
         applications = applications.filter(
-            applicant__resume__educational_level=education_level)
+            applicant__resume__educational_level=education_level
+        )
+
     if ethnicity:
         applications = applications.filter(
-            applicant__resume__ethnicity=ethnicity)
+            applicant__resume__ethnicity=ethnicity
+        )
+
     if gender:
-        applications = applications.filter(applicant__resume__gender=gender)
+        applications = applications.filter(
+            applicant__resume__gender=gender
+        )
+
     if disability:
         applications = applications.filter(
-            applicant__resume__disability=disability)
+            applicant__resume__disability=disability
+        )
+
     if experience:
         applications = applications.filter(
-            applicant__work_experiences__years__gte=experience)
+            applicant__work_experiences__years__gte=experience
+        )
+
     if name_search:
         applications = applications.filter(
             Q(applicant__first_name__icontains=name_search) |
             Q(applicant__last_name__icontains=name_search)
         )
 
+    # Prevent duplicate applications and ensure consistent ordering
+    applications = applications.distinct().order_by('id')
+
     total_applications = applications.count()
 
-    # Apply pagination
-    paginator = Paginator(applications, 20)  # Show 10 applications per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    # Check if export to Excel is requested
-    export_excel = request.GET.get('export_excel')
-    if export_excel:
-        if applications.count() < 1:
+    # Export filtered applications
+    if request.GET.get('export_excel'):
+        if not applications.exists():
             messages.error(request, "There are no applications to export.")
             return redirect(request.META.get('HTTP_REFERER', '/'))
-        else:
 
-            response = export_applications_to_excel(request, applications)
+        return export_applications_to_excel(request, applications)
 
-            # messages.success(
-            #     request, f"Successfully exported {applications.count()} applications.")
+    # Pagination
+    paginator = Paginator(applications, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
 
-            return response
-
-    # Prepare context data
     context = {
         'vacancy': vacancy,
         'ethnicity': ethnicities,
         'educational_levels': educational_levels,
         'total_applications': total_applications,
         'page_obj': page_obj,
+        'filter_criteria': filter_criteria,
     }
 
     return render(request, 'hr/application_detail.html', context)
+
 
 
 @admins
@@ -1498,8 +1516,9 @@ def apps(request):
     else:
         applications = Application.objects.all()
 
-    paginator = Paginator(applications, 10)  # Show 10 applications per page
+    paginator = Paginator(applications, 10) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'hr/apps.html', {'page_obj': page_obj, 'ref_number': ref_number})
+
